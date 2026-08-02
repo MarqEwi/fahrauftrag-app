@@ -100,17 +100,22 @@
   /* ---------- Kästchenraster (eigene, vereinfachte Darstellung) ---------- */
   .spaltenkopf{display:flex;gap:8px;font-size:.62rem;font-weight:700;letter-spacing:.06em;
     text-transform:uppercase;color:var(--text2);margin-bottom:5px}
-  .spaltenkopf .sk-a{flex:1 1 auto;padding-left:78px}
+  .spaltenkopf .sk-a{flex:1 1 auto;padding-left:32px}
   .spaltenkopf .sk-b{flex:0 0 84px;text-align:center}
   .gitterblock{display:flex;gap:8px;align-items:stretch}
   .gitter{flex:1 1 auto;min-width:0}
   .kmzeile{display:flex;align-items:stretch;margin-bottom:-1.5px}
-  .kmlabel{flex:0 0 78px;font-size:.7rem;line-height:1.15;font-weight:700;padding-right:7px;
-    display:flex;align-items:center;justify-content:flex-end;text-align:right}
+  /* Nur die Zeilenmarke a) / b) – ausgeschrieben stünden die Wörter links
+     neben dem Gitter und nähmen den Kästchen die Breite weg. Wofür a) und b)
+     stehen, sagen die Eingabefelder und der Merksatz unter dem Gitter. */
+  .kmlabel{flex:0 0 32px;font-size:.9rem;line-height:1;font-weight:700;padding-right:8px;
+    display:flex;align-items:center;justify-content:flex-end}
   .kmboxen{display:flex;flex:1 1 auto;min-width:0}
-  .kmboxen span{flex:1 1 0;min-width:0;height:44px;border:1.5px solid var(--linie);
+  .kmboxen span{flex:1 1 0;min-width:0;height:52px;border:1.5px solid var(--linie);
     margin-right:-1.5px;display:flex;align-items:center;justify-content:center;
-    font-size:1.2rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2)}
+    font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2)}
+  /* Ein Tipp auf eine Zeile springt in das zugehörige Eingabefeld. */
+  .kmzeile{cursor:pointer}
   /* min-width:0 ist wichtig: sonst wächst die Box mit einer langen Zahl mit
      und drückt die Kästchen auf schmalen Geräten zusammen. */
   .nachweis{flex:0 0 84px;min-width:0;border:1.5px solid var(--linie);background:var(--bg2);
@@ -121,13 +126,20 @@
   .nachweis .nwert.lang{font-size:1.15rem}
   .nachweis .neinheit{font-size:.68rem;color:var(--text2)}
   @media(max-width:359px){
-    .kmlabel{flex:0 0 66px}
-    .spaltenkopf .sk-a{padding-left:66px}
+    .kmlabel{flex:0 0 28px;padding-right:6px}
+    .spaltenkopf .sk-a{padding-left:28px}
     .nachweis{flex:0 0 74px}
-    .kmboxen span{font-size:1.05rem}
   }
   .merksatz{margin-top:12px;padding:9px 12px;border-left:3px solid var(--accent);
     background:var(--bg3);font-size:.86rem;line-height:1.45}
+  /* Die Rechnung ausgeschrieben – der zweite Punkt, an dem es beim Ausfüllen
+     hakt: die gefahrenen Kilometer selbst auszurechnen. */
+  .rechnung{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;
+    gap:4px 8px;font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .rechnung .rm{font-size:.72rem;font-weight:700;color:var(--text2);margin-right:1px}
+  .rechnung .rop{color:var(--text2);font-weight:700}
+  .rechnung .rerg{font-size:1.3rem;font-weight:800;color:var(--accent2)}
+  html[data-theme="dark"] .rechnung .rerg{color:var(--accent2)}
   .fehler{margin-top:12px;padding:10px 12px;border:1.5px solid var(--bad);border-radius:9px;
     background:var(--bg3);color:var(--bad);font-size:.88rem;font-weight:600}
   .warnung{margin-top:12px;padding:9px 12px;border-left:3px solid var(--warn);
@@ -302,14 +314,15 @@
         <button data-v="std">Betriebsstunden</button>
       </div>
 
-      <label class="field" for="in-ab"><span class="marke">b)</span> <span id="lbl-ab">Abfahrt · km-Stand beim Start</span></label>
-      <input type="text" id="in-ab" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27716" maxlength="9">
-
+      <!-- Reihenfolge wie im Vordruck: a) oben, b) darunter. So stehen Eingabe
+           und Kästchengitter untereinander in derselben Anordnung – der
+           Zeilentausch, der die meisten Fehler verursacht, kann gar nicht
+           erst im Kopf passieren. -->
       <label class="field" for="in-rueck"><span class="marke">a)</span> <span id="lbl-rueck">Rückkehr · km-Stand am Ende</span></label>
       <input type="text" id="in-rueck" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27768" maxlength="9">
 
-      <label class="field" for="in-strecke">Startort / Zielort <span class="opt">optional</span></label>
-      <input type="text" id="in-strecke" autocomplete="off" placeholder="z. B. Musterstadt – Beispielheim" maxlength="80">
+      <label class="field" for="in-ab"><span class="marke">b)</span> <span id="lbl-ab">Abfahrt · km-Stand beim Start</span></label>
+      <input type="text" id="in-ab" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27716" maxlength="9">
 
       <div class="btn-row">
         <button class="btn secondary" id="btn-uebernehmen" style="display:none"><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg> Stand der letzten Fahrt</button>
@@ -328,11 +341,11 @@
       <div class="gitterblock">
         <div class="gitter">
           <div class="kmzeile">
-            <div class="kmlabel">a) Rück&shy;kehr</div>
+            <div class="kmlabel" aria-hidden="true">a)</div>
             <div class="kmboxen" id="box-rueck" aria-label="Kästchen der Zeile a) Rückkehr"></div>
           </div>
           <div class="kmzeile">
-            <div class="kmlabel">b) Ab&shy;fahrt</div>
+            <div class="kmlabel" aria-hidden="true">b)</div>
             <div class="kmboxen" id="box-ab" aria-label="Kästchen der Zeile b) Abfahrt"></div>
           </div>
         </div>
@@ -346,6 +359,9 @@
       <div class="merksatz" id="merksatz"></div>
       <div class="fehler" id="fehler" style="display:none" role="alert"></div>
       <div class="warnung" id="warnung" style="display:none"></div>
+
+      <label class="field" for="in-strecke">Startort / Zielort <span class="opt">optional, nur für deine Notiz</span></label>
+      <input type="text" id="in-strecke" autocomplete="off" placeholder="z. B. Musterstadt – Beispielheim" maxlength="80">
 
       <div class="btn-row">
         <button class="btn primary" id="btn-kopieren" disabled><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Eintrag kopieren</button>
@@ -1086,10 +1102,19 @@ function homeRender(){
 
   const ms = $("merksatz");
   if (r.fertig){
-    ms.innerHTML = "Oben <b>a) Rückkehr</b> " + esc(String(r.rueck)) + " · unten <b>b) Abfahrt</b> "
-      + esc(String(r.ab)) + " · rechts <b>" + esc(fmtNum(r.diff)) + " " + esc(m.einheit) + "</b>.";
+    /* Die Rechnung ausgeschrieben, damit sie sich nachvollziehen und im Kopf
+       oder auf dem Blatt gegenprüfen lässt. */
+    ms.innerHTML = '<div class="rechnung">'
+      + '<span><span class="rm">a)</span>' + esc(String(r.rueck)) + "</span>"
+      + '<span class="rop">−</span>'
+      + '<span><span class="rm">b)</span>' + esc(String(r.ab)) + "</span>"
+      + '<span class="rop">=</span>'
+      + '<b class="rerg">' + esc(fmtNum(r.diff)) + " " + esc(m.einheit) + "</b></div>";
   } else {
-    ms.innerHTML = "Merksatz: <b>oben steht immer das Spätere.</b> Trag beide Stände ein, dann erscheint hier der fertige Eintrag.";
+    /* Solange nichts eingetragen ist, erklärt der Merksatz, wofür a) und b)
+       stehen – im Gitter selbst steht aus Platzgründen nur die Marke. */
+    ms.innerHTML = "Oben <b>a) Rückkehr</b>, unten <b>b) Abfahrt</b>, rechts die gefahrenen "
+      + esc(m.einheit) + ". Merksatz: <b>oben steht immer das Spätere.</b>";
   }
 
   $("btn-kopieren").disabled = !r.fertig;
@@ -1109,6 +1134,9 @@ function kopierText(){
 }
 
 ["in-ab", "in-rueck"].forEach(id => $(id).addEventListener("input", homeRender));
+/* Tipp auf eine Gitterzeile springt in das Feld, das diese Zeile füllt. */
+$("box-rueck").parentElement.addEventListener("click", () => $("in-rueck").focus());
+$("box-ab").parentElement.addEventListener("click", () => $("in-ab").focus());
 segInit("s-modus", v => { store(MODUS_KEY, v); beschriftungRender(); homeRender(); });
 
 $("btn-leeren").addEventListener("click", () => {
