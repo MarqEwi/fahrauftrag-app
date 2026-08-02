@@ -812,8 +812,7 @@
     </div>
     <div class="merksatz" id="z-rechnung"></div>
     <div class="btn-row">
-      <button class="btn primary" id="z-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Diese Zeile kopieren</button>
-      <button class="btn secondary" id="z-edit">Bearbeiten</button>
+      <button class="btn" id="z-edit"><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg> Diese Fahrt bearbeiten</button>
     </div>
   </div>
 </div>
@@ -1621,11 +1620,6 @@ function ntZeileText(z, m){
   if (z.strecke) t += " | " + z.strecke;
   return t;
 }
-$("z-copy").addEventListener("click", async () => {
-  const k = ntKette(), z = k.zeilen[zeileIndex];
-  if (!z) return;
-  if (await Bridge.copyText(ntZeileText(z, k.m))) toast("Zeile kopiert");
-});
 $("z-edit").addEventListener("click", () => { closeModal("modal-zeile"); ntOpenEditor(zeileIndex); });
 
 /* --- Editor für eine nachzutragende Fahrt --- */
