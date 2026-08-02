@@ -98,22 +98,22 @@
   .seg button.active{background:var(--accent);color:var(--accent-text)}
   .seg.mini button{padding:7px 6px;font-size:.82rem}
   /* ---------- Kästchenraster (eigene, vereinfachte Darstellung) ---------- */
-  .spaltenkopf{display:flex;gap:8px;font-size:.62rem;font-weight:700;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--text2);margin-bottom:5px}
-  .spaltenkopf .sk-a{flex:1 1 auto;padding-left:32px}
+  /* Der Spaltenkopf trägt die Zuordnung – so wie auf dem Blatt, wo über den
+     Kästchen "km-Stand/BetrStd · a) Rückkehr · b) Abfahrt" steht. Dadurch
+     bleibt das Gitter selbst ein sauberer Block aus 2 × 6 Kästchen. */
+  .spaltenkopf{display:flex;gap:8px;color:var(--text2);margin-bottom:5px}
+  .spaltenkopf .sk-a{flex:1 1 auto;min-width:0}
   .spaltenkopf .sk-b{flex:0 0 84px;text-align:center}
+  .spaltenkopf .skt{display:block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .spaltenkopf .skz{display:block;font-size:.74rem;font-weight:700;color:var(--text)}
+  .spaltenkopf .skz i{font-style:normal;color:var(--text2);font-weight:400}
   .gitterblock{display:flex;gap:8px;align-items:stretch}
   .gitter{flex:1 1 auto;min-width:0}
   .kmzeile{display:flex;align-items:stretch;margin-bottom:-1.5px}
-  /* Nur die Zeilenmarke a) / b) – ausgeschrieben stünden die Wörter links
-     neben dem Gitter und nähmen den Kästchen die Breite weg. Wofür a) und b)
-     stehen, sagen die Eingabefelder und der Merksatz unter dem Gitter. */
-  .kmlabel{flex:0 0 32px;font-size:.9rem;line-height:1;font-weight:700;padding-right:8px;
-    display:flex;align-items:center;justify-content:flex-end}
   .kmboxen{display:flex;flex:1 1 auto;min-width:0}
-  .kmboxen span{flex:1 1 0;min-width:0;height:52px;border:1.5px solid var(--linie);
+  .kmboxen span{flex:1 1 0;min-width:0;height:56px;border:1.5px solid var(--linie);
     margin-right:-1.5px;display:flex;align-items:center;justify-content:center;
-    font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2)}
+    font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2)}
   /* Ein Tipp auf eine Zeile springt in das zugehörige Eingabefeld. */
   .kmzeile{cursor:pointer}
   /* min-width:0 ist wichtig: sonst wächst die Box mit einer langen Zahl mit
@@ -126,9 +126,8 @@
   .nachweis .nwert.lang{font-size:1.15rem}
   .nachweis .neinheit{font-size:.68rem;color:var(--text2)}
   @media(max-width:359px){
-    .kmlabel{flex:0 0 28px;padding-right:6px}
-    .spaltenkopf .sk-a{padding-left:28px}
     .nachweis{flex:0 0 74px}
+    .kmboxen span{font-size:1.3rem;height:50px}
   }
   .merksatz{margin-top:12px;padding:9px 12px;border-left:3px solid var(--accent);
     background:var(--bg3);font-size:.86rem;line-height:1.45}
@@ -160,6 +159,32 @@
   .fahrt .faktionen{margin-top:6px;display:flex;gap:6px;justify-content:flex-end}
   .fahrt .faktionen .btn{padding:5px 10px;font-size:.85rem;border-radius:7px}
   .empty{color:var(--text2);text-align:center;padding:20px 8px;font-size:.9rem}
+  /* ---------- Nachtragen ---------- */
+  .bilanz{margin-top:12px;border-top:1.5px solid var(--linie);padding-top:10px}
+  .bilanz .bz{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;padding:2px 0}
+  .bilanz .bz b{font-variant-numeric:tabular-nums}
+  .bilanz .bz.gross{font-size:1.05rem;font-weight:700;border-top:1px dashed var(--line);margin-top:6px;padding-top:8px}
+  .status{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:.88rem;font-weight:600;border:1.5px solid}
+  .status.ok{border-color:var(--ok);color:var(--ok);background:var(--bg3)}
+  .status.offen{border-color:var(--warn);color:var(--warn);background:var(--bg3)}
+  .status.schlecht{border-color:var(--bad);color:var(--bad);background:var(--bg3)}
+  .ntzeile{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);
+    width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;font:inherit;
+    color:var(--text);cursor:pointer}
+  .ntzeile:last-child{border-bottom:none}
+  .ntnr{flex:0 0 26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-text);
+    display:grid;place-items:center;font-size:.8rem;font-weight:700}
+  .ntdaten{flex:1;min-width:0;display:block}
+  .ntkopf{display:block;font-size:.86rem;font-weight:700;overflow-wrap:anywhere}
+  .ntkopf .ntstrecke{font-weight:400;color:var(--text2)}
+  .ntstaende{display:block;font-size:.8rem;color:var(--text2);font-variant-numeric:tabular-nums;margin-top:2px}
+  .ntstaende b{color:var(--text)}
+  .ntrechts{flex:none;text-align:right;font-variant-numeric:tabular-nums}
+  .ntrechts .ntkm{display:block;font-size:1.05rem;font-weight:800;white-space:nowrap}
+  .ntrechts .ntkm span{font-size:.72rem;font-weight:600;color:var(--text2)}
+  .ntmarke{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    background:var(--bg3);color:var(--text2);border-radius:5px;padding:1px 6px;margin-top:3px}
+  .ntfehler{display:block;color:var(--bad);font-size:.8rem;font-weight:600;margin-top:3px}
   .notice{background:var(--bg3);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
     padding:9px 12px;font-size:.84rem;color:var(--text2);margin:10px 0}
   .info-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
@@ -258,6 +283,11 @@
     <path d="M8.5 6.5h12M8.5 12h12M8.5 17.5h12"/>
     <path d="M4 6.5h.01M4 12h.01M4 17.5h.01"/>
   </symbol>
+  <symbol id="i-stack" viewBox="0 0 24 24">
+    <rect x="3.5" y="3.5" width="17" height="5" rx="1"/>
+    <rect x="3.5" y="9.5" width="17" height="5" rx="1"/>
+    <rect x="3.5" y="15.5" width="17" height="5" rx="1"/>
+  </symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24">
     <path d="M4 7h16M4 12h16M4 17h16"/>
     <circle cx="14.5" cy="7" r="2" fill="var(--bg2)"/>
@@ -334,18 +364,19 @@
       <h3><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg> So eintragen</h3>
 
       <div class="spaltenkopf">
-        <div class="sk-a" id="kopf-links">km-Stand / BetrStd</div>
-        <div class="sk-b">Nachweis</div>
+        <div class="sk-a">
+          <span class="skt" id="kopf-links">km-Stand / BetrStd</span>
+          <span class="skz">a) Rückkehr <i>oben</i> · b) Abfahrt <i>unten</i></span>
+        </div>
+        <div class="sk-b"><span class="skt">Nachweis</span></div>
       </div>
 
       <div class="gitterblock">
         <div class="gitter">
           <div class="kmzeile">
-            <div class="kmlabel" aria-hidden="true">a)</div>
             <div class="kmboxen" id="box-rueck" aria-label="Kästchen der Zeile a) Rückkehr"></div>
           </div>
           <div class="kmzeile">
-            <div class="kmlabel" aria-hidden="true">b)</div>
             <div class="kmboxen" id="box-ab" aria-label="Kästchen der Zeile b) Abfahrt"></div>
           </div>
         </div>
@@ -370,6 +401,7 @@
     </div>
 
     <div class="btn-row" style="margin:0 0 14px">
+      <button class="btn secondary" id="go-nachtragen"><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Fahrten nachtragen</button>
       <button class="btn secondary" id="go-fahrten"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Meine Fahrten <span id="fahrten-anzahl" class="muted"></span></button>
     </div>
 
@@ -399,6 +431,52 @@
 
     <div class="btn-row">
       <button class="btn danger small" id="f-clear">Liste leeren</button>
+    </div>
+  </section>
+
+  <!-- ===== Fahrten nachtragen ===== -->
+  <section class="view" id="view-nachtragen">
+    <button class="backlink" data-nav="home">← Zurück zur Ausfüllhilfe</button>
+    <h2><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Fahrten nachtragen</h2>
+    <p class="muted" style="margin-top:0">Du kennst den letzten eingetragenen Stand und den Stand von heute.
+      Trag die Fahrten dazwischen ein – die App baut daraus die Kette und rechnet jede Zeile aus.
+      Erst wenn nichts mehr offen ist, passt der Nachtrag zum Fahrzeug.</p>
+
+    <div class="card">
+      <h3><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg> Rahmen</h3>
+      <div class="seg mini" id="nt-modus" role="group" aria-label="Einheit">
+        <button data-v="km" class="active">Kilometer</button>
+        <button data-v="std">Betriebsstunden</button>
+      </div>
+
+      <label class="field" for="nt-start"><span id="nt-lbl-start">Letzter eingetragener km-Stand</span></label>
+      <input type="text" id="nt-start" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27716" maxlength="9">
+
+      <label class="field" for="nt-aktuell"><span id="nt-lbl-aktuell">km-Stand jetzt am Fahrzeug</span></label>
+      <input type="text" id="nt-aktuell" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 28361" maxlength="9">
+
+      <div class="bilanz" id="nt-bilanz"></div>
+      <div class="status" id="nt-status"></div>
+    </div>
+
+    <div class="card">
+      <h3><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Fahrten <span id="nt-anzahl" class="muted"></span></h3>
+      <div id="nt-liste"></div>
+      <div class="empty" id="nt-empty">Noch keine Fahrt eingetragen. Trag der Reihe nach ein, was du nachholen musst.</div>
+      <p class="muted" id="nt-tipp" style="display:none">Tipp auf eine Zeile zeigt sie groß im Kästchengitter – so trägst du sie Zeile für Zeile ab.</p>
+      <div class="btn-row">
+        <button class="btn" id="nt-add"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Fahrt hinzufügen</button>
+        <button class="btn secondary" id="nt-rest" style="display:none"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Rest als eigene Fahrt</button>
+      </div>
+      <p class="muted" id="nt-limit-info"></p>
+      <div class="btn-row" id="nt-ausgabe" style="display:none">
+        <button class="btn primary" id="nt-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Alle Zeilen kopieren</button>
+        <button class="btn secondary" id="nt-export"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Ausgeben <span class="premium-star" id="nt-export-star">💎</span></button>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn danger small" id="nt-clear">Nachtrag verwerfen</button>
     </div>
   </section>
 
@@ -522,8 +600,9 @@
     <ul>
       <li><svg class="ic" aria-hidden="true"><use href="#i-ban"/></svg> Keine Werbung</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Unbegrenzt viele Fahrten in der Liste (frei: max. 3)</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Fahrtenliste als PDF, Bild oder Text ausgeben</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Fahrtenliste drucken</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: max. 5 Fahrten)</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Listen als PDF, Bild oder Text ausgeben</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Listen drucken</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg> Unterstützt die Weiterentwicklung</li>
     </ul>
     <div id="premium-buy-area"></div>
@@ -577,6 +656,81 @@
     <div class="btn-row">
       <button class="btn primary" id="e-save">Speichern</button>
       <button class="btn secondary" data-close="modal-editor">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Editor: eine nachzutragende Fahrt ===== -->
+<div class="modal-back" id="modal-ntfahrt">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Nachzutragende Fahrt">
+    <button class="iconbtn x" data-close="modal-ntfahrt" aria-label="Schließen"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <h2 id="nt-e-title">Fahrt hinzufügen</h2>
+    <p class="muted" style="margin-top:0">Beginnt bei <b id="nt-e-ab">–</b>.</p>
+
+    <label class="field" for="nt-e-datum">Datum</label>
+    <input type="date" id="nt-e-datum">
+
+    <label class="field" for="nt-e-strecke">Startort / Zielort <span class="opt">optional</span></label>
+    <input type="text" id="nt-e-strecke" placeholder="z. B. Musterstadt – Beispielheim" maxlength="80" autocomplete="off">
+
+    <label class="field">Was weißt du von dieser Fahrt?</label>
+    <div class="seg mini" id="nt-e-art" role="group" aria-label="Art der Angabe">
+      <button data-v="km" class="active">Gefahrene km</button>
+      <button data-v="stand">Stand am Ende</button>
+    </div>
+
+    <div id="nt-e-feld-km">
+      <label class="field" for="nt-e-km"><span id="nt-e-lbl-km">Gefahrene Kilometer</span></label>
+      <input type="text" id="nt-e-km" class="zahl" inputmode="numeric" placeholder="z. B. 230" maxlength="9" autocomplete="off">
+    </div>
+    <div id="nt-e-feld-stand" style="display:none">
+      <label class="field" for="nt-e-stand"><span class="marke">a)</span> <span id="nt-e-lbl-stand">Notierter Stand am Ende der Fahrt</span></label>
+      <input type="text" id="nt-e-stand" class="zahl" inputmode="numeric" placeholder="z. B. 27946" maxlength="9" autocomplete="off">
+      <p class="muted" style="font-size:.8rem">Nimm das, wenn du dir für diese Fahrt einen Stand notiert hast – die gefahrenen Kilometer ergeben sich dann von selbst.</p>
+    </div>
+
+    <p class="muted" id="nt-e-vorschau">&nbsp;</p>
+    <div id="nt-e-err" class="fehler" style="display:none"></div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="nt-e-save">Speichern</button>
+      <button class="btn secondary" data-close="modal-ntfahrt">Abbrechen</button>
+    </div>
+    <div class="btn-row" id="nt-e-loeschzeile" style="display:none">
+      <button class="btn danger small" id="nt-e-del">Diese Fahrt löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Eine fertige Zeile im Kästchengitter ===== -->
+<div class="modal-back" id="modal-zeile">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Zeile für das Blatt">
+    <button class="iconbtn x" data-close="modal-zeile" aria-label="Schließen"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <h2 id="z-title">Zeile</h2>
+    <p class="muted" id="z-info" style="margin-top:0"></p>
+
+    <div class="spaltenkopf">
+      <div class="sk-a">
+        <span class="skt" id="z-kopf-links">km-Stand / BetrStd</span>
+        <span class="skz">a) Rückkehr <i>oben</i> · b) Abfahrt <i>unten</i></span>
+      </div>
+      <div class="sk-b"><span class="skt">Nachweis</span></div>
+    </div>
+    <div class="gitterblock">
+      <div class="gitter">
+        <div class="kmzeile"><div class="kmboxen" id="z-box-rueck" aria-label="Kästchen der Zeile a) Rückkehr"></div></div>
+        <div class="kmzeile"><div class="kmboxen" id="z-box-ab" aria-label="Kästchen der Zeile b) Abfahrt"></div></div>
+      </div>
+      <div class="nachweis">
+        <div class="nkopf">km oder<br>BetrStd</div>
+        <div class="nwert" id="z-nachweis">–</div>
+        <div class="neinheit" id="z-einheit">km</div>
+      </div>
+    </div>
+    <div class="merksatz" id="z-rechnung"></div>
+    <div class="btn-row">
+      <button class="btn primary" id="z-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Diese Zeile kopieren</button>
+      <button class="btn secondary" id="z-edit">Bearbeiten</button>
     </div>
   </div>
 </div>
@@ -694,6 +848,7 @@ const Edition = {
     document.body.classList.toggle("edition-free", !this.isPremium());
     document.body.classList.toggle("edition-premium", this.isPremium());
     renderSettings(); renderFahrten();
+    if (typeof ntRender === "function") ntRender();
     if (typeof updateAdbarH === "function") updateAdbarH();
     if (typeof Ads === "object" && Ads.sync) Ads.sync();
   }
@@ -965,7 +1120,8 @@ const Bridge = {
          Teilen-Menü ausgeben (dort steht u. a. Drucken bereit). */
       const blob = buildListPdfBlob();
       if (!blob) return false;
-      return await this.saveBlob("fahrten-" + dateStamp() + ".pdf", blob, "Fahrtenliste drucken");
+      const k = exportKopf();
+      return await this.saveBlob(k.datei + "-" + dateStamp() + ".pdf", blob, k.titel + " drucken");
     }
     window.print();
     return true;
@@ -1013,6 +1169,7 @@ function show(view){
 }
 document.querySelectorAll("[data-nav]").forEach(b => b.addEventListener("click", () => show(b.dataset.nav)));
 $("go-fahrten").addEventListener("click", () => show("fahrten"));
+$("go-nachtragen").addEventListener("click", () => show("nachtragen"));
 
 /* ---------- Modals ---------- */
 /* Reihenfolge der geöffneten Fenster – die Zurück-Taste schließt immer das
@@ -1316,6 +1473,367 @@ $("e-save").addEventListener("click", () => {
   renderFahrten();
 });
 
+/* ---------- Fahrten nachtragen ------------------------------------------
+   Ausgangslage: Der letzte Eintrag auf dem Blatt liegt Tage zurück, das
+   Fahrzeug zeigt heute einen ganz anderen Stand. Bekannt sind die Fahrten
+   dazwischen, nicht aber die Zwischenstände – die hat ja niemand notiert.
+
+   Deshalb ist die Eingaberichtung hier umgedreht: Je Fahrt werden die
+   gefahrenen Kilometer eingetragen, die Stände ergeben sich als Kette
+   (jede Abfahrt ist die Rückkehr der Fahrt davor). Wer sich für eine Fahrt
+   doch einen Stand notiert hat, kann diesen statt der Kilometer angeben –
+   dann rechnet die App die Kilometer daraus aus und die Kette hängt sich
+   an diesem festen Punkt auf.
+
+   Bewusste Festlegung: Der Rest zwischen der letzten Fahrt und dem
+   aktuellen Stand wird NICHT selbsttätig auf die Fahrten verteilt. Er
+   steht sichtbar da, und es gibt genau einen ausdrücklichen Knopf, der
+   daraus eine eigene Zeile macht. Die App ordnet die Zahlen der nutzenden
+   Person – sie erfindet keine.                                          */
+const NT_KEY = "fa_nachtrag";
+const NT_FREI = 5;                      /* Fahrten in der freien Version */
+let NT = ntLaden();
+let ntEditIndex = null;
+
+function ntLeer(){ return { start:"", aktuell:"", modus:"km", fahrten:[] }; }
+function ntLaden(){
+  const d = load(NT_KEY, null);
+  if (!d || typeof d !== "object" || !Array.isArray(d.fahrten)) return ntLeer();
+  return { start: d.start || "", aktuell: d.aktuell || "", modus: d.modus === "std" ? "std" : "km", fahrten: d.fahrten };
+}
+function ntSichern(){ store(NT_KEY, NT); }
+
+/* Baut die Kette aus Rahmen und Fahrten. */
+function ntKette(){
+  const m = FA.modus(NT.modus);
+  const s = FA.parse(NT.start), a = FA.parse(NT.aktuell);
+  const erg = {
+    m, zeilen: [], start: s.wert, aktuell: a.wert,
+    rahmenFehler: null, rest: null, verteilt: null, zeilenFehler: false, komplett: false
+  };
+  if (s.fehler){ erg.rahmenFehler = "Letzter Stand: " + s.fehler; return erg; }
+  if (a.fehler){ erg.rahmenFehler = "Aktueller Stand: " + a.fehler; return erg; }
+  if (s.wert != null && a.wert != null && a.wert < s.wert){
+    erg.rahmenFehler = "Der Stand jetzt (" + fmtNum(a.wert) + ") ist kleiner als der letzte eingetragene ("
+      + fmtNum(s.wert) + "). Prüfe, ob die beiden Felder vertauscht sind.";
+    return erg;
+  }
+
+  let ab = s.wert;
+  NT.fahrten.forEach((f, i) => {
+    const z = { i, datum: f.datum, strecke: f.strecke, art: f.art === "stand" ? "stand" : "km",
+                ab, rueck: null, km: null, fehler: null };
+    if (ab == null){
+      z.fehler = "Der letzte eingetragene Stand fehlt.";
+    } else if (z.art === "stand"){
+      const p = FA.parse(f.stand);
+      if (p.fehler) z.fehler = p.fehler;
+      else if (p.wert == null) z.fehler = "Kein Stand eingetragen.";
+      else if (p.wert < ab) z.fehler = "Der notierte Stand (" + fmtNum(p.wert) + ") liegt vor dem Stand, mit dem diese Fahrt beginnt (" + fmtNum(ab) + ").";
+      else { z.rueck = p.wert; z.km = p.wert - ab; }
+    } else {
+      const p = FA.parse(f.km);
+      if (p.fehler) z.fehler = p.fehler;
+      else if (p.wert == null) z.fehler = "Keine Kilometer eingetragen.";
+      else {
+        z.km = p.wert;
+        z.rueck = ab + p.wert;
+        if (z.rueck > FA.MAX) z.fehler = "Der Stand würde über sechs Stellen hinausgehen.";
+      }
+    }
+    if (z.fehler){ erg.zeilenFehler = true; ab = null; }
+    else ab = z.rueck;
+    erg.zeilen.push(z);
+  });
+
+  const letzter = erg.zeilen.length ? erg.zeilen[erg.zeilen.length - 1].rueck : s.wert;
+  if (letzter != null && s.wert != null) erg.verteilt = letzter - s.wert;
+  if (letzter != null && a.wert != null) erg.rest = a.wert - letzter;
+  erg.komplett = !erg.rahmenFehler && !erg.zeilenFehler && erg.zeilen.length > 0 && erg.rest === 0;
+  return erg;
+}
+
+function ntBeschriftung(){
+  const m = FA.modus(NT.modus);
+  $("nt-lbl-start").textContent = "Letzter eingetragener " + m.feldLabel;
+  $("nt-lbl-aktuell").textContent = m.feldLabel + " jetzt am Fahrzeug";
+  $("nt-e-lbl-km").textContent = "Gefahrene " + (m === FA.MODI.km ? "Kilometer" : "Betriebsstunden");
+  $("nt-e-lbl-stand").textContent = "Notierter " + m.feldLabel + " am Ende der Fahrt";
+}
+
+function ntRender(){
+  const k = ntKette();
+  const m = k.m;
+
+  /* --- Bilanz und Status --- */
+  const bil = $("nt-bilanz");
+  const zeile = (t, w, gross) => '<div class="bz' + (gross ? " gross" : "") + '"><span>' + t + "</span><b>" + w + "</b></div>";
+  bil.innerHTML =
+    zeile("Letzter eingetragener Stand", k.start == null ? "–" : fmtNum(k.start)) +
+    zeile("Stand jetzt am Fahrzeug", k.aktuell == null ? "–" : fmtNum(k.aktuell)) +
+    zeile("Gesamt nachzutragen", (k.start != null && k.aktuell != null) ? fmtNum(k.aktuell - k.start) + " " + m.einheit : "–", true) +
+    zeile("auf Fahrten verteilt", k.verteilt == null ? "–" : fmtNum(k.verteilt) + " " + m.einheit);
+
+  const st = $("nt-status");
+  st.style.display = "";
+  if (k.rahmenFehler){
+    st.className = "status schlecht"; st.textContent = k.rahmenFehler;
+  } else if (k.start == null || k.aktuell == null){
+    st.className = "status offen"; st.textContent = "Trag oben beide Stände ein – daraus ergibt sich, wie viel zu verteilen ist.";
+  } else if (k.zeilenFehler){
+    st.className = "status schlecht"; st.textContent = "Mindestens eine Fahrt passt noch nicht – die betroffene Zeile ist unten rot markiert.";
+  } else if (!k.zeilen.length){
+    st.className = "status offen";
+    st.textContent = "Offen: " + fmtNum(k.rest) + " " + m.einheit + ". Trag die Fahrten ein, die du nachholen musst.";
+  } else if (k.rest > 0){
+    st.className = "status offen";
+    st.textContent = "Es fehlen noch " + fmtNum(k.rest) + " " + m.einheit + ", bis der Nachtrag zum Fahrzeug passt.";
+  } else if (k.rest < 0){
+    st.className = "status schlecht";
+    st.textContent = "Die Fahrten ergeben " + fmtNum(-k.rest) + " " + m.einheit + " mehr, als das Fahrzeug insgesamt gefahren ist.";
+  } else {
+    st.className = "status ok";
+    st.textContent = "Die Kette geht auf: Die letzte Rückkehr trifft genau den Stand am Fahrzeug.";
+  }
+
+  /* --- Liste der Fahrten --- */
+  const cont = $("nt-liste");
+  cont.innerHTML = "";
+  k.zeilen.forEach(z => {
+    const b = document.createElement("button");
+    b.className = "ntzeile";
+    b.dataset.zeile = z.i;
+    b.innerHTML =
+      '<span class="ntnr">' + (z.i + 1) + "</span>" +
+      '<span class="ntdaten">' +
+        '<span class="ntkopf">' + esc(datumKurz(z.datum)) +
+          (z.strecke ? ' <span class="ntstrecke">· ' + esc(z.strecke) + "</span>" : "") + "</span>" +
+        (z.fehler
+          ? '<span class="ntfehler">' + esc(z.fehler) + "</span>"
+          : '<span class="ntstaende">a) Rückkehr <b>' + esc(String(z.rueck)) + "</b> · b) Abfahrt <b>" + esc(String(z.ab)) + "</b></span>") +
+        (z.art === "stand" ? '<span class="ntmarke">Stand notiert</span>' : "") +
+      "</span>" +
+      '<span class="ntrechts"><span class="ntkm">' + esc(z.km == null ? "–" : fmtNum(z.km)) +
+        ' <span>' + esc(m.einheit) + "</span></span></span>";
+    cont.appendChild(b);
+  });
+  cont.querySelectorAll("[data-zeile]").forEach(b => b.addEventListener("click", () => {
+    const i = parseInt(b.dataset.zeile, 10);
+    const z = ntKette().zeilen[i];
+    if (z && z.fehler) ntOpenEditor(i); else ntZeigeZeile(i);
+  }));
+  $("nt-empty").style.display = k.zeilen.length ? "none" : "block";
+  $("nt-anzahl").textContent = k.zeilen.length ? "(" + k.zeilen.length + ")" : "";
+
+  /* --- Knöpfe --- */
+  /* Ausgeben und Kopieren erst, wenn die Kette lückenlos ist: Nach einer
+     fehlerhaften Zeile steht keine Abfahrt mehr fest, alle folgenden Zeilen
+     wären erfunden. Ein noch offener Rest ist dagegen kein Hindernis – er
+     steht in der Ausgabe ausdrücklich als "OFFEN" mit drin. */
+  const sauber = !k.rahmenFehler && !k.zeilenFehler && k.zeilen.length > 0;
+  $("nt-rest").style.display = (sauber && k.rest > 0) ? "" : "none";
+  $("nt-tipp").style.display = sauber ? "" : "none";
+  $("nt-ausgabe").style.display = sauber ? "" : "none";
+  $("nt-export-star").style.display = Edition.isPremium() ? "none" : "";
+  $("nt-limit-info").innerHTML = Edition.isPremium()
+    ? "💎 Premium: beliebig viele Fahrten je Nachtrag."
+    : "Freie Version: bis zu " + NT_FREI + " Fahrten je Nachtrag (aktuell " + k.zeilen.length + "). "
+      + '<a href="#" id="nt-limit-premium">Premium ansehen</a>';
+  const lp = $("nt-limit-premium");
+  if (lp) lp.addEventListener("click", e => { e.preventDefault(); openPremium(); });
+}
+
+/* Eine fertige Zeile groß im Kästchengitter zeigen. */
+let zeileIndex = null;
+function ntZeigeZeile(i){
+  const k = ntKette(), z = k.zeilen[i];
+  if (!z || z.fehler) return;
+  zeileIndex = i;
+  $("z-title").textContent = "Zeile " + (i + 1) + " von " + k.zeilen.length;
+  $("z-info").textContent = datumKurz(z.datum) + (z.strecke ? " · " + z.strecke : "");
+  $("z-kopf-links").textContent = k.m.spalte;
+  kaestchenRender("z-box-rueck", z.rueck);
+  kaestchenRender("z-box-ab", z.ab);
+  const nw = $("z-nachweis");
+  nw.textContent = fmtNum(z.km);
+  nw.classList.toggle("lang", nw.textContent.length > 5);
+  $("z-einheit").textContent = k.m.einheit;
+  $("z-rechnung").innerHTML = '<div class="rechnung">'
+    + '<span><span class="rm">a)</span>' + esc(String(z.rueck)) + "</span>"
+    + '<span class="rop">−</span>'
+    + '<span><span class="rm">b)</span>' + esc(String(z.ab)) + "</span>"
+    + '<span class="rop">=</span>'
+    + '<b class="rerg">' + esc(fmtNum(z.km)) + " " + esc(k.m.einheit) + "</b></div>";
+  openModal("modal-zeile");
+}
+function ntZeileText(z, m){
+  let t = "a) Rückkehr: " + FA.mitNullen(z.rueck) + " | b) Abfahrt: " + FA.mitNullen(z.ab)
+        + " | " + m.nachweis + ": " + z.km;
+  if (z.strecke) t += " | " + z.strecke;
+  return t;
+}
+$("z-copy").addEventListener("click", async () => {
+  const k = ntKette(), z = k.zeilen[zeileIndex];
+  if (!z) return;
+  if (await Bridge.copyText(ntZeileText(z, k.m))) toast("Zeile kopiert");
+});
+$("z-edit").addEventListener("click", () => { closeModal("modal-zeile"); ntOpenEditor(zeileIndex); });
+
+/* --- Editor für eine nachzutragende Fahrt --- */
+function ntEditorRender(){
+  const art = segValue("nt-e-art");
+  $("nt-e-feld-km").style.display = art === "km" ? "" : "none";
+  $("nt-e-feld-stand").style.display = art === "stand" ? "" : "none";
+  const m = FA.modus(NT.modus);
+  const k = ntKette();
+  /* Stand, bei dem diese Fahrt beginnt: Rückkehr der Fahrt davor. */
+  const vorher = ntEditIndex == null
+    ? (k.zeilen.length ? k.zeilen[k.zeilen.length - 1].rueck : k.start)
+    : (ntEditIndex > 0 ? k.zeilen[ntEditIndex - 1].rueck : k.start);
+  $("nt-e-ab").textContent = vorher == null ? "–" : fmtNum(vorher) + " " + m.einheit;
+
+  let fehler = null, vorschau = "";
+  if (art === "km"){
+    const p = FA.parse($("nt-e-km").value);
+    if (p.fehler) fehler = p.fehler;
+    else if (p.wert != null && vorher != null){
+      const r = vorher + p.wert;
+      vorschau = r > FA.MAX ? "" : "Ergibt a) Rückkehr <b>" + esc(String(r)) + "</b>";
+      if (r > FA.MAX) fehler = "Der Stand würde über sechs Stellen hinausgehen.";
+    }
+  } else {
+    const p = FA.parse($("nt-e-stand").value);
+    if (p.fehler) fehler = p.fehler;
+    else if (p.wert != null && vorher != null){
+      if (p.wert < vorher) fehler = "Der Stand liegt vor dem Stand, mit dem diese Fahrt beginnt (" + fmtNum(vorher) + ").";
+      else vorschau = "Ergibt <b>" + esc(fmtNum(p.wert - vorher)) + " " + esc(m.einheit) + "</b> für diese Fahrt";
+    }
+  }
+  $("nt-e-err").style.display = fehler ? "block" : "none";
+  $("nt-e-err").textContent = fehler || "";
+  $("nt-e-vorschau").innerHTML = vorschau || "&nbsp;";
+  return { art, fehler };
+}
+["nt-e-km", "nt-e-stand"].forEach(id => $(id).addEventListener("input", ntEditorRender));
+segInit("nt-e-art", ntEditorRender);
+
+function ntOpenEditor(index){
+  ntEditIndex = index;
+  const neu = index == null;
+  const f = neu ? null : NT.fahrten[index];
+  $("nt-e-title").textContent = neu ? "Fahrt hinzufügen" : "Fahrt " + (index + 1) + " bearbeiten";
+  segSet("nt-e-art", f && f.art === "stand" ? "stand" : "km");
+  $("nt-e-datum").value = f ? (f.datum || "") : isoHeute();
+  $("nt-e-strecke").value = f ? (f.strecke || "") : "";
+  $("nt-e-km").value = f && f.km != null ? String(f.km) : "";
+  $("nt-e-stand").value = f && f.stand != null ? String(f.stand) : "";
+  $("nt-e-loeschzeile").style.display = neu ? "none" : "";
+  ntBeschriftung();
+  ntEditorRender();
+  openModal("modal-ntfahrt");
+}
+
+$("nt-add").addEventListener("click", () => {
+  if (!Edition.isPremium() && NT.fahrten.length >= NT_FREI){ openPremium(); return; }
+  ntOpenEditor(null);
+});
+
+$("nt-e-save").addEventListener("click", () => {
+  const { art, fehler } = ntEditorRender();
+  if (fehler) return;
+  const wert = art === "km" ? FA.parse($("nt-e-km").value) : FA.parse($("nt-e-stand").value);
+  if (wert.wert == null){
+    $("nt-e-err").style.display = "block";
+    $("nt-e-err").textContent = art === "km"
+      ? "Trag ein, wie weit diese Fahrt ging."
+      : "Trag den notierten Stand am Ende der Fahrt ein.";
+    return;
+  }
+  const eintrag = {
+    datum: $("nt-e-datum").value || "",
+    strecke: $("nt-e-strecke").value.trim(),
+    art,
+    km: art === "km" ? wert.wert : null,
+    stand: art === "stand" ? wert.wert : null
+  };
+  if (ntEditIndex == null) NT.fahrten.push(eintrag); else NT.fahrten[ntEditIndex] = eintrag;
+  ntSichern();
+  closeModal("modal-ntfahrt");
+  ntRender();
+});
+
+$("nt-e-del").addEventListener("click", () => {
+  if (ntEditIndex == null) return;
+  if (!confirm("Diese Fahrt aus dem Nachtrag entfernen?")) return;
+  NT.fahrten.splice(ntEditIndex, 1);
+  ntSichern();
+  closeModal("modal-ntfahrt");
+  ntRender();
+});
+
+/* Der Rest bekommt eine eigene Zeile – ausdrücklich und mit leerem Datum,
+   damit die nutzende Person selbst einträgt, worum es sich handelt. */
+$("nt-rest").addEventListener("click", () => {
+  const k = ntKette();
+  if (!(k.rest > 0)) return;
+  if (!Edition.isPremium() && NT.fahrten.length >= NT_FREI){ openPremium(); return; }
+  NT.fahrten.push({ datum: "", strecke: "", art: "km", km: k.rest, stand: null });
+  ntSichern();
+  ntRender();
+  ntOpenEditor(NT.fahrten.length - 1);
+  toast("Rest als neue Fahrt angelegt – Datum und Strecke fehlen noch");
+});
+
+$("nt-clear").addEventListener("click", () => {
+  if (!NT.fahrten.length && !NT.start && !NT.aktuell) return;
+  if (!confirm("Den ganzen Nachtrag verwerfen?")) return;
+  NT = ntLeer(); ntSichern();
+  $("nt-start").value = ""; $("nt-aktuell").value = "";
+  segSet("nt-modus", "km");
+  ntBeschriftung(); ntRender();
+});
+
+$("nt-start").addEventListener("input", () => { NT.start = $("nt-start").value; ntSichern(); ntRender(); });
+$("nt-aktuell").addEventListener("input", () => { NT.aktuell = $("nt-aktuell").value; ntSichern(); ntRender(); });
+segInit("nt-modus", v => { NT.modus = v; ntSichern(); ntBeschriftung(); ntRender(); });
+
+$("nt-copy").addEventListener("click", async () => {
+  const k = ntKette();
+  const gut = k.zeilen.filter(z => !z.fehler);
+  if (!gut.length){ alert("Es gibt noch keine fertige Zeile."); return; }
+  const txt = gut.map((z, n) => (n + 1) + ". " + datumKurz(z.datum) + " – " + ntZeileText(z, k.m)).join("\n");
+  if (await Bridge.copyText(txt)) toast(gut.length + " Zeilen kopiert");
+});
+
+$("nt-export").addEventListener("click", () => {
+  if (!Edition.isPremium()){ openPremium(); return; }
+  const k = ntKette();
+  if (!k.zeilen.filter(z => !z.fehler).length){ alert("Es gibt noch keine fertige Zeile."); return; }
+  exportQuelle = "nachtrag";
+  openModal("modal-export");
+});
+
+function ntExportRows(){
+  const k = ntKette();
+  const head = ["Nr","Datum","Start / Ziel","b) Abfahrt","a) Rueckkehr","Nachweis"];
+  const rows = k.zeilen.filter(z => !z.fehler).map(z => [
+    String(z.i + 1),
+    z.datum ? datumKurz(z.datum) : "-",
+    z.strecke || "-",
+    String(z.ab),
+    String(z.rueck),
+    z.km + " " + k.m.einheit
+  ]);
+  return { head, rows };
+}
+function ntSummeText(){
+  const k = ntKette();
+  const t = [];
+  if (k.verteilt != null) t.push("Summe: " + k.verteilt + " " + k.m.einheit);
+  if (k.rest) t.push("OFFEN: " + k.rest + " " + k.m.einheit);
+  return t.join(" · ");
+}
+
 /* ---------- Ausgabe: Text, Bild, PDF ---------- */
 function dateStamp(){
   const d = new Date();
@@ -1323,8 +1841,13 @@ function dateStamp(){
 }
 function dateStr(){ return new Date().toLocaleDateString("de-DE", {day:"2-digit",month:"2-digit",year:"numeric"}); }
 
+/* Welche Liste ausgegeben wird: die gemerkten Fahrten oder der Nachtrag.
+   Beide nutzen dieselben Ausgabewege (Text, Bild, PDF, Drucken). */
+let exportQuelle = "fahrten";
+
 /* Kopf und Zeilen der Fahrtenliste (rein textuelle Werte) */
 function exportRows(){
+  if (exportQuelle === "nachtrag") return ntExportRows();
   const head = ["Datum","Name","Start / Ziel","b) Abfahrt","a) Rueckkehr","Nachweis"];
   const rows = fahrten().map(f => {
     const m = FA.modus(f.modus);
@@ -1340,8 +1863,16 @@ function exportRows(){
   });
   return { head, rows };
 }
+
+/* Überschrift, Untertitel und Dateiname je nach Quelle. */
+function exportKopf(){
+  return exportQuelle === "nachtrag"
+    ? { titel:"Nachgetragene Fahrten", unter:"Zeilen für den Fahrauftrag", datei:"nachtrag" }
+    : { titel:"Fahrtenliste", unter:"Private Notizen zum Fahrauftrag", datei:"fahrten" };
+}
 function colWidths(head, rows){ return head.map((hh,i) => Math.max(hh.length, ...rows.map(r => r[i].length))); }
 function summeText(){
+  if (exportQuelle === "nachtrag") return ntSummeText();
   const liste = fahrten();
   const kmSum = liste.filter(f => FA.modus(f.modus) === FA.MODI.km).reduce((s,f) => s + (fahrtDiff(f) || 0), 0);
   const stdSum = liste.filter(f => FA.modus(f.modus) === FA.MODI.std).reduce((s,f) => s + (fahrtDiff(f) || 0), 0);
@@ -1353,10 +1884,11 @@ function summeText(){
 
 function exportText(){
   const { head, rows } = exportRows();
+  const k = exportKopf();
   if (!rows.length){ alert("Die Liste ist leer."); return; }
   const w = colWidths(head, rows);
   const fmt = cells => cells.map((c,i) => c.padEnd(w[i])).join("  ");
-  let txt = "Fahrtenliste (private Notizen zum Fahrauftrag)\n";
+  let txt = k.titel + " (" + k.unter + ")\n";
   txt += "Erstellt: " + dateStr() + "\n\n";
   txt += fmt(head) + "\n";
   txt += w.map(x => "-".repeat(x)).join("  ") + "\n";
@@ -1364,12 +1896,13 @@ function exportText(){
   const s = summeText();
   if (s) txt += "\n" + s + "\n";
   txt += "\nErstellt mit der Fahrauftrag Ausfuellhilfe - inoffizielle App, kein amtlicher Nachweis.\n";
-  Bridge.saveTextFile("fahrten-" + dateStamp() + ".txt", txt, "text/plain");
+  Bridge.saveTextFile(k.datei + "-" + dateStamp() + ".txt", txt, "text/plain");
   closeModal("modal-export");
 }
 
 function exportImage(){
   const { head, rows } = exportRows();
+  const k = exportKopf();
   if (!rows.length){ alert("Die Liste ist leer."); return; }
   const DPR = 2, padX = 26, rowH = 34, titleH = 92, footH = 56;
   const fBody = "16px system-ui, Arial, sans-serif", fHead = "600 16px system-ui, Arial, sans-serif";
@@ -1387,9 +1920,9 @@ function exportImage(){
   const ctx = cv.getContext("2d"); ctx.scale(DPR, DPR);
   ctx.fillStyle = "#fffdf6"; ctx.fillRect(0,0,totalW,totalH);
   ctx.fillStyle = "#41502f"; ctx.font = "700 24px system-ui, Arial, sans-serif";
-  ctx.fillText("Fahrtenliste", padX, 40);
+  ctx.fillText(k.titel, padX, 40);
   ctx.fillStyle = "#5f5f55"; ctx.font = "14px system-ui, Arial, sans-serif";
-  ctx.fillText("Private Notizen zum Fahrauftrag · Erstellt: " + dateStr(), padX, 64);
+  ctx.fillText(k.unter + " · Erstellt: " + dateStr(), padX, 64);
 
   let y = titleH;
   ctx.fillStyle = "#41502f"; ctx.fillRect(padX, y, tableW, rowH);
@@ -1408,7 +1941,7 @@ function exportImage(){
   const s = summeText();
   if (s) ctx.fillText(s, padX, y + 22);
   ctx.fillText("Erstellt mit der Fahrauftrag Ausfüllhilfe – inoffizielle App, kein amtlicher Nachweis.", padX, y + 42);
-  cv.toBlob(blob => { Bridge.saveBlob("fahrten-" + dateStamp() + ".png", blob, "Fahrtenliste als Bild"); }, "image/png");
+  cv.toBlob(blob => { Bridge.saveBlob(k.datei + "-" + dateStamp() + ".png", blob, k.titel + " als Bild"); }, "image/png");
   closeModal("modal-export");
 }
 
@@ -1449,10 +1982,11 @@ function strToBlob(s, mime){ const b = new Uint8Array(s.length); for (let i = 0;
    Wird sowohl vom PDF-Export als auch vom Drucken in der App genutzt. */
 function buildListPdfBlob(){
   const { head, rows } = exportRows();
+  const k = exportKopf();
   if (!rows.length){ alert("Die Liste ist leer."); return null; }
   const w = colWidths(head, rows);
   const fmt = cells => cells.map((c,i) => c.padEnd(w[i])).join("  ");
-  const lines = ["Fahrtenliste (private Notizen zum Fahrauftrag)", "Erstellt: " + dateStr(), "",
+  const lines = [k.titel + " (" + k.unter + ")", "Erstellt: " + dateStr(), "",
                  fmt(head), w.map(x => "-".repeat(x)).join("  ")];
   rows.forEach(r => lines.push(fmt(r)));
   const s = summeText();
@@ -1463,13 +1997,15 @@ function buildListPdfBlob(){
 function exportPdf(){
   const blob = buildListPdfBlob();
   if (!blob) return;
-  Bridge.saveBlob("fahrten-" + dateStamp() + ".pdf", blob, "Fahrtenliste als PDF");
+  const k = exportKopf();
+  Bridge.saveBlob(k.datei + "-" + dateStamp() + ".pdf", blob, k.titel + " als PDF");
   closeModal("modal-export");
 }
 
 $("f-export").addEventListener("click", () => {
   if (!Edition.isPremium()){ openPremium(); return; }
   if (!fahrten().length){ alert("Die Liste ist leer."); return; }
+  exportQuelle = "fahrten";
   openModal("modal-export");
 });
 $("exp-pdf").addEventListener("click", exportPdf);
@@ -1479,6 +2015,7 @@ $("exp-txt").addEventListener("click", exportText);
 $("f-print").addEventListener("click", async () => {
   if (!Edition.isPremium()){ openPremium(); return; }
   if (!fahrten().length){ alert("Die Liste ist leer."); return; }
+  exportQuelle = "fahrten";
   /* In der App gibt es keinen Druckdialog – dort erzeugt Bridge.print()
      die PDF-Fassung und öffnet das Teilen-Menü. */
   if (Bridge.isNative()){ await Bridge.print(); return; }
@@ -1695,6 +2232,12 @@ if (Bridge.isNative()){
 }
 renderFahrten();
 homeRender();
+/* Nachtrag aus dem Speicher in die Felder zurückholen */
+$("nt-start").value = NT.start || "";
+$("nt-aktuell").value = NT.aktuell || "";
+segSet("nt-modus", NT.modus === "std" ? "std" : "km");
+ntBeschriftung();
+ntRender();
 if (!load(OB_KEY, false)){ obShow(0); openModal("modal-onboarding"); }
 </script>
 </body>
