@@ -26,6 +26,9 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
 - „Eintrag kopieren“ legt eine Kurzfassung in die Zwischenablage:
   `a) Rückkehr: 027768 | b) Abfahrt: 027716 | gefahrene km: 52`
 - Startort/Zielort als freiwillige Notiz
+- Zwei Gestaltungen zur Wahl: **Modern** (aufgeräumte App-Optik, Olivgrün als
+  einzige Akzentfarbe) und **Klassisch** (Schwarz auf Papierweiß, Haarlinien,
+  gerade Kanten – angelehnt an die Optik des Vordrucks), jeweils hell und dunkel
 - Komplett offline, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
 
 ## Fahrten nachtragen
