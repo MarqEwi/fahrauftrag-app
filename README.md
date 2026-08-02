@@ -23,6 +23,10 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
 - Klare Fehlermeldung, wenn der Rückkehr-Stand kleiner ist als der Abfahrt-Stand –
   meist sind dann die beiden Zeilen vertauscht
 - Prüfhinweise bei 0 km und bei ungewöhnlich großen Differenzen
+- **Uhrzeiten** (in den Einstellungen zuschaltbar, standardmäßig aus): Beginn und
+  Ende eintragen, Fahrzeit wird ausgerechnet – Fahrten über Mitternacht inbegriffen.
+  Ab mehr als 4:30 Stunden erscheint ein Hinweis auf die Lenk- und Ruhezeiten
+  (eine Gedächtnisstütze, keine Prüfung einer Vorschrift)
 - Zwei Gestaltungen zur Wahl: **Modern** (aufgeräumte App-Optik, Olivgrün als
   einzige Akzentfarbe) und **Klassisch** (Schwarz auf Papierweiß, Haarlinien,
   gerade Kanten – angelehnt an die Optik des Vordrucks), jeweils hell und dunkel
