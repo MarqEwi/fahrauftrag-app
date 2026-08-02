@@ -219,6 +219,27 @@
   .bilanz .bz{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;padding:2px 0}
   .bilanz .bz b{font-variant-numeric:tabular-nums}
   .bilanz .bz.gross{font-size:1.05rem;font-weight:700;border-top:1px dashed var(--line);margin-top:6px;padding-top:8px}
+  /* Der offene Rest – die Zahl, auf die es beim Nachtragen ankommt. */
+  .restbox{margin-top:12px;border:2px solid var(--line);border-radius:12px;
+    padding:12px 14px;background:var(--bg3)}
+  .restbox .rb-label{font-size:.64rem;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--text2)}
+  .restbox .rb-wert{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums;
+    line-height:1.15;margin-top:1px}
+  .restbox .rb-balken{height:9px;border:1px solid var(--line);background:var(--bg2);
+    border-radius:99px;overflow:hidden;margin-top:9px}
+  .restbox .rb-balken i{display:block;height:100%;width:0;background:var(--accent);
+    transition:width .35s ease}
+  .restbox .rb-sub{font-size:.8rem;color:var(--text2);margin-top:7px}
+  .restbox.offen{border-color:var(--warn)}
+  .restbox.offen .rb-wert{color:var(--warn)}
+  .restbox.ok{border-color:var(--ok)}
+  .restbox.ok .rb-wert{color:var(--ok)}
+  .restbox.ok .rb-balken i{background:var(--ok)}
+  .restbox.schlecht{border-color:var(--bad)}
+  .restbox.schlecht .rb-wert{color:var(--bad)}
+  .restbox.schlecht .rb-balken i{background:var(--bad)}
+  @media (prefers-reduced-motion: reduce){ .restbox .rb-balken i{transition:none} }
   .status{margin-top:10px;padding:11px 13px;border-radius:10px;font-size:.88rem;font-weight:600;
     border:1.5px solid;display:flex;gap:9px;align-items:flex-start}
   .status::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:currentColor;margin-top:5px}
@@ -316,6 +337,9 @@
   body.sticky-on #km-sticky{display:flex}
   #km-sticky .ks-left{flex:1;font-size:.88rem;color:var(--text2)}
   #km-sticky .ks-wert{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
+  #km-sticky.offen{border-top-color:var(--warn)} #km-sticky.offen .ks-wert{color:var(--warn)}
+  #km-sticky.ok{border-top-color:var(--ok)} #km-sticky.ok .ks-wert{color:var(--ok)}
+  #km-sticky.schlecht{border-top-color:var(--bad)} #km-sticky.schlecht .ks-wert{color:var(--bad)}
   footer.app{background:var(--bg2);border-top:1px solid var(--line);color:var(--text2);
     font-size:.74rem;padding:14px;text-align:center}
   footer.app a{color:var(--text2)}
@@ -345,6 +369,8 @@
   html[data-stil="klassisch"] .modal,
   html[data-stil="klassisch"] .acc,
   html[data-stil="klassisch"] .status,
+  html[data-stil="klassisch"] .restbox,
+  html[data-stil="klassisch"] .restbox .rb-balken,
   html[data-stil="klassisch"] .fehler,
   html[data-stil="klassisch"] .info-row,
   html[data-stil="klassisch"] .rubrikkarte,
@@ -422,10 +448,6 @@
     <circle cx="14.5" cy="7" r="2" fill="var(--bg2)"/>
     <circle cx="8.5" cy="12" r="2" fill="var(--bg2)"/>
     <circle cx="15.5" cy="17" r="2" fill="var(--bg2)"/>
-  </symbol>
-  <symbol id="i-copy" viewBox="0 0 24 24">
-    <rect x="8.5" y="8.5" width="12" height="12" rx="2"/>
-    <path d="M15.5 5.5v-1a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/>
   </symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24">
@@ -567,6 +589,12 @@
       <input type="text" id="nt-aktuell" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 28361" maxlength="9">
 
       <div class="bilanz" id="nt-bilanz"></div>
+      <div class="restbox" id="nt-rest-box">
+        <div class="rb-label" id="rb-label">Noch zu verteilen</div>
+        <div class="rb-wert" id="rb-wert">–</div>
+        <div class="rb-balken" id="rb-balken"><i></i></div>
+        <div class="rb-sub" id="rb-sub"></div>
+      </div>
       <div class="status" id="nt-status"></div>
     </div>
 
@@ -581,8 +609,7 @@
       </div>
       <p class="muted" id="nt-limit-info"></p>
       <div class="btn-row" id="nt-ausgabe" style="display:none">
-        <button class="btn primary" id="nt-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Alle Zeilen kopieren</button>
-        <button class="btn secondary" id="nt-export"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Ausgeben <span class="premium-star" id="nt-export-star">💎</span></button>
+        <button class="btn primary" id="nt-export"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Ausgeben <span class="premium-star" id="nt-export-star">💎</span></button>
         <button class="btn secondary" id="nt-print"><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> <span id="nt-print-label">Drucken</span> <span class="premium-star" id="nt-print-star">💎</span></button>
       </div>
     </div>
@@ -1206,37 +1233,6 @@ const Bridge = {
     }
     window.print();
     return true;
-  },
-  /* Text in die Zwischenablage. Die moderne API ist in der WebView nicht
-     überall erlaubt – deshalb ein Rückfall, und in keinem Fall stilles
-     Scheitern. */
-  async copyText(text){
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(text);
-        this.log("Kopiert (Zwischenablage)");
-        return true;
-      }
-      throw new Error("Zwischenablage nicht verfügbar");
-    } catch(e){
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.position = "fixed"; ta.style.top = "-1000px";
-        document.body.appendChild(ta);
-        ta.select(); ta.setSelectionRange(0, text.length);
-        const ok = document.execCommand("copy");
-        ta.remove();
-        if (!ok) throw new Error("execCommand meldet Fehlschlag");
-        this.log("Kopiert (Rückfallweg)");
-        return true;
-      } catch(e2){
-        this.log("Kopieren fehlgeschlagen: " + (e2 && e2.message ? e2.message : e2), true);
-        alert("Das Kopieren hat nicht geklappt. Hier ist der Text zum Abschreiben:\n\n" + text);
-        return false;
-      }
-    }
   }
 };
 
@@ -1511,8 +1507,36 @@ function ntRender(){
   bil.innerHTML =
     zeile("Letzter eingetragener Stand", k.start == null ? "–" : fmtNum(k.start)) +
     zeile("Stand jetzt am Fahrzeug", k.aktuell == null ? "–" : fmtNum(k.aktuell)) +
-    zeile("Gesamt nachzutragen", (k.start != null && k.aktuell != null) ? fmtNum(k.aktuell - k.start) + " " + m.einheit : "–", true) +
-    zeile("auf Fahrten verteilt", k.verteilt == null ? "–" : fmtNum(k.verteilt) + " " + m.einheit);
+    zeile("Gesamt nachzutragen", (k.start != null && k.aktuell != null) ? fmtNum(k.aktuell - k.start) + " " + m.einheit : "–", true);
+  /* "verteilt" steht bewusst nur im Restkasten darunter – zweimal dieselbe
+     Zahl macht die Karte nur länger, nicht klarer. */
+
+  /* --- Der offene Rest, hervorgehoben --- */
+  const box = $("nt-rest-box"), gesamt = (k.start != null && k.aktuell != null) ? k.aktuell - k.start : null;
+  let zustand = "", label = "Noch zu verteilen", wert = "–", sub = "";
+  if (k.rahmenFehler || k.start == null || k.aktuell == null){
+    sub = "Beide Stände oben eintragen.";
+  } else if (k.zeilenFehler){
+    zustand = "schlecht"; label = "Kette unterbrochen"; wert = "–";
+    sub = "Eine Fahrt passt nicht – siehe rote Zeile unten.";
+  } else if (k.rest > 0){
+    zustand = "offen"; label = "Noch zu verteilen"; wert = fmtNum(k.rest) + " " + m.einheit;
+    sub = fmtNum(k.verteilt) + " von " + fmtNum(gesamt) + " " + m.einheit + " verteilt";
+  } else if (k.rest < 0){
+    zustand = "schlecht"; label = "Zu viel verteilt"; wert = fmtNum(-k.rest) + " " + m.einheit;
+    sub = fmtNum(k.verteilt) + " statt " + fmtNum(gesamt) + " " + m.einheit + " – eine Fahrt ist zu lang.";
+  } else {
+    zustand = "ok"; label = "Nichts mehr offen"; wert = "0 " + m.einheit;
+    sub = fmtNum(gesamt) + " " + m.einheit + " vollständig verteilt";
+  }
+  box.className = "restbox " + zustand;
+  $("rb-label").textContent = label;
+  $("rb-wert").textContent = wert;
+  $("rb-sub").textContent = sub;
+  const anteil = (gesamt && gesamt > 0 && k.verteilt != null)
+    ? Math.max(0, Math.min(100, k.verteilt / gesamt * 100)) : 0;
+  $("rb-balken").style.display = (gesamt && gesamt > 0 && !k.zeilenFehler) ? "" : "none";
+  $("rb-balken").firstElementChild.style.width = anteil + "%";
 
   const st = $("nt-status");
   st.style.display = "";
@@ -1522,15 +1546,14 @@ function ntRender(){
     st.className = "status offen"; st.textContent = "Trag oben beide Stände ein – daraus ergibt sich, wie viel zu verteilen ist.";
   } else if (k.zeilenFehler){
     st.className = "status schlecht"; st.textContent = "Mindestens eine Fahrt passt noch nicht – die betroffene Zeile ist unten rot markiert.";
-  } else if (!k.zeilen.length){
-    st.className = "status offen";
-    st.textContent = "Offen: " + fmtNum(k.rest) + " " + m.einheit + ". Trag die Fahrten ein, die du nachholen musst.";
   } else if (k.rest > 0){
     st.className = "status offen";
-    st.textContent = "Es fehlen noch " + fmtNum(k.rest) + " " + m.einheit + ", bis der Nachtrag zum Fahrzeug passt.";
+    st.textContent = k.zeilen.length
+      ? "Trag weitere Fahrten ein, bis nichts mehr offen ist."
+      : "Trag die Fahrten ein, die du nachholen musst.";
   } else if (k.rest < 0){
     st.className = "status schlecht";
-    st.textContent = "Die Fahrten ergeben " + fmtNum(-k.rest) + " " + m.einheit + " mehr, als das Fahrzeug insgesamt gefahren ist.";
+    st.textContent = "Die Fahrten ergeben mehr, als das Fahrzeug insgesamt gefahren ist – kürze eine Fahrt oder nimm eine heraus.";
   } else {
     st.className = "status ok";
     st.textContent = "Die Kette geht auf: Die letzte Rückkehr trifft genau den Stand am Fahrzeug.";
@@ -1589,6 +1612,7 @@ function ntRender(){
       + '<a href="#" id="nt-limit-premium">Premium ansehen</a>';
   const lp = $("nt-limit-premium");
   if (lp) lp.addEventListener("click", e => { e.preventDefault(); openPremium(); });
+  updateSticky();
 }
 
 /* Eine fertige Zeile groß im Kästchengitter zeigen. */
@@ -1613,12 +1637,6 @@ function ntZeigeZeile(i){
     + '<span class="rop">=</span>'
     + '<b class="rerg">' + esc(fmtNum(z.km)) + " " + esc(k.m.einheit) + "</b></div>";
   openModal("modal-zeile");
-}
-function ntZeileText(z, m){
-  let t = "a) Rückkehr: " + FA.mitNullen(z.rueck) + " | b) Abfahrt: " + FA.mitNullen(z.ab)
-        + " | " + m.nachweis + ": " + z.km;
-  if (z.strecke) t += " | " + z.strecke;
-  return t;
 }
 $("z-edit").addEventListener("click", () => { closeModal("modal-zeile"); ntOpenEditor(zeileIndex); });
 
@@ -1739,14 +1757,6 @@ $("nt-clear").addEventListener("click", () => {
 $("nt-start").addEventListener("input", () => { NT.start = $("nt-start").value; ntSichern(); ntRender(); });
 $("nt-aktuell").addEventListener("input", () => { NT.aktuell = $("nt-aktuell").value; ntSichern(); ntRender(); });
 segInit("nt-modus", v => { NT.modus = v; ntSichern(); ntBeschriftung(); ntRender(); });
-
-$("nt-copy").addEventListener("click", async () => {
-  const k = ntKette();
-  const gut = k.zeilen.filter(z => !z.fehler);
-  if (!gut.length){ alert("Es gibt noch keine fertige Zeile."); return; }
-  const txt = gut.map((z, n) => (n + 1) + ". " + datumKurz(z.datum) + " – " + ntZeileText(z, k.m)).join("\n");
-  if (await Bridge.copyText(txt)) toast(gut.length + " Zeilen kopiert");
-});
 
 $("nt-export").addEventListener("click", () => {
   if (!Edition.isPremium()){ openPremium(); return; }
@@ -2101,10 +2111,28 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 /* ---------- Mitwandernde Ergebnisleiste ---------- */
+/* Die Leiste am unteren Rand zeigt immer die Zahl, um die es gerade geht:
+   auf der Startseite die gefahrenen Kilometer, im Nachtrag den offenen Rest
+   – der bleibt damit auch beim Blättern durch eine lange Liste im Blick. */
 function updateSticky(){
-  const on = $("view-home").classList.contains("active") && aktuell && aktuell.fertig;
-  document.body.classList.toggle("sticky-on", !!on);
-  if (on) $("ks-wert").textContent = fmtNum(aktuell.diff) + " " + modusAktuell().einheit;
+  const leiste = $("km-sticky");
+  let an = false;
+  if ($("view-home").classList.contains("active") && aktuell && aktuell.fertig){
+    an = true;
+    leiste.className = "";
+    $("ks-label").textContent = modusAktuell().nachweis;
+    $("ks-wert").textContent = fmtNum(aktuell.diff) + " " + modusAktuell().einheit;
+  } else if ($("view-nachtragen").classList.contains("active")){
+    const k = ntKette();
+    if (!k.rahmenFehler && !k.zeilenFehler && k.rest != null){
+      an = true;
+      leiste.className = k.rest > 0 ? "offen" : (k.rest < 0 ? "schlecht" : "ok");
+      $("ks-label").textContent = k.rest > 0 ? "noch zu verteilen"
+        : (k.rest < 0 ? "zu viel verteilt" : "nichts mehr offen");
+      $("ks-wert").textContent = fmtNum(Math.abs(k.rest)) + " " + k.m.einheit;
+    }
+  }
+  document.body.classList.toggle("sticky-on", an);
 }
 function updateAdbarH(){
   if (document.body.classList.contains("native-ads")){

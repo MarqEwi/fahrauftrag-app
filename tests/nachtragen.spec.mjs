@@ -24,6 +24,13 @@ const KETTE = {
   ]
 };
 
+test("Der offene Rest wandert beim Blättern mit", async ({ page }) => {
+  await mitNachtrag(page, { ...KETTE, fahrten: KETTE.fahrten.slice(0, 1) });
+  await expect(page.locator("#km-sticky")).toBeVisible();
+  await expect(page.locator("#ks-label")).toHaveText("noch zu verteilen");
+  await expect(page.locator("#ks-wert")).toHaveText("415 km");
+});
+
 test("Die Kette rechnet jede Fahrt aus und geht am Ende auf", async ({ page }) => {
   const errors = [];
   page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
@@ -53,7 +60,10 @@ test("Ein offener Rest wird beziffert und nicht heimlich verteilt", async ({ pag
   await mitNachtrag(page, { ...KETTE, fahrten: KETTE.fahrten.slice(0, 2) });
 
   await expect(page.locator("#nt-status")).toHaveClass(/offen/);
-  await expect(page.locator("#nt-status")).toContainText("268");
+  // Der offene Rest steht hervorgehoben im eigenen Kasten
+  await expect(page.locator("#nt-rest-box")).toHaveClass(/offen/);
+  await expect(page.locator("#rb-wert")).toHaveText("268 km");
+  await expect(page.locator("#rb-sub")).toContainText("377 von 645");
   await expect(page.locator("#nt-rest")).toBeVisible();
 
   // Die vorhandenen Fahrten bleiben unangetastet …
@@ -67,6 +77,8 @@ test("Ein offener Rest wird beziffert und nicht heimlich verteilt", async ({ pag
 
   await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);
   await expect(page.locator("#nt-status")).toHaveClass(/ok/);
+  await expect(page.locator("#nt-rest-box")).toHaveClass(/ok/);
+  await expect(page.locator("#rb-label")).toHaveText("Nichts mehr offen");
   await expect(page.locator("#nt-rest")).toBeHidden();
 });
 
@@ -77,6 +89,8 @@ test("Zu viele Kilometer werden als Fehler gemeldet", async ({ page }) => {
   });
   await expect(page.locator("#nt-status")).toHaveClass(/schlecht/);
   await expect(page.locator("#nt-status")).toContainText("mehr");
+  await expect(page.locator("#rb-label")).toHaveText("Zu viel verteilt");
+  await expect(page.locator("#rb-wert")).toHaveText("255 km");
 });
 
 test("Ein Zwischenstand vor dem Beginn der Fahrt ist ein Fehler", async ({ page }) => {
