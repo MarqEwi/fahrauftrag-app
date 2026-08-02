@@ -45,12 +45,21 @@
   }
   header.app{
     position:sticky; top:0; z-index:30; background:var(--accent); color:#fff;
-    padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top));
-    display:flex; align-items:center; gap:10px; transition:transform .25s ease;
+    padding:10px 14px 0; padding-top:calc(10px + env(safe-area-inset-top));
+    display:flex; flex-direction:column; transition:transform .25s ease;
   }
   header.app.hidden{transform:translateY(-100%)}
+  header.app .kopfzeile{display:flex;align-items:center;gap:10px;padding-bottom:9px}
   header.app h1{font-size:1.1rem;margin:0;line-height:1.2}
   header.app .sub{font-size:.72rem;opacity:.9;display:block;font-weight:400}
+  /* Rubriken – die drei gleichrangigen Bereiche der App */
+  nav.rubriken{display:flex;gap:2px;margin:0 -14px;padding:0 6px}
+  nav.rubriken button{flex:1;background:none;border:0;border-bottom:3px solid transparent;
+    color:rgba(255,255,255,.72);font:inherit;font-weight:700;font-size:.82rem;
+    padding:10px 3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+  nav.rubriken button .ic{width:17px;height:17px}
+  nav.rubriken button.active{color:#fff;border-bottom-color:#fff}
+  nav.rubriken button .zahl{font-weight:400;opacity:.8}
   .spacer{flex:1}
   .iconbtn{background:var(--bg2);border:1.5px solid var(--line);border-radius:9px;color:var(--text);
     width:38px;height:38px;font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none}
@@ -108,14 +117,18 @@
   .spaltenkopf .skz{display:block;font-size:.74rem;font-weight:700;color:var(--text)}
   .spaltenkopf .skz i{font-style:normal;color:var(--text2);font-weight:400}
   .gitterblock{display:flex;gap:8px;align-items:stretch}
-  .gitter{flex:1 1 auto;min-width:0}
-  .kmzeile{display:flex;align-items:stretch;margin-bottom:-1.5px}
-  .kmboxen{display:flex;flex:1 1 auto;min-width:0}
-  .kmboxen span{flex:1 1 0;min-width:0;height:56px;border:1.5px solid var(--linie);
-    margin-right:-1.5px;display:flex;align-items:center;justify-content:center;
-    font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2)}
-  /* Ein Tipp auf eine Zeile springt in das zugehörige Eingabefeld. */
-  .kmzeile{cursor:pointer}
+  /* EIN Raster für beide Zeilen: Zwei getrennte Reihen könnten ihre
+     Spaltenbreiten unterschiedlich runden und säßen dann minimal versetzt.
+     Mit einem gemeinsamen Grid stehen a) und b) zwangsläufig übereinander.
+     Die Zeilen-Container darin sind nur noch Gruppierung (display:contents). */
+  .gitter{flex:1 1 auto;min-width:0;display:grid;grid-template-columns:repeat(6,1fr);
+    border:1.5px solid var(--linie);cursor:pointer}
+  .kmzeile,.kmboxen{display:contents}
+  .gitter span{height:56px;display:flex;align-items:center;justify-content:center;
+    font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums;background:var(--bg2);
+    border-right:1.5px solid var(--linie);border-bottom:1.5px solid var(--linie)}
+  .gitter span:nth-child(6n){border-right:0}
+  .gitter span:nth-child(n+7){border-bottom:0}
   /* min-width:0 ist wichtig: sonst wächst die Box mit einer langen Zahl mit
      und drückt die Kästchen auf schmalen Geräten zusammen. */
   .nachweis{flex:0 0 84px;min-width:0;border:1.5px solid var(--linie);background:var(--bg2);
@@ -127,8 +140,15 @@
   .nachweis .neinheit{font-size:.68rem;color:var(--text2)}
   @media(max-width:359px){
     .nachweis{flex:0 0 74px}
-    .kmboxen span{font-size:1.3rem;height:50px}
+    .gitter span{font-size:1.3rem;height:50px}
   }
+  /* Kleine Fassung für die Liste im Nachtrag */
+  .gitterblock.klein{gap:6px;margin-top:6px}
+  .gitterblock.klein .gitter span{height:34px;font-size:1.05rem}
+  .gitterblock.klein .nachweis{flex:0 0 66px}
+  .gitterblock.klein .nachweis .nwert{font-size:1.15rem}
+  .gitterblock.klein .nachweis .nwert.lang{font-size:.92rem}
+  .gitterblock.klein .nachweis .neinheit{font-size:.62rem}
   .merksatz{margin-top:12px;padding:9px 12px;border-left:3px solid var(--accent);
     background:var(--bg3);font-size:.86rem;line-height:1.45}
   /* Die Rechnung ausgeschrieben – der zweite Punkt, an dem es beim Ausfüllen
@@ -168,25 +188,36 @@
   .status.ok{border-color:var(--ok);color:var(--ok);background:var(--bg3)}
   .status.offen{border-color:var(--warn);color:var(--warn);background:var(--bg3)}
   .status.schlecht{border-color:var(--bad);color:var(--bad);background:var(--bg3)}
-  .ntzeile{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);
-    width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;font:inherit;
-    color:var(--text);cursor:pointer}
+  .ntzeile{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);
+    cursor:pointer}
   .ntzeile:last-child{border-bottom:none}
+  .ntzeile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .ntnr{flex:0 0 26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-text);
     display:grid;place-items:center;font-size:.8rem;font-weight:700}
-  .ntdaten{flex:1;min-width:0;display:block}
-  .ntkopf{display:block;font-size:.86rem;font-weight:700;overflow-wrap:anywhere}
+  .ntdaten{flex:1;min-width:0}
+  .ntkopf{font-size:.86rem;font-weight:700;overflow-wrap:anywhere}
   .ntkopf .ntstrecke{font-weight:400;color:var(--text2)}
-  .ntstaende{display:block;font-size:.8rem;color:var(--text2);font-variant-numeric:tabular-nums;margin-top:2px}
-  .ntstaende b{color:var(--text)}
-  .ntrechts{flex:none;text-align:right;font-variant-numeric:tabular-nums}
-  .ntrechts .ntkm{display:block;font-size:1.05rem;font-weight:800;white-space:nowrap}
-  .ntrechts .ntkm span{font-size:.72rem;font-weight:600;color:var(--text2)}
+  .ntkopf .ntoffen{font-style:normal;font-weight:400;color:var(--warn)}
   .ntmarke{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-    background:var(--bg3);color:var(--text2);border-radius:5px;padding:1px 6px;margin-top:3px}
-  .ntfehler{display:block;color:var(--bad);font-size:.8rem;font-weight:600;margin-top:3px}
+    background:var(--bg3);color:var(--text2);border-radius:5px;padding:1px 6px;vertical-align:2px}
+  .ntfehler{color:var(--bad);font-size:.8rem;font-weight:600;margin-top:4px}
   .notice{background:var(--bg3);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
     padding:9px 12px;font-size:.84rem;color:var(--text2);margin:10px 0}
+  /* Vorstellung der Rubrik "Nachtragen" auf der Startseite. Kräftiger als
+     eine Schaltfläche, aber in derselben Akzentfarbe – kein zweiter Farbton. */
+  .rubrikkarte{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
+    background:var(--bg2);border:2px solid var(--accent);border-radius:var(--radius);
+    padding:14px 15px;margin:0 0 14px;font:inherit;color:var(--text);position:relative}
+  .rubrikkarte .rk-icon{flex:none;width:38px;height:38px;border-radius:9px;background:var(--accent);
+    color:var(--accent-text);display:grid;place-items:center}
+  .rubrikkarte .rk-icon .ic{width:21px;height:21px}
+  .rubrikkarte .rk-txt{flex:1;min-width:0;padding-right:14px}
+  .rubrikkarte .rk-eyebrow{display:block;font-size:.62rem;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--accent2);margin-bottom:2px}
+  .rubrikkarte b{display:block;font-size:1.02rem;margin-bottom:3px}
+  .rubrikkarte .rk-sub{display:block;font-size:.84rem;color:var(--text2);font-weight:400;line-height:1.4}
+  .rubrikkarte .rk-pfeil{position:absolute;top:20px;right:14px;width:10px;height:10px;
+    border-top:2.5px solid var(--accent);border-right:2.5px solid var(--accent);transform:rotate(45deg)}
   .info-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
     background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);
     font:inherit;font-size:.9rem;font-weight:600;color:var(--text);padding:13px 14px}
@@ -259,15 +290,13 @@
     opacity:0;visibility:hidden;transition:opacity .18s ease, transform .18s ease}
   #toast.show{opacity:1;visibility:visible;transform:translateY(0)}
   .view{display:none}.view.active{display:block}
-  .backlink{background:none;border:none;color:var(--accent2);font:inherit;font-weight:700;
-    cursor:pointer;padding:6px 0;margin-bottom:6px}
   .premium-star{color:var(--gold);font-size:.82em}
   .mini-badge{display:inline-block;background:var(--gold);color:#fff;font-size:.64rem;font-weight:700;
     border-radius:6px;padding:1px 6px;white-space:nowrap;vertical-align:middle}
   /* Druck: nur die Fahrtenliste */
   @media print{
     body{background:#fff;color:#000}
-    header.app,#adbar,#km-sticky,footer.app,.btn,.btn-row,.iconbtn,.backlink,.notice,.info-row{display:none !important}
+    header.app,#adbar,#km-sticky,footer.app,.btn,.btn-row,.iconbtn,.notice,.info-row,.rubrikkarte{display:none !important}
     .view{display:none}.view.print-me{display:block !important}
     .card{border:none;box-shadow:none;padding:0}
   }
@@ -326,9 +355,16 @@
 </svg>
 
 <header class="app">
-  <h1>Fahrauftrag<span class="sub">Ausfüllhilfe für die Kilometerfelder · inoffiziell</span></h1>
-  <span class="spacer"></span>
-  <button class="iconbtn" id="btn-settings" aria-label="Einstellungen" title="Einstellungen"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg></button>
+  <div class="kopfzeile">
+    <h1>Fahrauftrag<span class="sub">Ausfüllhilfe für die Kilometerfelder · inoffiziell</span></h1>
+    <span class="spacer"></span>
+    <button class="iconbtn" id="btn-settings" aria-label="Einstellungen" title="Einstellungen"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg></button>
+  </div>
+  <nav class="rubriken" id="rubriken" aria-label="Bereiche">
+    <button data-view="home" class="active"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg> Ausfüllhilfe</button>
+    <button data-view="nachtragen"><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Nachtragen</button>
+    <button data-view="fahrten"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Fahrten <span class="zahl" id="tab-fahrten-anzahl"></span></button>
+  </nav>
 </header>
 
 <main>
@@ -372,7 +408,7 @@
       </div>
 
       <div class="gitterblock">
-        <div class="gitter">
+        <div class="gitter" id="gitter-home">
           <div class="kmzeile">
             <div class="kmboxen" id="box-rueck" aria-label="Kästchen der Zeile a) Rückkehr"></div>
           </div>
@@ -400,8 +436,19 @@
       </div>
     </div>
 
+    <button class="rubrikkarte" id="go-nachtragen">
+      <span class="rk-icon"><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg></span>
+      <span class="rk-txt">
+        <span class="rk-eyebrow">Eigener Bereich</span>
+        <b>Mehrere Tage nachtragen</b>
+        <span class="rk-sub">Du kennst nur den letzten eingetragenen Stand und den von heute?
+          Trag die Fahrten dazwischen ein – die App baut die Kette, rechnet jede Zeile aus
+          und sagt dir, wie viel noch offen ist.</span>
+      </span>
+      <span class="rk-pfeil" aria-hidden="true"></span>
+    </button>
+
     <div class="btn-row" style="margin:0 0 14px">
-      <button class="btn secondary" id="go-nachtragen"><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Fahrten nachtragen</button>
       <button class="btn secondary" id="go-fahrten"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Meine Fahrten <span id="fahrten-anzahl" class="muted"></span></button>
     </div>
 
@@ -413,7 +460,6 @@
 
   <!-- ===== Fahrtenliste ===== -->
   <section class="view" id="view-fahrten">
-    <button class="backlink" data-nav="home">← Zurück zur Ausfüllhilfe</button>
     <h2><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Meine Fahrten</h2>
     <p class="muted" style="margin-top:0">Nur als Gedächtnisstütze für dich – der Fahrauftrag selbst wird weiterhin von Hand ausgefüllt.</p>
 
@@ -436,7 +482,6 @@
 
   <!-- ===== Fahrten nachtragen ===== -->
   <section class="view" id="view-nachtragen">
-    <button class="backlink" data-nav="home">← Zurück zur Ausfüllhilfe</button>
     <h2><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Fahrten nachtragen</h2>
     <p class="muted" style="margin-top:0">Du kennst den letzten eingetragenen Stand und den Stand von heute.
       Trag die Fahrten dazwischen ein – die App baut daraus die Kette und rechnet jede Zeile aus.
@@ -1163,11 +1208,14 @@ const Bridge = {
 function show(view){
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   $("view-" + view).classList.add("active");
+  document.querySelectorAll("#rubriken button").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === view));
   window.scrollTo(0, 0);
   document.querySelector("header.app").classList.remove("hidden"); lastScrollY = 0;
   updateSticky();
 }
 document.querySelectorAll("[data-nav]").forEach(b => b.addEventListener("click", () => show(b.dataset.nav)));
+document.querySelectorAll("#rubriken button").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
 $("go-fahrten").addEventListener("click", () => show("fahrten"));
 $("go-nachtragen").addEventListener("click", () => show("nachtragen"));
 
@@ -1217,6 +1265,19 @@ const MODUS_KEY = "fa_modus";
 let aktuell = null;          /* letztes Rechenergebnis der Startseite */
 
 function modusAktuell(){ return FA.modus(segValue("s-modus")); }
+
+/* Ein fertiges Kästchengitter als HTML – für die Liste im Nachtrag, wo jede
+   Zeile so aussehen soll, wie sie später auf dem Blatt steht. */
+function gitterBlockHTML(rueck, ab, km, einheit){
+  const zellen = w => FA.kaestchen(w).map(z => "<span>" + esc(z) + "</span>").join("");
+  const wert = km == null ? "–" : fmtNum(km);
+  return '<div class="gitterblock klein">' +
+    '<div class="gitter">' + zellen(rueck) + zellen(ab) + "</div>" +
+    '<div class="nachweis">' +
+      '<div class="nwert' + (wert.length > 5 ? " lang" : "") + '">' + esc(wert) + "</div>" +
+      '<div class="neinheit">' + esc(einheit) + "</div>" +
+    "</div></div>";
+}
 
 function kaestchenRender(elId, wert){
   const el = $(elId);
@@ -1291,9 +1352,16 @@ function kopierText(){
 }
 
 ["in-ab", "in-rueck"].forEach(id => $(id).addEventListener("input", homeRender));
-/* Tipp auf eine Gitterzeile springt in das Feld, das diese Zeile füllt. */
-$("box-rueck").parentElement.addEventListener("click", () => $("in-rueck").focus());
-$("box-ab").parentElement.addEventListener("click", () => $("in-ab").focus());
+/* Tipp auf eine Gitterzeile springt in das Feld, das diese Zeile füllt.
+   Beide Zeilen liegen in EINEM Raster, deshalb entscheidet die Nummer der
+   angetippten Zelle: die ersten sechs gehören zu a), die übrigen zu b). */
+$("gitter-home").addEventListener("click", e => {
+  const zelle = e.target.closest("span");
+  if (!zelle) return;
+  const i = Array.prototype.indexOf.call($("gitter-home").querySelectorAll("span"), zelle);
+  if (i < 0) return;
+  $(i < FA.STELLEN ? "in-rueck" : "in-ab").focus();
+});
 segInit("s-modus", v => { store(MODUS_KEY, v); beschriftungRender(); homeRender(); });
 
 $("btn-leeren").addEventListener("click", () => {
@@ -1398,6 +1466,7 @@ function renderFahrten(){
   $("f-empty").style.display = liste.length ? "none" : "block";
 
   $("fahrten-anzahl").textContent = liste.length ? "(" + liste.length + ")" : "";
+  $("tab-fahrten-anzahl").textContent = liste.length ? liste.length : "";
   $("btn-uebernehmen").style.display = liste.length ? "" : "none";
 
   const star = Edition.isPremium() ? "none" : "";
@@ -1600,28 +1669,34 @@ function ntRender(){
   const cont = $("nt-liste");
   cont.innerHTML = "";
   k.zeilen.forEach(z => {
-    const b = document.createElement("button");
-    b.className = "ntzeile";
-    b.dataset.zeile = z.i;
-    b.innerHTML =
-      '<span class="ntnr">' + (z.i + 1) + "</span>" +
-      '<span class="ntdaten">' +
-        '<span class="ntkopf">' + esc(datumKurz(z.datum)) +
-          (z.strecke ? ' <span class="ntstrecke">· ' + esc(z.strecke) + "</span>" : "") + "</span>" +
+    const el = document.createElement("div");
+    el.className = "ntzeile";
+    el.dataset.zeile = z.i;
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.innerHTML =
+      '<div class="ntnr">' + (z.i + 1) + "</div>" +
+      '<div class="ntdaten">' +
+        '<div class="ntkopf">' + (z.datum ? esc(datumKurz(z.datum)) : '<i class="ntoffen">Datum fehlt</i>') +
+          (z.strecke ? ' <span class="ntstrecke">· ' + esc(z.strecke) + "</span>" : "") +
+          (z.art === "stand" ? ' <span class="ntmarke">Stand notiert</span>' : "") + "</div>" +
         (z.fehler
-          ? '<span class="ntfehler">' + esc(z.fehler) + "</span>"
-          : '<span class="ntstaende">a) Rückkehr <b>' + esc(String(z.rueck)) + "</b> · b) Abfahrt <b>" + esc(String(z.ab)) + "</b></span>") +
-        (z.art === "stand" ? '<span class="ntmarke">Stand notiert</span>' : "") +
-      "</span>" +
-      '<span class="ntrechts"><span class="ntkm">' + esc(z.km == null ? "–" : fmtNum(z.km)) +
-        ' <span>' + esc(m.einheit) + "</span></span></span>";
-    cont.appendChild(b);
+          ? '<div class="ntfehler">' + esc(z.fehler) + "</div>"
+          : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit)) +
+      "</div>";
+    cont.appendChild(el);
   });
-  cont.querySelectorAll("[data-zeile]").forEach(b => b.addEventListener("click", () => {
-    const i = parseInt(b.dataset.zeile, 10);
+  const oeffne = i => {
     const z = ntKette().zeilen[i];
     if (z && z.fehler) ntOpenEditor(i); else ntZeigeZeile(i);
-  }));
+  };
+  cont.querySelectorAll("[data-zeile]").forEach(el => {
+    const i = parseInt(el.dataset.zeile, 10);
+    el.addEventListener("click", () => oeffne(i));
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); oeffne(i); }
+    });
+  });
   $("nt-empty").style.display = k.zeilen.length ? "none" : "block";
   $("nt-anzahl").textContent = k.zeilen.length ? "(" + k.zeilen.length + ")" : "";
 
