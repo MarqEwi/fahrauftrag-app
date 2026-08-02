@@ -479,15 +479,15 @@
         <button data-v="std">Betriebsstunden</button>
       </div>
 
-      <!-- Reihenfolge wie im Vordruck: a) oben, b) darunter. So stehen Eingabe
-           und Kästchengitter untereinander in derselben Anordnung – der
-           Zeilentausch, der die meisten Fehler verursacht, kann gar nicht
-           erst im Kopf passieren. -->
-      <label class="field" for="in-rueck"><span class="marke">a)</span> <span id="lbl-rueck">Rückkehr · km-Stand am Ende</span></label>
-      <input type="text" id="in-rueck" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27768" maxlength="9">
-
+      <!-- Reihenfolge der Fahrt: erst die Abfahrt, dann die Rückkehr – so wie
+           man es erlebt. Im Vordruck stehen die beiden umgekehrt; damit das
+           beim Übertragen auffällt, trägt jedes Feld die Marke seiner Zeile
+           (b) bzw. a)), und das Gitter darunter zeigt sie an ihrem Platz. -->
       <label class="field" for="in-ab"><span class="marke">b)</span> <span id="lbl-ab">Abfahrt · km-Stand beim Start</span></label>
       <input type="text" id="in-ab" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27716" maxlength="9">
+
+      <label class="field" for="in-rueck"><span class="marke">a)</span> <span id="lbl-rueck">Rückkehr · km-Stand am Ende</span></label>
+      <input type="text" id="in-rueck" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27768" maxlength="9">
 
       <div class="btn-row">
         <button class="btn secondary" id="btn-leeren"><svg class="ic" aria-hidden="true"><use href="#i-eraser"/></svg> Leeren</button>
