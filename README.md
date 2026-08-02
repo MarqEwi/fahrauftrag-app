@@ -25,8 +25,6 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
 - Prüfhinweise bei 0 km und bei ungewöhnlich großen Differenzen
 - „Eintrag kopieren“ legt eine Kurzfassung in die Zwischenablage:
   `a) Rückkehr: 027768 | b) Abfahrt: 027716 | gefahrene km: 52`
-- **Fahrtenliste** als Gedächtnisstütze mit Datum, Name und Strecke; der
-  Rückkehr-Stand der letzten Fahrt lässt sich als neue Abfahrt übernehmen
 - Startort/Zielort als freiwillige Notiz
 - Komplett offline, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
 
@@ -50,9 +48,9 @@ Zwei Dinge macht die App dabei bewusst **nicht**:
 
 ## Editionen
 
-- **Frei:** mit Werbung, bis zu 5 gemerkte Fahrten und bis zu 5 Fahrten je Nachtrag
-- **Premium** (einmalig 2,99 €): werbefrei, unbegrenzte Fahrtenliste und
-  Nachträge, Ausgabe als PDF, Bild oder Text sowie Drucken
+- **Frei:** mit Werbung, bis zu 5 Fahrten je Nachtrag
+- **Premium** (einmalig 2,99 €): werbefrei, beliebig lange Nachträge,
+  Ausgabe als PDF, Bild oder Text sowie Drucken
 
 ## Technik
 

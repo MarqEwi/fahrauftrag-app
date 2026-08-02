@@ -163,21 +163,6 @@
     background:var(--bg3);color:var(--bad);font-size:.88rem;font-weight:600}
   .warnung{margin-top:12px;padding:9px 12px;border-left:3px solid var(--warn);
     background:var(--bg3);color:var(--text);font-size:.86rem}
-  /* Fahrtenliste – gestapelte Einträge statt Tabelle, damit auf dem Handy
-     nichts seitlich aus dem Bild läuft. */
-  .fahrt{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
-  .fahrt:last-child{border-bottom:none}
-  .fahrt .fdaten{flex:1;min-width:0}
-  .fahrt .fkopf{font-size:.86rem;font-weight:700}
-  .fahrt .fkopf .fname{font-weight:400;color:var(--text2)}
-  .fahrt .fstrecke{font-size:.84rem;color:var(--text2);overflow-wrap:anywhere}
-  .fahrt .fwerte{font-size:.8rem;color:var(--text2);font-variant-numeric:tabular-nums;margin-top:2px}
-  .fahrt .fwerte b{color:var(--text);font-weight:700}
-  .fahrt .frechts{flex:none;text-align:right}
-  .fahrt .fdiff{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .fahrt .fdiff span{font-size:.72rem;font-weight:600;color:var(--text2)}
-  .fahrt .faktionen{margin-top:6px;display:flex;gap:6px;justify-content:flex-end}
-  .fahrt .faktionen .btn{padding:5px 10px;font-size:.85rem;border-radius:7px}
   .empty{color:var(--text2);text-align:center;padding:20px 8px;font-size:.9rem}
   /* ---------- Nachtragen ---------- */
   .bilanz{margin-top:12px;border-top:1.5px solid var(--linie);padding-top:10px}
@@ -293,7 +278,7 @@
   .premium-star{color:var(--gold);font-size:.82em}
   .mini-badge{display:inline-block;background:var(--gold);color:#fff;font-size:.64rem;font-weight:700;
     border-radius:6px;padding:1px 6px;white-space:nowrap;vertical-align:middle}
-  /* Druck: nur die Fahrtenliste */
+  /* Druck: nur die nachgetragenen Fahrten */
   @media print{
     body{background:#fff;color:#000}
     header.app,#adbar,#km-sticky,footer.app,.btn,.btn-row,.iconbtn,.notice,.info-row,.rubrikkarte{display:none !important}
@@ -363,7 +348,6 @@
   <nav class="rubriken" id="rubriken" aria-label="Bereiche">
     <button data-view="home" class="active"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg> Ausfüllhilfe</button>
     <button data-view="nachtragen"><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Nachtragen</button>
-    <button data-view="fahrten"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Fahrten <span class="zahl" id="tab-fahrten-anzahl"></span></button>
   </nav>
 </header>
 
@@ -391,7 +375,6 @@
       <input type="text" id="in-ab" class="zahl" inputmode="numeric" autocomplete="off" placeholder="z. B. 27716" maxlength="9">
 
       <div class="btn-row">
-        <button class="btn secondary" id="btn-uebernehmen" style="display:none"><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg> Stand der letzten Fahrt</button>
         <button class="btn secondary" id="btn-leeren"><svg class="ic" aria-hidden="true"><use href="#i-eraser"/></svg> Leeren</button>
       </div>
     </div>
@@ -432,7 +415,6 @@
 
       <div class="btn-row">
         <button class="btn primary" id="btn-kopieren" disabled><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Eintrag kopieren</button>
-        <button class="btn" id="btn-speichern" disabled><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Als Fahrt merken</button>
       </div>
     </div>
 
@@ -448,9 +430,6 @@
       <span class="rk-pfeil" aria-hidden="true"></span>
     </button>
 
-    <div class="btn-row" style="margin:0 0 14px">
-      <button class="btn secondary" id="go-fahrten"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Meine Fahrten <span id="fahrten-anzahl" class="muted"></span></button>
-    </div>
 
     <button class="info-row" id="info-feld">
       <span class="info-row-txt"><b>Wie das Kilometerfeld aufgebaut ist</b><br><span class="info-row-sub">Warum die Rückkehr oben steht, was in die Nachweis-Spalte gehört und was es mit den Betriebsstunden auf sich hat.</span></span>
@@ -458,27 +437,6 @@
     </button>
   </section>
 
-  <!-- ===== Fahrtenliste ===== -->
-  <section class="view" id="view-fahrten">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Meine Fahrten</h2>
-    <p class="muted" style="margin-top:0">Nur als Gedächtnisstütze für dich – der Fahrauftrag selbst wird weiterhin von Hand ausgefüllt.</p>
-
-    <div class="btn-row" style="margin-top:10px">
-      <button class="btn" id="f-add"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Fahrt hinzufügen</button>
-      <button class="btn secondary" id="f-export"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Export <span class="premium-star" id="f-export-star">💎</span></button>
-      <button class="btn secondary" id="f-print"><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> <span id="f-print-label">Drucken</span> <span class="premium-star" id="f-print-star">💎</span></button>
-    </div>
-    <p class="muted" id="f-limit-info"></p>
-
-    <div class="card">
-      <div id="f-liste"></div>
-      <div class="empty" id="f-empty">Noch keine Fahrt gemerkt. Über „Als Fahrt merken“ auf der Startseite oder „＋ Fahrt hinzufügen“ beginnst du die Liste.</div>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn danger small" id="f-clear">Liste leeren</button>
-    </div>
-  </section>
 
   <!-- ===== Fahrten nachtragen ===== -->
   <section class="view" id="view-nachtragen">
@@ -517,6 +475,7 @@
       <div class="btn-row" id="nt-ausgabe" style="display:none">
         <button class="btn primary" id="nt-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Alle Zeilen kopieren</button>
         <button class="btn secondary" id="nt-export"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Ausgeben <span class="premium-star" id="nt-export-star">💎</span></button>
+        <button class="btn secondary" id="nt-print"><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> <span id="nt-print-label">Drucken</span> <span class="premium-star" id="nt-print-star">💎</span></button>
       </div>
     </div>
 
@@ -534,7 +493,7 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="adbar">
   <span class="adlabel">Anzeige</span>
-  <span style="flex:1">Werbefrei &amp; unbegrenzte Fahrtenliste: Premium für einmalig 2,99&nbsp;€.</span>
+  <span style="flex:1">Werbefrei &amp; unbegrenzte Nachträge: Premium für einmalig 2,99&nbsp;€.</span>
   <a href="#" id="ad-premium-link">Mehr&nbsp;erfahren</a>
 </div>
 
@@ -644,10 +603,9 @@
     <h2>💎 Premium – einmalig 2,99 €</h2>
     <ul>
       <li><svg class="ic" aria-hidden="true"><use href="#i-ban"/></svg> Keine Werbung</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Unbegrenzt viele Fahrten in der Liste (frei: max. 5)</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: ebenfalls max. 5 Fahrten)</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Listen als PDF, Bild oder Text ausgeben</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Listen drucken</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: max. 5 Fahrten)</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Nachtrag als PDF, Bild oder Text ausgeben</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Nachtrag drucken</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg> Unterstützt die Weiterentwicklung</li>
     </ul>
     <div id="premium-buy-area"></div>
@@ -657,9 +615,9 @@
 
 <!-- ===== Export-Auswahl ===== -->
 <div class="modal-back" id="modal-export">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Fahrtenliste ausgeben">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Nachtrag ausgeben">
     <button class="iconbtn x" data-close="modal-export" aria-label="Schließen"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
-    <h2>Fahrtenliste ausgeben</h2>
+    <h2>Nachtrag ausgeben</h2>
     <p class="muted" id="export-hint">Wähle das Format – die Datei wird lokal gespeichert (in der App zum Speichern/Teilen).</p>
     <div class="btn-row col">
       <button class="btn primary" id="exp-pdf"><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Als PDF</button>
@@ -669,41 +627,6 @@
   </div>
 </div>
 
-<!-- ===== Fahrt-Editor ===== -->
-<div class="modal-back" id="modal-editor">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Fahrt bearbeiten">
-    <button class="iconbtn x" data-close="modal-editor" aria-label="Schließen"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
-    <h2 id="e-title">Fahrt hinzufügen</h2>
-
-    <div class="seg mini" id="e-modus" role="group" aria-label="Einheit">
-      <button data-v="km" class="active">Kilometer</button>
-      <button data-v="std">Betriebsstunden</button>
-    </div>
-
-    <label class="field" for="e-datum">Datum</label>
-    <input type="date" id="e-datum">
-
-    <label class="field" for="e-name">Name Fahrer/Fahrerin <span class="opt">optional</span></label>
-    <input type="text" id="e-name" placeholder="z. B. Mustermann" maxlength="60" autocomplete="off">
-
-    <label class="field" for="e-strecke">Startort / Zielort <span class="opt">optional</span></label>
-    <input type="text" id="e-strecke" placeholder="z. B. Musterstadt – Beispielheim" maxlength="80" autocomplete="off">
-
-    <label class="field" for="e-ab"><span class="marke">b)</span> <span id="e-lbl-ab">Abfahrt · km-Stand</span></label>
-    <input type="text" id="e-ab" class="zahl" inputmode="numeric" placeholder="z. B. 27716" maxlength="9" autocomplete="off">
-
-    <label class="field" for="e-rueck"><span class="marke">a)</span> <span id="e-lbl-rueck">Rückkehr · km-Stand</span></label>
-    <input type="text" id="e-rueck" class="zahl" inputmode="numeric" placeholder="z. B. 27768" maxlength="9" autocomplete="off">
-
-    <p class="muted" id="e-vorschau" style="margin-top:10px">&nbsp;</p>
-    <div id="e-err" class="fehler" style="display:none"></div>
-
-    <div class="btn-row">
-      <button class="btn primary" id="e-save">Speichern</button>
-      <button class="btn secondary" data-close="modal-editor">Abbrechen</button>
-    </div>
-  </div>
-</div>
 
 <!-- ===== Editor: eine nachzutragende Fahrt ===== -->
 <div class="modal-back" id="modal-ntfahrt">
@@ -885,14 +808,13 @@ function load(key, fallback){
 /* ---------- Edition (zentraler free/premium-Schalter) ---------- */
 const Edition = {
   KEY: "fa_edition",
-  FREE_LIMIT: 5,
   get(){ return load(this.KEY, "free") === "premium" ? "premium" : "free"; },
   isPremium(){ return this.get() === "premium"; },
   set(v){ store(this.KEY, v === "premium" ? "premium" : "free"); this.apply(); },
   apply(){
     document.body.classList.toggle("edition-free", !this.isPremium());
     document.body.classList.toggle("edition-premium", this.isPremium());
-    renderSettings(); renderFahrten();
+    renderSettings();
     if (typeof ntRender === "function") ntRender();
     if (typeof updateAdbarH === "function") updateAdbarH();
     if (typeof Ads === "object" && Ads.sync) Ads.sync();
@@ -1216,7 +1138,6 @@ function show(view){
 }
 document.querySelectorAll("[data-nav]").forEach(b => b.addEventListener("click", () => show(b.dataset.nav)));
 document.querySelectorAll("#rubriken button").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
-$("go-fahrten").addEventListener("click", () => show("fahrten"));
 $("go-nachtragen").addEventListener("click", () => show("nachtragen"));
 
 /* ---------- Modals ---------- */
@@ -1336,7 +1257,6 @@ function homeRender(){
   }
 
   $("btn-kopieren").disabled = !r.fertig;
-  $("btn-speichern").disabled = !r.fertig;
   updateSticky();
 }
 
@@ -1376,172 +1296,6 @@ $("btn-kopieren").addEventListener("click", async () => {
   if (await Bridge.copyText(t)) toast("Eintrag kopiert");
 });
 
-$("btn-speichern").addEventListener("click", () => {
-  if (!aktuell || !aktuell.fertig) return;
-  if (!darfSpeichern()) return;
-  const liste = fahrten();
-  liste.push({
-    datum: isoHeute(),
-    name: "",
-    strecke: $("in-strecke").value.trim(),
-    ab: aktuell.ab,
-    rueck: aktuell.rueck,
-    modus: segValue("s-modus")
-  });
-  store(FAHRT_KEY, liste);
-  renderFahrten();
-  toast("Fahrt gemerkt");
-});
-
-$("btn-uebernehmen").addEventListener("click", () => {
-  const liste = fahrten();
-  if (!liste.length) return;
-  const letzte = liste[liste.length - 1];
-  segSet("s-modus", letzte.modus === "std" ? "std" : "km");
-  store(MODUS_KEY, segValue("s-modus"));
-  beschriftungRender();
-  $("in-ab").value = String(letzte.rueck);
-  $("in-rueck").value = "";
-  homeRender();
-  $("in-rueck").focus();
-  toast("Stand der letzten Fahrt übernommen");
-});
-
-/* ---------- Fahrtenliste ---------- */
-const FAHRT_KEY = "fa_fahrten";
-let editIndex = null;
-
-function fahrten(){ const l = load(FAHRT_KEY, []); return Array.isArray(l) ? l : []; }
-function isoHeute(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-}
-function datumKurz(iso){
-  if (!iso) return "–";
-  const t = String(iso).split("-");
-  return t.length === 3 ? t[2] + "." + t[1] + "." + t[0].slice(2) : iso;
-}
-function fahrtDiff(f){
-  const r = FA.auswerten(f.ab, f.rueck);
-  return r.fertig ? r.diff : null;
-}
-function darfSpeichern(){
-  if (Edition.isPremium()) return true;
-  if (fahrten().length < Edition.FREE_LIMIT) return true;
-  openPremium();
-  return false;
-}
-
-function renderFahrten(){
-  const liste = fahrten();
-  const cont = $("f-liste");
-  cont.innerHTML = "";
-  liste.forEach((f, i) => {
-    const m = FA.modus(f.modus);
-    const d = fahrtDiff(f);
-    const el = document.createElement("div");
-    el.className = "fahrt";
-    el.innerHTML =
-      '<div class="fdaten">' +
-        '<div class="fkopf">' + esc(datumKurz(f.datum)) +
-          (f.name ? ' <span class="fname">· ' + esc(f.name) + "</span>" : "") + "</div>" +
-        (f.strecke ? '<div class="fstrecke">' + esc(f.strecke) + "</div>" : "") +
-        '<div class="fwerte">a) Rückkehr <b>' + esc(String(f.rueck)) + "</b> · b) Abfahrt <b>" + esc(String(f.ab)) + "</b></div>" +
-      "</div>" +
-      '<div class="frechts">' +
-        '<div class="fdiff">' + esc(d == null ? "–" : fmtNum(d)) + ' <span>' + esc(m.einheit) + "</span></div>" +
-        '<div class="faktionen">' +
-          '<button class="btn secondary" data-edit="' + i + '" aria-label="Fahrt bearbeiten">✎</button>' +
-          '<button class="btn danger" data-del="' + i + '" aria-label="Fahrt löschen">✕</button>' +
-        "</div>" +
-      "</div>";
-    cont.appendChild(el);
-  });
-  cont.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEditor(parseInt(b.dataset.edit, 10))));
-  cont.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
-    const i = parseInt(b.dataset.del, 10);
-    if (!confirm("Diese Fahrt löschen?")) return;
-    const l = fahrten(); l.splice(i, 1); store(FAHRT_KEY, l); renderFahrten();
-  }));
-  $("f-empty").style.display = liste.length ? "none" : "block";
-
-  $("fahrten-anzahl").textContent = liste.length ? "(" + liste.length + ")" : "";
-  $("tab-fahrten-anzahl").textContent = liste.length ? liste.length : "";
-  $("btn-uebernehmen").style.display = liste.length ? "" : "none";
-
-  const star = Edition.isPremium() ? "none" : "";
-  $("f-export-star").style.display = star;
-  $("f-print-star").style.display = star;
-  $("f-limit-info").innerHTML = Edition.isPremium()
-    ? "💎 Premium: unbegrenzt viele Fahrten, Ausgabe als PDF, Bild oder Text."
-    : "Freie Version: bis zu " + Edition.FREE_LIMIT + " Fahrten (aktuell " + liste.length + "). "
-      + '<a href="#" id="f-limit-premium">Premium ansehen</a>';
-  const lp = $("f-limit-premium");
-  if (lp) lp.addEventListener("click", e => { e.preventDefault(); openPremium(); });
-}
-
-$("f-clear").addEventListener("click", () => {
-  if (!fahrten().length) return;
-  if (!confirm("Wirklich alle gemerkten Fahrten löschen?")) return;
-  store(FAHRT_KEY, []); renderFahrten(); toast("Liste geleert");
-});
-
-/* ---------- Fahrt-Editor ---------- */
-function editorRender(){
-  const m = FA.modus(segValue("e-modus"));
-  $("e-lbl-ab").textContent = "Abfahrt · " + m.feldLabel;
-  $("e-lbl-rueck").textContent = "Rückkehr · " + m.feldLabel;
-  const r = FA.auswerten($("e-ab").value, $("e-rueck").value);
-  $("e-err").style.display = r.fehler ? "block" : "none";
-  $("e-err").textContent = r.fehler || "";
-  $("e-vorschau").innerHTML = r.fertig
-    ? "Nachweis: <b>" + esc(fmtNum(r.diff)) + " " + esc(m.einheit) + "</b>"
-    : "&nbsp;";
-  return r;
-}
-["e-ab", "e-rueck"].forEach(id => $(id).addEventListener("input", editorRender));
-segInit("e-modus", editorRender);
-
-function openEditor(index){
-  editIndex = index;
-  const neu = index == null;
-  const liste = fahrten();
-  const f = neu ? null : liste[index];
-  $("e-title").textContent = neu ? "Fahrt hinzufügen" : "Fahrt bearbeiten";
-  segSet("e-modus", (f && f.modus === "std") ? "std" : segValue("s-modus"));
-  $("e-datum").value = f ? (f.datum || isoHeute()) : isoHeute();
-  $("e-name").value = f ? (f.name || "") : "";
-  $("e-strecke").value = f ? (f.strecke || "") : "";
-  $("e-ab").value = f && f.ab != null ? String(f.ab) : "";
-  $("e-rueck").value = f && f.rueck != null ? String(f.rueck) : "";
-  editorRender();
-  openModal("modal-editor");
-}
-
-$("f-add").addEventListener("click", () => { if (darfSpeichern()) openEditor(null); });
-
-$("e-save").addEventListener("click", () => {
-  const r = editorRender();
-  if (r.fehler) return;
-  if (!r.fertig){
-    $("e-err").style.display = "block";
-    $("e-err").textContent = "Bitte beide Stände eintragen – Abfahrt und Rückkehr.";
-    return;
-  }
-  const liste = fahrten();
-  const eintrag = {
-    datum: $("e-datum").value || isoHeute(),
-    name: $("e-name").value.trim(),
-    strecke: $("e-strecke").value.trim(),
-    ab: r.ab, rueck: r.rueck,
-    modus: segValue("e-modus")
-  };
-  if (editIndex == null) liste.push(eintrag); else liste[editIndex] = eintrag;
-  store(FAHRT_KEY, liste);
-  closeModal("modal-editor");
-  renderFahrten();
-});
-
 /* ---------- Fahrten nachtragen ------------------------------------------
    Ausgangslage: Der letzte Eintrag auf dem Blatt liegt Tage zurück, das
    Fahrzeug zeigt heute einen ganz anderen Stand. Bekannt sind die Fahrten
@@ -1563,6 +1317,16 @@ const NT_KEY = "fa_nachtrag";
 const NT_FREI = 5;                      /* Fahrten in der freien Version */
 let NT = ntLaden();
 let ntEditIndex = null;
+
+function isoHeute(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function datumKurz(iso){
+  if (!iso) return "–";
+  const t = String(iso).split("-");
+  return t.length === 3 ? t[2] + "." + t[1] + "." + t[0].slice(2) : iso;
+}
 
 function ntLeer(){ return { start:"", aktuell:"", modus:"km", fahrten:[] }; }
 function ntLaden(){
@@ -1709,7 +1473,9 @@ function ntRender(){
   $("nt-rest").style.display = (sauber && k.rest > 0) ? "" : "none";
   $("nt-tipp").style.display = sauber ? "" : "none";
   $("nt-ausgabe").style.display = sauber ? "" : "none";
-  $("nt-export-star").style.display = Edition.isPremium() ? "none" : "";
+  const stern = Edition.isPremium() ? "none" : "";
+  $("nt-export-star").style.display = stern;
+  $("nt-print-star").style.display = stern;
   $("nt-limit-info").innerHTML = Edition.isPremium()
     ? "💎 Premium: beliebig viele Fahrten je Nachtrag."
     : "Freie Version: bis zu " + NT_FREI + " Fahrten je Nachtrag (aktuell " + k.zeilen.length + "). "
@@ -1884,8 +1650,19 @@ $("nt-export").addEventListener("click", () => {
   if (!Edition.isPremium()){ openPremium(); return; }
   const k = ntKette();
   if (!k.zeilen.filter(z => !z.fehler).length){ alert("Es gibt noch keine fertige Zeile."); return; }
-  exportQuelle = "nachtrag";
   openModal("modal-export");
+});
+
+$("nt-print").addEventListener("click", async () => {
+  if (!Edition.isPremium()){ openPremium(); return; }
+  const k = ntKette();
+  if (!k.zeilen.filter(z => !z.fehler).length){ alert("Es gibt noch keine fertige Zeile."); return; }
+  /* In der App gibt es keinen Druckdialog – dort erzeugt Bridge.print()
+     die PDF-Fassung und öffnet das Teilen-Menü. */
+  if (Bridge.isNative()){ await Bridge.print(); return; }
+  $("view-nachtragen").classList.add("print-me");
+  Bridge.print();
+  setTimeout(() => $("view-nachtragen").classList.remove("print-me"), 1000);
 });
 
 function ntExportRows(){
@@ -1916,46 +1693,14 @@ function dateStamp(){
 }
 function dateStr(){ return new Date().toLocaleDateString("de-DE", {day:"2-digit",month:"2-digit",year:"numeric"}); }
 
-/* Welche Liste ausgegeben wird: die gemerkten Fahrten oder der Nachtrag.
-   Beide nutzen dieselben Ausgabewege (Text, Bild, PDF, Drucken). */
-let exportQuelle = "fahrten";
-
-/* Kopf und Zeilen der Fahrtenliste (rein textuelle Werte) */
-function exportRows(){
-  if (exportQuelle === "nachtrag") return ntExportRows();
-  const head = ["Datum","Name","Start / Ziel","b) Abfahrt","a) Rueckkehr","Nachweis"];
-  const rows = fahrten().map(f => {
-    const m = FA.modus(f.modus);
-    const d = fahrtDiff(f);
-    return [
-      datumKurz(f.datum),
-      f.name || "-",
-      f.strecke || "-",
-      String(f.ab == null ? "-" : f.ab),
-      String(f.rueck == null ? "-" : f.rueck),
-      (d == null ? "-" : d + " " + m.einheit)
-    ];
-  });
-  return { head, rows };
-}
-
-/* Überschrift, Untertitel und Dateiname je nach Quelle. */
+/* Ausgegeben wird der Nachtrag – Text, Bild, PDF und Drucken teilen sich
+   dieselben Zeilen. */
+function exportRows(){ return ntExportRows(); }
 function exportKopf(){
-  return exportQuelle === "nachtrag"
-    ? { titel:"Nachgetragene Fahrten", unter:"Zeilen für den Fahrauftrag", datei:"nachtrag" }
-    : { titel:"Fahrtenliste", unter:"Private Notizen zum Fahrauftrag", datei:"fahrten" };
+  return { titel:"Nachgetragene Fahrten", unter:"Zeilen für den Fahrauftrag", datei:"nachtrag" };
 }
 function colWidths(head, rows){ return head.map((hh,i) => Math.max(hh.length, ...rows.map(r => r[i].length))); }
-function summeText(){
-  if (exportQuelle === "nachtrag") return ntSummeText();
-  const liste = fahrten();
-  const kmSum = liste.filter(f => FA.modus(f.modus) === FA.MODI.km).reduce((s,f) => s + (fahrtDiff(f) || 0), 0);
-  const stdSum = liste.filter(f => FA.modus(f.modus) === FA.MODI.std).reduce((s,f) => s + (fahrtDiff(f) || 0), 0);
-  const t = [];
-  if (kmSum) t.push("Summe km: " + kmSum);
-  if (stdSum) t.push("Summe BetrStd: " + stdSum);
-  return t.join(" · ");
-}
+function summeText(){ return ntSummeText(); }
 
 function exportText(){
   const { head, rows } = exportRows();
@@ -2053,7 +1798,7 @@ function buildPdf(lines){
   return pdf;
 }
 function strToBlob(s, mime){ const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xff; return new Blob([b], { type: mime }); }
-/* Baut die Fahrtenliste als PDF-Blob; null, wenn die Liste leer ist.
+/* Baut den Nachtrag als PDF-Blob; null, wenn nichts fertig ist.
    Wird sowohl vom PDF-Export als auch vom Drucken in der App genutzt. */
 function buildListPdfBlob(){
   const { head, rows } = exportRows();
@@ -2077,27 +1822,10 @@ function exportPdf(){
   closeModal("modal-export");
 }
 
-$("f-export").addEventListener("click", () => {
-  if (!Edition.isPremium()){ openPremium(); return; }
-  if (!fahrten().length){ alert("Die Liste ist leer."); return; }
-  exportQuelle = "fahrten";
-  openModal("modal-export");
-});
 $("exp-pdf").addEventListener("click", exportPdf);
 $("exp-img").addEventListener("click", exportImage);
 $("exp-txt").addEventListener("click", exportText);
 
-$("f-print").addEventListener("click", async () => {
-  if (!Edition.isPremium()){ openPremium(); return; }
-  if (!fahrten().length){ alert("Die Liste ist leer."); return; }
-  exportQuelle = "fahrten";
-  /* In der App gibt es keinen Druckdialog – dort erzeugt Bridge.print()
-     die PDF-Fassung und öffnet das Teilen-Menü. */
-  if (Bridge.isNative()){ await Bridge.print(); return; }
-  $("view-fahrten").classList.add("print-me");
-  Bridge.print();
-  setTimeout(() => $("view-fahrten").classList.remove("print-me"), 1000);
-});
 
 /* ---------- Premium ---------- */
 function openPremium(){
@@ -2179,8 +1907,8 @@ function renderSettings(){
   const expEl = $("export-status");
   if (expEl && Bridge.statusLog.length) expEl.textContent = "Export-Status: " + Bridge.statusLog.join(" → ");
   $("s-edition-status").innerHTML = Edition.isPremium()
-    ? "💎 <b>Premium</b> ist aktiv: keine Werbung, unbegrenzte Fahrtenliste, Ausgabe als PDF/Bild/Text, Drucken."
-    : "Aktuell: <b>Freie Version</b> (mit Werbung, bis zu " + Edition.FREE_LIMIT + " gemerkte Fahrten).";
+    ? "💎 <b>Premium</b> ist aktiv: keine Werbung, beliebig lange Nachträge, Ausgabe als PDF/Bild/Text, Drucken."
+    : "Aktuell: <b>Freie Version</b> (mit Werbung, bis zu " + NT_FREI + " Fahrten je Nachtrag).";
   renderBerechnung();
 }
 $("btn-settings").addEventListener("click", () => { renderSettings(); openModal("modal-settings"); });
@@ -2297,7 +2025,7 @@ Edition.apply();
 Ads.sync();
 if (Bridge.isNative()){
   /* In der App führt "Drucken" über das Teilen-Menü (kein WebView-Druckdialog). */
-  const pl = $("f-print-label");
+  const pl = $("nt-print-label");
   if (pl) pl.textContent = "Drucken / Teilen";
   const eh = $("export-hint");
   if (eh) eh.textContent = "Wähle das Format – anschließend öffnet sich das Teilen-Menü, über das du die Datei speichern, versenden oder drucken kannst.";
@@ -2305,7 +2033,6 @@ if (Bridge.isNative()){
   /* Rückfall, falls deviceready bereits gefeuert hat: */
   setTimeout(() => Billing.init(), 3000);
 }
-renderFahrten();
 homeRender();
 /* Nachtrag aus dem Speicher in die Felder zurückholen */
 $("nt-start").value = NT.start || "";

@@ -146,14 +146,11 @@ test("Der Nachtrag übersteht einen Neustart der App", async ({ page }) => {
   await expect(page.locator("#nt-status")).toHaveClass(/ok/);
 });
 
-test("Die Ausgabe des Nachtrags enthält die Kette, nicht die Fahrtenliste", async ({ page }) => {
+test("Die Ausgabe des Nachtrags enthält die Kette", async ({ page }) => {
   await page.addInitScript(nt => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_edition", JSON.stringify("premium"));
     localStorage.setItem("fa_nachtrag", JSON.stringify(nt));
-    localStorage.setItem("fa_fahrten", JSON.stringify([
-      { datum: "2026-01-01", name: "", strecke: "Andere Fahrt", ab: 100, rueck: 111, modus: "km" }
-    ]));
   }, KETTE);
   await page.goto("/");
   await page.click("#go-nachtragen");
@@ -163,5 +160,4 @@ test("Die Ausgabe des Nachtrags enthält die Kette, nicht die Fahrtenliste", asy
   const pdf = await page.evaluate(() => buildListPdfBlob().text());
   expect(pdf).toContain("Nachgetragene Fahrten");
   expect(pdf).toContain("27946");
-  expect(pdf).not.toContain("Andere Fahrt");
 });

@@ -50,10 +50,7 @@ test("App lädt ohne Konsolenfehler und rechnet die gefahrenen Kilometer", async
   await expect(page.locator("#lbl-ab")).toContainText("Betriebsstunden");
   await page.click('#s-modus button[data-v="km"]');
 
-  // Fahrt merken – und nur eigene Schlüssel im localStorage
-  await page.click("#btn-speichern");
-  await page.click("#go-fahrten");
-  await expect(page.locator("#f-liste .fahrt")).toHaveCount(1);
+  // Im localStorage stehen nur eigene Schlüssel
   const keys = await page.evaluate(() => Object.keys(localStorage));
   expect(keys.every(k => k.startsWith("fa_"))).toBeTruthy();
   expect(keys.some(k => k.startsWith("sgt_") || k.startsWith("pft_") || k.startsWith("bft_"))).toBeFalsy();
