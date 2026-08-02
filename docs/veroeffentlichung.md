@@ -1,29 +1,30 @@
-# Veröffentlichung Schritt für Schritt (SGT Rechner)
+# Veröffentlichung Schritt für Schritt (Fahrauftrag Ausfüllhilfe)
 
 Einfache Checkliste für alle Schritte außerhalb des Codes. Reihenfolge einhalten –
 jeder Block ist unabhängig abhakbar.
 
 ## 1. GitHub Pages aktivieren (Web-Version + Datenschutz-URL)
 
-1. Im Browser das Repo öffnen: `github.com/MarqEwi/sgt-rechner`
+1. Im Browser das Repo öffnen: `github.com/MarqEwi/fahrauftrag-app`
 2. Oben auf **Settings** → links auf **Pages**
 3. Bei „Build and deployment“: **Deploy from a branch** wählen,
    Branch **main**, Ordner **/ (root)** → **Save**
-4. Nach 1–2 Minuten ist die App unter `https://marqewi.github.io/sgt-rechner/`
+4. Nach 1–2 Minuten ist die App unter `https://marqewi.github.io/fahrauftrag-app/`
    erreichbar – und die Datenschutzerklärung unter
-   `https://marqewi.github.io/sgt-rechner/datenschutz.html`
+   `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
    (diese URL brauchst du später in der Play Console)
 
 ## 2. AdMob: neue App + Banner anlegen
 
-1. Auf [admob.google.com](https://admob.google.com) anmelden (gleiches Konto wie BFT/PFT)
+1. Auf [admob.google.com](https://admob.google.com) anmelden (gleiches Konto wie BFT, PFT und SGT)
 2. **Apps → App hinzufügen** → Plattform **Android** →
    „Ist die App bei Google Play gelistet?“ → **Nein** (sie ist ja noch nicht veröffentlicht)
-3. App-Name: **SGT Rechner** → anlegen
+3. App-Name: **Fahrauftrag Ausfüllhilfe** → anlegen
 4. Die neue **App-ID** kopieren (Format `ca-app-pub-…~…`) →
-   in `android/app/src/main/AndroidManifest.xml` die Test-ID ersetzen
+   in `android/app/src/main/AndroidManifest.xml` die dort eingetragene
+   Google-Test-App-ID `ca-app-pub-3940256099942544~3347511713` ersetzen
 5. In der neuen App: **Anzeigenblöcke → Anzeigenblock hinzufügen → Banner**,
-   Name z. B. „SGT Banner unten“ → anlegen
+   Name z. B. „Fahrauftrag Banner unten“ → anlegen
 6. Die **Banner-Block-ID** kopieren (Format `ca-app-pub-…/…`) →
    in `index.html` bei `ADS_CONF` eintragen und `TESTING: false` setzen
 7. **Datenschutz & Mitteilungen** → DSGVO-Meldung für die neue App aktivieren,
@@ -35,14 +36,15 @@ jeder Block ist unabhängig abhakbar.
 ## 3. Play Console: App anlegen
 
 1. [play.google.com/console](https://play.google.com/console) → **App erstellen**
-2. Name: **SGT Soldaten-Grundfitness-Tool** (exakt 30 Zeichen) ·
+2. Name: **Fahrauftrag Ausfüllhilfe km** (27 Zeichen) ·
    Sprache Deutsch · **App** · **Kostenlos**
 3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen,
-   Icon `icons/icon-512.png`, Feature-Grafik 1024×500 mit Hintergrund **#5C663B**
+   Icon `icons/icon-512.png`, Feature-Grafik 1024×500
+   (Hintergrundfarbe wird beim neuen Logo festgelegt und hier eingetragen)
 4. **Data Safety** ausfüllen (siehe Kurzreferenz in `docs/store-texte.md`);
-   „Gesundheit und Fitness“ NICHT ankreuzen
+   die vier AdMob-Datentypen bleiben unverändert, weil die App selbst nichts überträgt
 5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+**
-6. Datenschutz-URL: `https://marqewi.github.io/sgt-rechner/datenschutz.html`
+6. Datenschutz-URL: `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
 
 ## 4. Einmalkauf-Produkt anlegen
 
@@ -56,7 +58,7 @@ Play Console → deine App → **Monetarisieren → Produkte → In-App-Produkte
 | Produkt-ID | `premium_unlock` (muss exakt so lauten – steht so im Code) |
 | Tags | leer lassen |
 | Name (max. 55) | `Premium freischalten` |
-| Beschreibung (max. 200) | `Entfernt die Werbung, hebt das Limit im Prüfermodus auf und schaltet Export und Druck der Ergebnisliste frei. Einmaliger Kauf, kein Abo.` |
+| Beschreibung (max. 200) | **offen** – wird eingetragen, sobald der Funktionsumfang der Premium-Version feststeht (Rohform: `Entfernt die Werbung und schaltet … frei. Einmaliger Kauf, kein Abo.`) |
 | Symbol | `docs/store-grafiken/produktsymbol-premium-512.png` (optional; enthält bewusst keinen Text und kein Branding – das App-Icon ist hier nicht zulässig) |
 | Produktsteuerkategorie | Voreinstellung **Verkäufe digitaler Apps** beibehalten |
 | Altersfreigabe | leer lassen (erbt die Einstufung der App) |
@@ -79,12 +81,12 @@ meldet, der Kauf sei nicht verfügbar.
 1. Ordner für das Projekt wählen und in der Eingabeaufforderung (cmd) öffnen.
    Beim **ersten Mal** klonen:
    ```
-   git clone https://github.com/MarqEwi/sgt-rechner.git
-   cd sgt-rechner
+   git clone https://github.com/MarqEwi/fahrauftrag-app.git
+   cd fahrauftrag-app
    ```
    Wenn der Ordner schon existiert, stattdessen nur aktualisieren:
    ```
-   cd sgt-rechner
+   cd fahrauftrag-app
    git checkout main
    git pull
    ```
@@ -101,7 +103,7 @@ meldet, der Kauf sei nicht verfügbar.
 
 ### 5.2 Keystore hinterlegen (einmalig pro PC)
 
-1. Die vorhandene Keystore-Datei (derselbe Schlüssel wie bei BFT und PFT –
+1. Die vorhandene Keystore-Datei (derselbe Schlüssel wie bei BFT, PFT und SGT –
    **niemals einen neuen erzeugen**, sonst lässt sich die App später nicht mehr
    aktualisieren) in den Ordner `android/` kopieren, z. B. als `android.keystore`.
 2. Im Ordner `android/` die Datei `keystore.properties.example` kopieren und die
@@ -143,16 +145,16 @@ meldet, der Kauf sei nicht verfügbar.
    einfach bestätigen. Dein Keystore ist dann der Upload-Schlüssel.
 4. Die Datei `app-release.aab` hochladen.
 5. Release-Name kann bleiben; unter „Versionshinweise“ z. B. eintragen:
-   `Erste Version des SGT Rechners.`
+   `Erste Version der Fahrauftrag Ausfüllhilfe.`
 6. **Speichern → Release überprüfen → Freigabe starten**.
 
 Nach diesem Upload kennt die Play Console den Paketnamen
-`de.mercwerk.sgtrechner`, und das In-App-Produkt aus Schritt 4 lässt sich
+`de.mercwerk.fahrauftragausfuellhilfe`, und das In-App-Produkt aus Schritt 4 lässt sich
 anlegen.
 
 ### 5.5 Bei jedem weiteren Upload
 
-In `android/app/build.gradle` den `versionCode` um 1 erhöhen (aktuell `2`),
+In `android/app/build.gradle` den `versionCode` um 1 erhöhen (aktuell `1`),
 bei sichtbaren Änderungen zusätzlich den `versionName` anpassen. Danach wieder
 `npm run cap:sync` und neu bauen.
 
@@ -193,7 +195,14 @@ Entwicklerkonten. Dann zuerst diesen Test durchlaufen lassen; an der App selbst
 
 ## 6. Nach der AdMob-Freigabe
 
-Die echten IDs sind bereits eingebaut (`TESTING: false`, Banner-ID in
-`ADS_CONF`, App-ID im `AndroidManifest.xml`). Die Freigabe passiert allein auf
-Googles Seite – ein neuer Build ist dafür **nicht** nötig. Sobald AdMob die App
-freigegeben hat, erscheinen die Banner von selbst.
+**Stand jetzt stehen im Code noch Googles Test-IDs** (`TESTING: true` in
+`ADS_CONF`, Test-App-ID im `AndroidManifest.xml`). Sobald die eigene AdMob-App
+nach Schritt 2 angelegt ist, beide IDs eintragen und `TESTING` auf `false`
+setzen – erst dann verdient die App etwas.
+
+Danach passiert die Freigabe allein auf Googles Seite – ein neuer Build ist
+dafür **nicht** nötig. Sobald AdMob die App freigegeben hat, erscheinen die
+Banner von selbst.
+
+**Niemals** die AdMob-IDs des SGT Rechners in dieser App verwenden: Google
+wertet das als ungültigen Traffic und das trifft das ganze Konto.

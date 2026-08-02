@@ -1,4 +1,14 @@
-# Play-Store-Texte – SGT Rechner (Vorschlag)
+# Play-Store-Texte – SGT Rechner (VERALTET, wird ersetzt)
+
+> **Achtung:** Diese Datei enthält noch die Texte des SGT Rechners, aus dem
+> dieses Repo abgeleitet wurde. Sie werden vollständig durch eigene Texte für
+> die **Fahrauftrag Ausfüllhilfe** ersetzt, sobald der Funktionsumfang und die
+> Grafiken feststehen. Bis dahin bleibt die Datei als Formatvorlage stehen –
+> **nichts daraus in die Play Console übernehmen**, „wiederholter Inhalt“ ist
+> bei mehreren Apps desselben Kontos das größte Ablehnungsrisiko.
+
+## Alte Texte (nur als Muster für Aufbau und Länge)
+
 
 Dritte App der Reihe (nach BFT Tool und PFT Tool) – deshalb sind diese Texte
 bewusst mit anderem Einstieg, anderer Gliederung und anderem Wortlaut

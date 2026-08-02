@@ -15,9 +15,9 @@ const TESTPERSONEN = [
    Share-Plugin, Premium freigeschaltet, zwei Testpersonen in der Liste. */
 async function appUmgebung(page, { plugins = true } = {}){
   await page.addInitScript(([personen, mitPlugins]) => {
-    localStorage.setItem("sgt_onboarding_done", "true");
-    localStorage.setItem("sgt_edition", JSON.stringify("premium"));
-    localStorage.setItem("sgt_participants", JSON.stringify(personen));
+    localStorage.setItem("fa_onboarding_done", "true");
+    localStorage.setItem("fa_edition", JSON.stringify("premium"));
+    localStorage.setItem("fa_participants", JSON.stringify(personen));
     window.__calls = [];
     const Plugins = mitPlugins ? {
       Filesystem: {
@@ -83,9 +83,9 @@ test("Fehlendes Plugin meldet sich, statt stillschweigend nichts zu tun", async 
 
 test("Im Browser bleibt der Download-Weg erhalten", async ({ page }) => {
   await page.addInitScript(personen => {
-    localStorage.setItem("sgt_onboarding_done", "true");
-    localStorage.setItem("sgt_edition", JSON.stringify("premium"));
-    localStorage.setItem("sgt_participants", JSON.stringify(personen));
+    localStorage.setItem("fa_onboarding_done", "true");
+    localStorage.setItem("fa_edition", JSON.stringify("premium"));
+    localStorage.setItem("fa_participants", JSON.stringify(personen));
   }, TESTPERSONEN);
   await inPrueferModus(page);
 

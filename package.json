@@ -1,8 +1,8 @@
 {
-  "name": "sgt-rechner",
+  "name": "fahrauftrag-ausfuellhilfe",
   "version": "1.0.0",
   "private": true,
-  "description": "SGT Rechner – inoffizieller Zeitrechner für das Soldaten-Grundfitness-Tool der Bundeswehr (Web + Capacitor-App)",
+  "description": "Fahrauftrag Ausfüllhilfe – inoffizielle Eintraghilfe für die Kilometerfelder im Fahrauftrag der Bundeswehr (Web + Capacitor-App)",
   "scripts": {
     "sync-www": "node scripts/sync-www.mjs",
     "sync": "npm run sync-www",

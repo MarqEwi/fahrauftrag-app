@@ -1,4 +1,4 @@
-package de.mercwerk.sgtrechner;
+package de.mercwerk.fahrauftragausfuellhilfe;
 
 import com.getcapacitor.BridgeActivity;
 

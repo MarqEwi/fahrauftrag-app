@@ -1,23 +1,27 @@
-# SGT Rechner – Soldaten-Grundfitness-Tool (inoffiziell)
+# Fahrauftrag Ausfüllhilfe (inoffiziell)
 
-Zeitrechner für das **Soldaten-Grundfitness-Tool (SGT)** der Bundeswehr: Die
-Zwischenzeiten der vier Aufgaben (Bewegen im Gelände, Ziehen, Tragen sowie Heben
-und Absetzen von Lasten) eingeben – die App ermittelt die Ampel-Kategorie
-**Grün, Gelb oder Rot** je Aufgabe und für den gesamten Durchlauf.
+Eintraghilfe für die **Kilometerfelder im Fahrauftrag** der Bundeswehr: Den
+km-Stand bei der Abfahrt und bei der Rückkehr eingeben – die App rechnet die
+gefahrenen Kilometer aus und zeigt im Kästchenraster, welche Zahl in welche
+Zeile gehört.
 
 > **Inoffizielle App** – privates Projekt, kein Angebot der Bundeswehr.
-> Alle Angaben ohne Gewähr; maßgeblich ist die offizielle Auswertung.
+> Kein Formular und kein Ersatz für den amtlichen Vordruck; eingetragen wird
+> weiterhin von Hand. Alle Angaben ohne Gewähr.
 
-## Funktionen
+## Wobei die App hilft
 
-- **Teilnehmer-Modus:** Zeiten eingeben, Ampel-Kategorie live sehen, Verlauf lokal speichern
-- **Prüfermodus:** mehrere Testpersonen erfassen, Ergebnisliste mit Kategorie,
-  Aufbau- und Ablaufanleitung für den Parcours (inkl. Skizzen und Original-Plänen),
-  Drucken, Export als PDF/Bild/Text (Premium)
-- **Editionen:** Freie Version (mit Werbung, begrenzte Personenzahl) und Premium
-  (2,99 €: werbefrei, unbegrenzte Listen, Export als PDF/Bild/Text)
-- Helles Design mit Dark Mode, responsiv, Ersteinrichtungs-Dialog
-- Komplett offline-fähig, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
+Im Kilometerfeld steht die **Rückkehr oben** und die **Abfahrt darunter** –
+also genau andersherum, als die Fahrt abläuft. Wer die beiden Zeilen
+vertauscht, trägt eine negative Strecke ein. Die App zeigt beide Zahlen an der
+Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
+
+- Abfahrt- und Rückkehr-km eingeben, gefahrene Kilometer sofort ablesen
+- Kästchenraster mit sechs Feldern je Zeile, rechtsbündig wie auf dem Vordruck
+- Umschalter **Kilometer / Betriebsstunden** (dieselben Felder, andere Einheit)
+- Warnung, wenn der Rückkehr-Stand kleiner ist als der Abfahrt-Stand
+- Startort/Zielort als freiwillige Notiz
+- Komplett offline, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
 
 ## Technik
 
@@ -28,31 +32,17 @@ und Absetzen von Lasten) eingeben – die App ermittelt die Ampel-Kategorie
   Browser über `a.download`/`window.print()`, in der Android-App über Capacitor-Plugins
 - Plugins werden ausschließlich über `window.Capacitor.Plugins.<Name>` angesprochen
   (kein Bundler, daher kein `Capacitor.registerPlugin`)
+- localStorage-Schlüssel tragen durchgehend das Präfix `fa_`, damit sich die
+  Web-Versionen der App-Familie unter derselben Origin nicht überschreiben
 
-## Bewertungssystem (Kurzfassung)
+## Was die App bewusst nicht tut
 
-Das SGT besteht aus 4 Aufgaben, die in **einem Durchlauf ohne festgelegte Pause**
-auf einem 55 m × 10 m großen Parcours im Freien absolviert werden – mit Feldanzug,
-Gefechtshelm und 13-kg-Gewichtsweste (gesamt ca. 20 kg). Die Zeiten werden auf
-0,1 s genau gemessen.
-
-| Aufgabe | Inhalt | Grün | Gelb | Rot |
-|---|---|---|---|---|
-| SGT-A „Bewegen im Gelände“ | ca. 130 m Parcours, 2× Slalom, 10 m Gleiten | ≤ 55 s | 55–70 s | ≥ 70 s |
-| SGT-B „Ziehen von Lasten“ | 50-kg-Dummy über ca. 40 m | ≤ 30 s | 30–50 s | ≥ 50 s |
-| SGT-C „Tragen von Lasten“ | 2 × 18-kg-Kanister über 100 m | ≤ 75 s | 75–100 s | ≥ 100 s |
-| SGT-D „Heben und Absetzen“ | 24-kg-Kanister 5× auf 1,25 m | ≤ 20 s | 20–50 s | ≥ 50 s |
-| *Gesamtzeit (nur Schnellüberblick)* | Summe A–D | ≤ 180 s | 180–270 s | ≥ 270 s |
-
-Die Grenzen gelten **für alle Testpersonen gleich** (keine Alters- oder
-Geschlechtergruppen). Die **schlechteste Einzelkategorie** bestimmt die Kategorie
-des Durchlaufs; ein **vorzeitiger Abbruch** bedeutet obligatorisch „Rot“.
-Die Zeitwerte sind laut Handanweisung **vorläufig**.
-
-Quelle: Kommando Streitkräftebasis / Institut für Präventivmedizin der Bundeswehr,
-„Handanweisung Soldaten-Grundfitness-Tool ‚SGT‘“ (Stand April 2019).
+- Sie bildet **den Vordruck nicht nach.** Das Kästchenraster ist eine eigene,
+  vereinfachte Darstellung als Eintraghilfe – kein ausfüllbares Formular.
+- Sie kennt **keine Dienststellen, Fahrzeuge oder Aufträge** aus irgendeinem System.
+- Sie sendet **nichts** an einen Server.
 
 ## Web-Version
 
-Die App läuft als Web-Version unter: <https://marqewi.github.io/sgt-rechner/>
+Die App läuft als Web-Version unter: <https://marqewi.github.io/fahrauftrag-app/>
 (GitHub Pages: Settings → Pages → Deploy from a branch → `main` / root)

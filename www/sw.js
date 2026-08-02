@@ -1,6 +1,8 @@
-/* Service Worker: Offline-Fähigkeit für den SGT Rechner (nur GitHub Pages).
-   Strategie: Netzwerk zuerst (damit Updates ankommen), Cache als Offline-Fallback. */
-const CACHE = "sgt-rechner-v1";
+/* Service Worker: Offline-Fähigkeit für die Fahrauftrag Ausfüllhilfe (nur GitHub Pages).
+   Strategie: Netzwerk zuerst (damit Updates ankommen), Cache als Offline-Fallback.
+   Der Cache-Name trägt bewusst den App-Namen: Alle Web-Versionen liegen unter
+   derselben Origin marqewi.github.io und würden sich sonst gegenseitig den Cache leeren. */
+const CACHE = "fahrauftrag-ausfuellhilfe-v1";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", e => {

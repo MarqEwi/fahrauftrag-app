@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
    auslösen lässt und exitApp beobachtbar ist. */
 async function appUmgebung(page, { onboardingFertig = true } = {}){
   await page.addInitScript(fertig => {
-    if (fertig) localStorage.setItem("sgt_onboarding_done", "true");
+    if (fertig) localStorage.setItem("fa_onboarding_done", "true");
     window.__back = { exits: 0, events: [] };
     window.Capacitor = {
       isNativePlatform: () => true,
@@ -25,7 +25,7 @@ async function appUmgebung(page, { onboardingFertig = true } = {}){
 const zurueck = page => page.evaluate(() => window.__backCb && window.__backCb());
 
 test("Info-Dialoge zeigen die Skizze der jeweiligen Aufgabe", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("sgt_onboarding_done", "true"));
+  await page.addInitScript(() => localStorage.setItem("fa_onboarding_done", "true"));
   await page.goto("/");
 
   for (const [knopf, skizzeId] of [["a", "skizze-a"], ["b", "skizze-b"], ["c", "skizze-c"],
@@ -45,7 +45,7 @@ test("Info-Dialoge zeigen die Skizze der jeweiligen Aufgabe", async ({ page }) =
 });
 
 test("Info-Dialoge ohne eigene Skizze bleiben bildlos", async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("sgt_onboarding_done", "true"));
+  await page.addInitScript(() => localStorage.setItem("fa_onboarding_done", "true"));
   await page.goto("/");
   await page.click('[data-info="ausruestung"]');
   await expect(page.locator("#info-content img.station-img")).toHaveCount(0);
@@ -99,5 +99,5 @@ test("Zurück beendet die Einführung, statt sie beim Neustart erneut zu zeigen"
   await expect(page.locator("#modal-onboarding")).toHaveClass(/open/);
   await zurueck(page);
   await expect(page.locator("#modal-onboarding")).not.toHaveClass(/open/);
-  expect(await page.evaluate(() => localStorage.getItem("sgt_onboarding_done"))).toBe("true");
+  expect(await page.evaluate(() => localStorage.getItem("fa_onboarding_done"))).toBe("true");
 });

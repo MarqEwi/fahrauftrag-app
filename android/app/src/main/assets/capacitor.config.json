@@ -1,6 +1,6 @@
 {
-	"appId": "de.mercwerk.sgtrechner",
-	"appName": "SGT Rechner",
+	"appId": "de.mercwerk.fahrauftragausfuellhilfe",
+	"appName": "Fahrauftrag Ausfüllhilfe",
 	"webDir": "www",
 	"server": {
 		"androidScheme": "https"

@@ -7,7 +7,7 @@ test("App lädt ohne Konsolenfehler und wertet das SGT korrekt aus", async ({ pa
   page.on("pageerror", e => errors.push(String(e)));
 
   await page.goto("/");
-  await expect(page).toHaveTitle(/SGT Rechner/);
+  await expect(page).toHaveTitle(/Fahrauftrag Ausfüllhilfe/);
   await page.click("#ob-skip");
   await page.click("#go-teilnehmer");
 
@@ -45,7 +45,7 @@ test("App lädt ohne Konsolenfehler und wertet das SGT korrekt aus", async ({ pa
   await expect(page.locator("#t-r-grade")).toHaveText("Kategorie Rot");
   await expect(page.locator("#t-r-failhint")).toContainText("Abbruch");
 
-  // Verlauf speichern + nur sgt_-Schlüssel im localStorage
+  // Verlauf speichern + nur fa_-Schlüssel im localStorage
   await page.selectOption("#t-abbruch", "");
   await page.fill("#t-a", "48,2");
   await page.fill("#t-b", "22,4");
@@ -54,7 +54,7 @@ test("App lädt ohne Konsolenfehler und wertet das SGT korrekt aus", async ({ pa
   await page.click("#t-save");
   await expect(page.locator("#t-history table")).toBeVisible();
   const keys = await page.evaluate(() => Object.keys(localStorage));
-  expect(keys.every(k => k.startsWith("sgt_"))).toBeTruthy();
+  expect(keys.every(k => k.startsWith("fa_"))).toBeTruthy();
   expect(keys.some(k => k.startsWith("pft_") || k.startsWith("bft_"))).toBeFalsy();
 
   expect(errors).toEqual([]);
