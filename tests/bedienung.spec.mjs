@@ -80,22 +80,23 @@ test("Der Stand der letzten Fahrt lässt sich als neue Abfahrt übernehmen", asy
   await expect(page.locator("#in-rueck")).toHaveValue("");
 });
 
-test("Die freie Version begrenzt die Liste und bietet Premium an", async ({ page }) => {
+test("Die freie Version begrenzt die Liste bei fünf Fahrten und bietet Premium an", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("fa_onboarding_done", "true");
-    localStorage.setItem("fa_fahrten", JSON.stringify([
-      { datum: "2026-07-01", name: "", strecke: "", ab: 100, rueck: 150, modus: "km" },
-      { datum: "2026-07-02", name: "", strecke: "", ab: 150, rueck: 200, modus: "km" },
-      { datum: "2026-07-03", name: "", strecke: "", ab: 200, rueck: 250, modus: "km" }
-    ]));
+    localStorage.setItem("fa_fahrten", JSON.stringify(
+      Array.from({ length: 5 }, (_, i) => (
+        { datum: "2026-07-0" + (i + 1), name: "", strecke: "", ab: 100 + i * 50, rueck: 150 + i * 50, modus: "km" }
+      ))
+    ));
   });
   await page.goto("/");
-  await page.fill("#in-ab", "250");
-  await page.fill("#in-rueck", "300");
+  await page.fill("#in-ab", "350");
+  await page.fill("#in-rueck", "400");
   await page.click("#btn-speichern");
-  // Statt einer vierten Fahrt erscheint das Premium-Fenster
+  // Statt einer sechsten Fahrt erscheint das Premium-Fenster
   await expect(page.locator("#modal-premium")).toHaveClass(/open/);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("fa_fahrten")).length)).toBe(3);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("fa_fahrten")).length)).toBe(5);
+  await expect(page.locator("#f-limit-info")).toContainText("bis zu 5");
 });
 
 test("Zurück schließt Fenster, geht zur Startseite und warnt vor dem Verlassen", async ({ page }) => {

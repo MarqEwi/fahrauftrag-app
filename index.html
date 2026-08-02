@@ -599,8 +599,8 @@
     <h2>💎 Premium – einmalig 2,99 €</h2>
     <ul>
       <li><svg class="ic" aria-hidden="true"><use href="#i-ban"/></svg> Keine Werbung</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Unbegrenzt viele Fahrten in der Liste (frei: max. 3)</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: max. 5 Fahrten)</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Unbegrenzt viele Fahrten in der Liste (frei: max. 5)</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: ebenfalls max. 5 Fahrten)</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Listen als PDF, Bild oder Text ausgeben</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Listen drucken</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg> Unterstützt die Weiterentwicklung</li>
@@ -840,7 +840,7 @@ function load(key, fallback){
 /* ---------- Edition (zentraler free/premium-Schalter) ---------- */
 const Edition = {
   KEY: "fa_edition",
-  FREE_LIMIT: 3,
+  FREE_LIMIT: 5,
   get(){ return load(this.KEY, "free") === "premium" ? "premium" : "free"; },
   isPremium(){ return this.get() === "premium"; },
   set(v){ store(this.KEY, v === "premium" ? "premium" : "free"); this.apply(); },

@@ -30,11 +30,29 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
 - Startort/Zielort als freiwillige Notiz
 - Komplett offline, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
 
+## Fahrten nachtragen
+
+Für den Fall, dass mehrere Tage auf einmal nachgeholt werden müssen: Du gibst
+den letzten eingetragenen Stand und den Stand von heute an, dazu je Fahrt die
+gefahrenen Kilometer – die App baut daraus die Kette der Kilometerstände (jede
+Abfahrt ist die Rückkehr der Fahrt davor) und sagt jederzeit, wie viel noch
+offen ist. Hast du dir für eine einzelne Fahrt einen Stand notiert, kannst du
+statt der Kilometer diesen Stand angeben; die Kette hängt sich dann an diesem
+festen Punkt auf.
+
+Zwei Dinge macht die App dabei bewusst **nicht**:
+
+- Sie verteilt einen offenen Rest **nicht selbsttätig** auf die Fahrten. Der
+  Rest steht sichtbar da; ein ausdrücklicher Knopf macht daraus eine eigene
+  Zeile, die von Hand gefüllt wird.
+- Sie gibt **keine lückenhafte Kette** aus. Nach einer fehlerhaften Zeile steht
+  keine Abfahrt mehr fest – alle folgenden Zeilen wären geraten.
+
 ## Editionen
 
-- **Frei:** mit Werbung, bis zu 3 gemerkte Fahrten
-- **Premium** (einmalig 2,99 €): werbefrei, unbegrenzte Fahrtenliste,
-  Ausgabe der Liste als PDF, Bild oder Text sowie Drucken
+- **Frei:** mit Werbung, bis zu 5 gemerkte Fahrten und bis zu 5 Fahrten je Nachtrag
+- **Premium** (einmalig 2,99 €): werbefrei, unbegrenzte Fahrtenliste und
+  Nachträge, Ausgabe als PDF, Bild oder Text sowie Drucken
 
 ## Technik
 
