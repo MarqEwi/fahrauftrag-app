@@ -524,13 +524,6 @@
       <div class="merksatz" id="merksatz"></div>
       <div class="fehler" id="fehler" style="display:none" role="alert"></div>
       <div class="warnung" id="warnung" style="display:none"></div>
-
-      <label class="field" for="in-strecke">Startort / Zielort <span class="opt">optional, nur für deine Notiz</span></label>
-      <input type="text" id="in-strecke" autocomplete="off" placeholder="z. B. Musterstadt – Beispielheim" maxlength="80">
-
-      <div class="btn-row">
-        <button class="btn primary" id="btn-kopieren" disabled><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg> Eintrag kopieren</button>
-      </div>
     </div>
 
     <button class="rubrikkarte" id="go-nachtragen">
@@ -1389,19 +1382,7 @@ function homeRender(){
       + esc(m.einheit) + ". Merksatz: <b>oben steht immer das Spätere.</b>";
   }
 
-  $("btn-kopieren").disabled = !r.fertig;
   updateSticky();
-}
-
-function kopierText(){
-  const m = modusAktuell();
-  const r = aktuell;
-  if (!r || !r.fertig) return "";
-  let t = "a) Rückkehr: " + FA.mitNullen(r.rueck) + " | b) Abfahrt: " + FA.mitNullen(r.ab)
-        + " | " + m.nachweis + ": " + r.diff;
-  const s = $("in-strecke").value.trim();
-  if (s) t += " | " + s;
-  return t;
 }
 
 ["in-ab", "in-rueck"].forEach(id => $(id).addEventListener("input", homeRender));
@@ -1418,15 +1399,9 @@ $("gitter-home").addEventListener("click", e => {
 segInit("s-modus", v => { store(MODUS_KEY, v); beschriftungRender(); homeRender(); });
 
 $("btn-leeren").addEventListener("click", () => {
-  $("in-ab").value = ""; $("in-rueck").value = ""; $("in-strecke").value = "";
+  $("in-ab").value = ""; $("in-rueck").value = "";
   homeRender();
   $("in-ab").focus();
-});
-
-$("btn-kopieren").addEventListener("click", async () => {
-  const t = kopierText();
-  if (!t) return;
-  if (await Bridge.copyText(t)) toast("Eintrag kopiert");
 });
 
 /* ---------- Fahrten nachtragen ------------------------------------------
