@@ -44,12 +44,21 @@ test("Die Fahrzeit wird ausgerechnet und in der Reihenfolge des Blattes gezeigt"
   await page.fill("#in-zeit-ab", "11:30");
   await page.fill("#in-zeit-rueck", "13:45");
 
-  const zz = page.locator("#zeitzeile");
-  await expect(zz).toBeVisible();
-  await expect(zz).toContainText("13:45");     // a) Ende steht vorn, wie oben im Feld
-  await expect(zz).toContainText("11:30");
-  await expect(zz).toContainText("2:15 h");
+  await expect(page.locator("#zeitzeile")).toBeVisible();
+  // a) Ende steht oben, b) Beginn darunter – wie beim Kilometerraster
+  await expect(page.locator("#z-ende")).toHaveText("13:45");
+  await expect(page.locator("#z-beginn")).toHaveText("11:30");
+  await expect(page.locator("#z-dauer")).toHaveText("2:15");
   await expect(page.locator("#lenkzeit")).toBeHidden();
+
+  // Beide Werte stehen bündig untereinander
+  const versatz = await page.evaluate(() => {
+    const a = document.getElementById("z-ende").getBoundingClientRect();
+    const b = document.getElementById("z-beginn").getBoundingClientRect();
+    return { links: Math.abs(a.left - b.left), rechts: Math.abs(a.right - b.right) };
+  });
+  expect(versatz.links).toBe(0);
+  expect(versatz.rechts).toBe(0);
 });
 
 test("Eine Fahrt über Mitternacht ergibt keine negative Zeit", async ({ page }) => {
@@ -57,9 +66,10 @@ test("Eine Fahrt über Mitternacht ergibt keine negative Zeit", async ({ page })
   // Beispiel aus einem echten Blatt: Beginn 23:50, Ende 03:00
   await page.fill("#in-zeit-ab", "23:50");
   await page.fill("#in-zeit-rueck", "03:00");
-  await expect(page.locator("#zeitzeile")).toContainText("3:10 h");
+  await expect(page.locator("#z-dauer")).toHaveText("3:10");
   // Die Annahme wird ausgewiesen, damit ein Zahlendreher nicht durchrutscht
-  await expect(page.locator("#zeitzeile")).toContainText("über Mitternacht");
+  await expect(page.locator("#z-mitternacht")).toBeVisible();
+  await expect(page.locator("#z-mitternacht")).toContainText("über Mitternacht");
 });
 
 test("Ab mehr als 4:30 Stunden erscheint der Hinweis auf die Lenkzeiten", async ({ page }) => {
@@ -68,7 +78,7 @@ test("Ab mehr als 4:30 Stunden erscheint der Hinweis auf die Lenkzeiten", async 
   // Genau 4:30 ist noch kein Hinweis
   await page.fill("#in-zeit-ab", "08:00");
   await page.fill("#in-zeit-rueck", "12:30");
-  await expect(page.locator("#zeitzeile")).toContainText("4:30 h");
+  await expect(page.locator("#z-dauer")).toHaveText("4:30");
   await expect(page.locator("#lenkzeit")).toBeHidden();
 
   // Eine Minute darüber schon
