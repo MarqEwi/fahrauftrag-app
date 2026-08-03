@@ -219,6 +219,10 @@
     background:var(--bg3);color:var(--text);font-size:.86rem}
   .empty{color:var(--text2);text-align:center;padding:20px 8px;font-size:.9rem}
   /* ---------- Nachtragen ---------- */
+  /* Verwaltungsfläche: gedämpfter Untergrund und gestrichelter Rand –
+     sichtbar kein Teil des Rechenwegs darüber. */
+  .blattkarte{background:var(--bg3);border-style:dashed;box-shadow:none}
+  .blattkarte h3{color:var(--text2)}
   .blattzeile{display:flex;gap:8px;margin-bottom:8px}
   .blattzeile select{flex:1;min-width:0}
   .blattzeile .btn{flex:none;padding-left:12px;padding-right:12px}
@@ -668,15 +672,7 @@
     <div class="card">
       <h3><svg class="ic" aria-hidden="true"><use href="#i-spanne"/></svg> Rahmen</h3>
 
-      <label class="field" style="margin-top:0" for="nt-blatt"><b>Blatt</b> <span class="opt">eines je Fahrzeug bzw. Papierblatt</span></label>
-      <div class="blattzeile">
-        <select id="nt-blatt" aria-label="Blatt wählen"></select>
-        <button class="btn secondary" id="nt-blatt-neu" aria-label="Neues Blatt anlegen"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Blatt <span class="premium-star" id="nt-blatt-star">💎</span></button>
-      </div>
-      <label class="field" for="nt-blatt-name"><b>Name des Blattes</b> <span class="opt">z. B. Kennzeichen, optional</span></label>
-      <input type="text" id="nt-blatt-name" placeholder="z. B. PKW Y-123 456" maxlength="40" autocomplete="off">
-
-      <div class="seg mini" id="nt-modus" role="group" aria-label="Einheit" style="margin-top:12px">
+      <div class="seg mini" id="nt-modus" role="group" aria-label="Einheit">
         <button data-v="km" class="active">Kilometer</button>
         <button data-v="std">Betriebsstunden</button>
       </div>
@@ -714,8 +710,25 @@
       </div>
     </div>
 
-    <div class="btn-row" style="margin-bottom:14px">
-      <button class="btn danger small" id="nt-clear">Nachtrag verwerfen</button>
+    <!-- Blattverwaltung: bewusst abgesetzt und ganz unten. Sie gehört nicht
+         zwischen die Rechenfelder – hier wird nicht gerechnet, sondern
+         verwaltet, zu welchem Blatt der Nachtrag darüber gehört. -->
+    <div class="card blattkarte">
+      <h3><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Blatt</h3>
+      <p class="muted" style="margin-top:0">Ein Blatt je Fahrzeug bzw. Papierblatt.
+        Der Nachtrag oben gehört zum hier gewählten Blatt.</p>
+
+      <div class="blattzeile">
+        <select id="nt-blatt" aria-label="Blatt wählen"></select>
+        <button class="btn secondary" id="nt-blatt-neu" aria-label="Neues Blatt anlegen"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Blatt <span class="premium-star" id="nt-blatt-star">💎</span></button>
+      </div>
+
+      <label class="field" for="nt-blatt-name"><b>Name des Blattes</b> <span class="opt">z. B. Kennzeichen, optional</span></label>
+      <input type="text" id="nt-blatt-name" placeholder="z. B. PKW Y-123 456" maxlength="40" autocomplete="off">
+
+      <div class="btn-row">
+        <button class="btn danger small" id="nt-clear">Nachtrag verwerfen</button>
+      </div>
     </div>
   </section>
 
