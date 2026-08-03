@@ -40,7 +40,7 @@ jeder Block ist unabhängig abhakbar.
    Sprache Deutsch · **App** · **Kostenlos**
 3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen,
    Icon `icons/icon-512.png`, Feature-Grafik 1024×500
-   (`docs/store-grafiken/feature-grafik-1024x500.png`; Hintergrundfarbe des Logos: `#546133`)
+   (`docs/store-grafiken/feature-grafik-1024x500.png`; Hintergrundfarbe des Logos: `#585F2A`)
 4. **Data Safety** ausfüllen (siehe Kurzreferenz in `docs/store-texte.md`);
    die vier AdMob-Datentypen bleiben unverändert, weil die App selbst nichts überträgt
 5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+**
