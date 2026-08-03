@@ -316,6 +316,9 @@
   .info-row .ic{width:22px;height:22px;color:var(--accent2)}
   .tag{display:inline-block;background:var(--bg3);border-radius:6px;padding:2px 8px;
     font-size:.72rem;color:var(--text2);margin:6px 3px 3px 0;font-weight:700;letter-spacing:.04em}
+  .info-schritt{font-size:.9rem;margin:.6rem 0 .3rem}
+  .info-skizze{display:block;width:100%;height:auto;margin:2px 0 6px}
+  .info-skizze text{font-family:inherit}
   #info-content ul{margin:.3rem 0 .6rem;padding-left:1.2rem}
   #info-content li{margin:.25rem 0;font-size:.9rem}
   /* Modals */
@@ -2351,29 +2354,88 @@ $("s-premium").addEventListener("click", () => { closeModal("modal-settings"); o
 
 /* ---------- Info: Aufbau des Kilometerfeldes ---------- */
 $("info-feld").addEventListener("click", () => {
+  /* Bild statt Textwüste: Die Fahrt läuft vorwärts, das Blatt schreibt sie
+     über Kreuz hin – genau dieses Kreuz wird gezeichnet. Als eingebettete
+     Vektorgrafik, damit die Skizze die Farben aller Designs übernimmt und
+     auf jedem Bildschirm scharf bleibt. */
   $("info-content").innerHTML =
-    '<span class="tag">Die beiden Zeilen</span>' +
+    '<p class="info-schritt"><b>1.</b> So läuft die Fahrt – erst Abfahrt, dann Rückkehr:</p>' +
+
+    '<svg viewBox="0 0 440 78" class="info-skizze" role="img" aria-label="Zeitstrahl der Fahrt: Abfahrt bei 27716, dann 52 Kilometer Fahrt, Rückkehr bei 27768">' +
+      '<g font-family="inherit">' +
+      /* Abfahrt-Kasten */
+      '<rect x="8" y="14" width="130" height="46" rx="7" fill="var(--bg3)" stroke="var(--linie)" stroke-width="1.5"/>' +
+      '<text x="73" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">b) Abfahrt</text>' +
+      '<text x="73" y="52" text-anchor="middle" font-size="15" font-weight="800" fill="var(--text)">27716</text>' +
+      /* Straße */
+      '<line x1="146" y1="37" x2="286" y2="37" stroke="var(--text2)" stroke-width="2"/>' +
+      '<line x1="286" y1="37" x2="278" y2="31" stroke="var(--text2)" stroke-width="2"/>' +
+      '<line x1="286" y1="37" x2="278" y2="43" stroke="var(--text2)" stroke-width="2"/>' +
+      '<text x="216" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent2)">52 km</text>' +
+      /* Rückkehr-Kasten */
+      '<rect x="294" y="14" width="130" height="46" rx="7" fill="var(--bg3)" stroke="var(--linie)" stroke-width="1.5"/>' +
+      '<text x="359" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">a) Rückkehr</text>' +
+      '<text x="359" y="52" text-anchor="middle" font-size="15" font-weight="800" fill="var(--text)">27768</text>' +
+      "</g>" +
+    "</svg>" +
+
+    '<p class="info-schritt"><b>2.</b> Das Blatt will es <b>über Kreuz</b>: Das Spätere nach oben, das Frühere nach unten.</p>' +
+
+    '<svg viewBox="0 0 440 216" class="info-skizze" role="img" aria-label="Die Rückkehr wandert in die obere Zeile, die Abfahrt in die untere. Rechts steht der Nachweis: 52 Kilometer.">' +
+      '<g font-family="inherit">' +
+      /* Fahrtkästen oben (klein) */
+      '<rect x="30" y="6" width="120" height="34" rx="6" fill="var(--bg3)" stroke="var(--linie)" stroke-width="1.5"/>' +
+      '<text x="90" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">b) 27716</text>' +
+      '<rect x="290" y="6" width="120" height="34" rx="6" fill="var(--bg3)" stroke="var(--linie)" stroke-width="1.5"/>' +
+      '<text x="350" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">a) 27768</text>' +
+      /* Gekreuzte Pfeile – der Kern der Sache. Grün: a) wandert nach oben
+         links in die erste Zeile. Rot: b) schwenkt rechts ums Raster herum
+         in die untere Zeile ein. */
+      '<path d="M 350 44 C 350 72, 130 58, 122 94" fill="none" stroke="var(--accent2)" stroke-width="2.5"/>' +
+      '<path d="M 122 94 l -2 -9 M 122 94 l 9 -5" fill="none" stroke="var(--accent2)" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<path d="M 90 44 C 90 92, 266 58, 266 150 Q 266 177 250 177" fill="none" stroke="var(--bad)" stroke-width="2.5"/>' +
+      '<path d="M 250 177 l 9 -5 M 250 177 l 9 5" fill="none" stroke="var(--bad)" stroke-width="2.5" stroke-linecap="round"/>' +
+      /* Formular-Ausschnitt: 2x6-Raster */
+      '<g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">' +
+      '<rect x="24" y="102" width="210" height="100"/>' +
+      '<line x1="24" y1="152" x2="234" y2="152"/>' +
+      '<line x1="59" y1="102" x2="59" y2="202"/><line x1="94" y1="102" x2="94" y2="202"/>' +
+      '<line x1="129" y1="102" x2="129" y2="202"/><line x1="164" y1="102" x2="164" y2="202"/>' +
+      '<line x1="199" y1="102" x2="199" y2="202"/>' +
+      '<rect x="300" y="102" width="116" height="100"/>' +
+      "</g>" +
+      /* Ziffern: oben die Rückkehr, unten die Abfahrt */
+      '<g font-size="19" font-weight="800" text-anchor="middle" fill="var(--text)">' +
+      '<text x="76.5" y="134">2</text><text x="111.5" y="134">7</text><text x="146.5" y="134">7</text>' +
+      '<text x="181.5" y="134">6</text><text x="216.5" y="134">8</text>' +
+      '<text x="76.5" y="184">2</text><text x="111.5" y="184">7</text><text x="146.5" y="184">7</text>' +
+      '<text x="181.5" y="184">1</text><text x="216.5" y="184">6</text>' +
+      "</g>" +
+      /* Zeilenmarken links am Raster */
+      '<text x="16" y="133" text-anchor="end" font-size="12" font-weight="700" fill="var(--text2)">a)</text>' +
+      '<text x="16" y="183" text-anchor="end" font-size="12" font-weight="700" fill="var(--text2)">b)</text>' +
+      /* Nachweis */
+      '<text x="358" y="126" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text2)">NACHWEIS</text>' +
+      '<text x="358" y="164" text-anchor="middle" font-size="26" font-weight="800" fill="var(--text)">52</text>' +
+      '<text x="358" y="186" text-anchor="middle" font-size="12" fill="var(--text2)">km</text>' +
+      "</g>" +
+    "</svg>" +
+
+    '<div class="merksatz" style="margin-top:6px">Merksatz: <b>oben steht immer das Spätere.</b> ' +
+    "Steht unten die größere Zahl, sind die Zeilen vertauscht – dann käme eine negative Strecke heraus.</div>" +
+
+    '<p class="info-schritt" style="margin-top:14px"><b>3.</b> Der <b>Nachweis</b> rechts ist einfach die Differenz:</p>' +
+    '<div class="rechnung" style="margin:2px 0 10px">' +
+      '<span><span class="rm">a)</span>27768</span><span class="rop">−</span>' +
+      '<span><span class="rm">b)</span>27716</span><span class="rop">=</span>' +
+      '<b class="rerg">52 km</b></div>' +
+
+    '<span class="tag">Noch zwei Kleinigkeiten</span>' +
     "<ul>" +
-    "<li><b>a) Rückkehr</b> steht <b>oben</b>: der Stand, den das Fahrzeug am Ende der Fahrt anzeigt.</li>" +
-    "<li><b>b) Abfahrt</b> steht <b>darunter</b>: der Stand beim Start.</li>" +
-    "<li>Die Reihenfolge ist also umgekehrt zum Ablauf der Fahrt. Merksatz: <b>oben steht immer das Spätere.</b></li>" +
+    "<li>Die Zahl steht <b>rechtsbündig</b> in den sechs Kästchen – vorn bleibt frei, was nicht gebraucht wird.</li>" +
+    "<li>Bei Fahrzeugen und Geräten, die nach <b>Betriebsstunden</b> abgerechnet werden, kommen die Stunden in dieselben Felder. Der Umschalter oben ändert nur Beschriftung und Einheit.</li>" +
     "</ul>" +
-    '<span class="tag">Die Kästchen</span>' +
-    "<ul>" +
-    "<li>Für jede Zeile stehen sechs gleich große Kästchen zur Verfügung – je Ziffer eines.</li>" +
-    "<li>Die Zahl wird <b>rechtsbündig</b> eingetragen. Hat der Stand nur fünf Stellen, bleibt das erste Kästchen leer.</li>" +
-    "</ul>" +
-    '<span class="tag">Die Nachweis-Spalte</span>' +
-    "<ul>" +
-    "<li>Rechts neben den Kästchen steht die gefahrene Strecke: <b>Rückkehr − Abfahrt</b>.</li>" +
-    "<li>Ist die Rückkehr kleiner als die Abfahrt, sind meist die beiden Zeilen vertauscht.</li>" +
-    "</ul>" +
-    '<span class="tag">Kilometer oder Betriebsstunden</span>' +
-    "<ul>" +
-    "<li>Dieselben Felder nehmen wahlweise den Kilometerstand oder – bei Fahrzeugen und Geräten, die danach abgerechnet werden – die Betriebsstunden auf.</li>" +
-    "<li>Der Umschalter oben ändert nur Beschriftung und Einheit; gerechnet wird gleich.</li>" +
-    "</ul>" +
-    '<p class="muted">Diese Darstellung ist eine vereinfachte Eintraghilfe und kein Abbild des amtlichen Vordrucks. ' +
+    '<p class="muted">Vereinfachte Eintraghilfe, kein Abbild des amtlichen Vordrucks. ' +
     "Maßgeblich ist immer der tatsächlich ausgefüllte Fahrauftrag.</p>";
   openModal("modal-info");
 });
