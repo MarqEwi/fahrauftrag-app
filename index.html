@@ -2077,6 +2077,7 @@ function ntOpenEditor(index){
   $("nt-e-zab").value = f && f.zab ? f.zab : "";
   $("nt-e-zende").value = f && f.zende ? f.zende : "";
   $("nt-e-loeschzeile").style.display = neu ? "none" : "";
+  delEntschaerfen();
   ntBeschriftung();
   ntEditorRender();
   openModal("modal-ntfahrt");
@@ -2114,13 +2115,30 @@ $("nt-e-save").addEventListener("click", () => {
   ntRender();
 });
 
+/* Löschen ohne confirm(): Browser-Bestätigungsdialoge werden in mancher
+   WebView- und Einbettungsumgebung stumm verworfen – dann liefert confirm()
+   "Nein", ohne dass je eine Frage erschien, und der Knopf wirkt kaputt.
+   Stattdessen bestätigt ein zweiter Tipp auf denselben Knopf; nach vier
+   Sekunden ohne zweiten Tipp entschärft er sich wieder. */
+let delScharf = null;
+function delEntschaerfen(){
+  clearTimeout(delScharf); delScharf = null;
+  const b = $("nt-e-del");
+  if (b) b.textContent = "Diese Fahrt löschen";
+}
 $("nt-e-del").addEventListener("click", () => {
   if (ntEditIndex == null) return;
-  if (!confirm("Diese Fahrt aus dem Nachtrag entfernen?")) return;
+  if (delScharf == null){
+    $("nt-e-del").textContent = "Wirklich löschen? Noch einmal tippen";
+    delScharf = setTimeout(delEntschaerfen, 4000);
+    return;
+  }
+  delEntschaerfen();
   NT.fahrten.splice(ntEditIndex, 1);
   ntSichern();
   closeModal("modal-ntfahrt");
   ntRender();
+  toast("Fahrt entfernt");
 });
 
 /* Der Rest bekommt eine eigene Zeile – ausdrücklich und mit leerem Datum,
@@ -2136,13 +2154,25 @@ $("nt-rest").addEventListener("click", () => {
   toast("Rest als neue Fahrt angelegt – Datum und Strecke fehlen noch");
 });
 
+let clearScharf = null;
+function clearEntschaerfen(){
+  clearTimeout(clearScharf); clearScharf = null;
+  const b = $("nt-clear");
+  if (b) b.textContent = "Nachtrag verwerfen";
+}
 $("nt-clear").addEventListener("click", () => {
   if (!NT.fahrten.length && !NT.start && !NT.aktuell) return;
-  if (!confirm("Den ganzen Nachtrag verwerfen?")) return;
+  if (clearScharf == null){
+    $("nt-clear").textContent = "Wirklich alles verwerfen? Noch einmal tippen";
+    clearScharf = setTimeout(clearEntschaerfen, 4000);
+    return;
+  }
+  clearEntschaerfen();
   NT = ntLeer(); ntSichern();
   $("nt-start").value = ""; $("nt-aktuell").value = "";
   segSet("nt-modus", "km");
   ntBeschriftung(); ntRender();
+  toast("Nachtrag verworfen");
 });
 
 $("nt-start").addEventListener("input", () => { NT.start = $("nt-start").value; ntSichern(); ntRender(); });

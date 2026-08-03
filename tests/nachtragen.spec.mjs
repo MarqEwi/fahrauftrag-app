@@ -175,3 +175,39 @@ test("Die Ausgabe des Nachtrags enthält die Kette", async ({ page }) => {
   expect(pdf).toContain("Nachgetragene Fahrten");
   expect(pdf).toContain("27946");
 });
+
+test("Löschen und Verwerfen funktionieren ohne Browser-Bestätigungsdialog", async ({ page }) => {
+  // confirm() wird in mancher Umgebung stumm verworfen – die App darf sich
+  // deshalb nicht darauf verlassen. Bestätigt wird per zweitem Tipp.
+  await mitNachtrag(page, KETTE);
+
+  // Fahrt löschen: Zeile öffnen -> bearbeiten -> zweimal tippen
+  await page.click("#nt-liste .ntzeile >> nth=0");
+  await page.click("#z-edit");
+  await page.click("#nt-e-del");
+  await expect(page.locator("#nt-e-del")).toContainText("Wirklich");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);   // noch nichts passiert
+  await page.click("#nt-e-del");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(2);
+
+  // Nachtrag verwerfen: ebenfalls zweistufig
+  await page.click("#nt-clear");
+  await expect(page.locator("#nt-clear")).toContainText("Wirklich");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(2);   // noch nichts passiert
+  await page.click("#nt-clear");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(0);
+  await expect(page.locator("#nt-start")).toHaveValue("");
+});
+
+test("Ein einzelner Tipp auf Löschen richtet nichts an", async ({ page }) => {
+  await mitNachtrag(page, KETTE);
+  await page.click("#nt-liste .ntzeile >> nth=0");
+  await page.click("#z-edit");
+  await page.click("#nt-e-del");                       // nur einmal
+  await page.click('[data-close="modal-ntfahrt"]');
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);
+  // Beim nächsten Öffnen ist der Knopf wieder entschärft
+  await page.click("#nt-liste .ntzeile >> nth=0");
+  await page.click("#z-edit");
+  await expect(page.locator("#nt-e-del")).toHaveText("Diese Fahrt löschen");
+});
