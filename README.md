@@ -42,6 +42,21 @@ offen ist. Hast du dir für eine einzelne Fahrt einen Stand notiert, kannst du
 statt der Kilometer diesen Stand angeben; die Kette hängt sich dann an diesem
 festen Punkt auf.
 
+Sind die **Uhrzeiten** eingeschaltet, lassen sich Beginn und Ende auch je
+nachgetragener Fahrt eintragen. Die Liste ordnet sich dann selbst nach Datum;
+innerhalb eines Tages bestimmst du die Reihenfolge über die Pfeile an der Zeile.
+Die App weist hin auf:
+
+- **Überschneidungen** – zwei Fahrten können nicht gleichzeitig stattfinden
+- **fehlende Pausen** – nach spätestens 4:30 Stunden Fahrzeit sind 45 Minuten
+  vorgesehen (teilbar in 15 und danach 30 Minuten)
+- **lange Tage** – über 9 Stunden Fahrzeit, ab 10 Stunden deutlicher
+- **kurze Ruhezeiten** – weniger als 11 Stunden zwischen zwei Tagen
+
+Das sind **Hinweise, keine Prüfung**: Die App sieht nur die Lücken zwischen den
+eingetragenen Fahrten. Pausen innerhalb einer Fahrt, andere Arbeitszeit und
+Ausnahmen kennt sie nicht.
+
 Zwei Dinge macht die App dabei bewusst **nicht**:
 
 - Sie verteilt einen offenen Rest **nicht selbsttätig** auf die Fahrten. Der
