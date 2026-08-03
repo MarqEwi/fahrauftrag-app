@@ -31,10 +31,22 @@ test("Die Fahrten ordnen sich selbst nach Datum", async ({ page }) => {
   expect(k[2]).toContain("Dritte");
 });
 
-test("Am selben Tag lässt sich die Reihenfolge von Hand ändern", async ({ page }) => {
+test("Am selben Tag entscheidet die Uhrzeit über die Reihenfolge", async ({ page }) => {
   await mitFahrten(page, [
-    fahrt("2026-07-14", 100, "08:00", "09:00", "Zuerst"),
-    fahrt("2026-07-14", 100, "10:00", "11:00", "Danach")
+    fahrt("2026-07-14", 100, "14:00", "15:00", "Nachmittags"),
+    fahrt("2026-07-14", 100, "08:00", "09:00", "Morgens")
+  ]);
+  const k = await koepfe(page);
+  expect(k[0]).toContain("Morgens");
+  expect(k[1]).toContain("Nachmittags");
+  // Von Hand tauschen wäre sinnlos – die Sortierung würde es zurückdrehen
+  await expect(page.locator("#nt-liste [data-runter='0']")).toBeDisabled();
+});
+
+test("Ohne Uhrzeiten entscheidet am selben Tag die Reihenfolge von Hand", async ({ page }) => {
+  await mitFahrten(page, [
+    fahrt("2026-07-14", 100, "", "", "Zuerst"),
+    fahrt("2026-07-14", 100, "", "", "Danach")
   ]);
   expect((await koepfe(page))[0]).toContain("Zuerst");
 
@@ -136,15 +148,42 @@ test("Die Hinweise sagen ausdrücklich, dass sie keine Prüfung sind", async ({ 
   await expect(page.locator("#nt-zeithinweise .fuss")).toContainText("keine Prüfung");
 });
 
-test("Die Uhrzeiten stehen an der Fahrt und überstehen den Neustart", async ({ page }) => {
+test("Die Uhrzeiten stehen gestapelt an der Fahrt und überstehen den Neustart", async ({ page }) => {
   await mitFahrten(page, [fahrt("2026-07-14", 230, "11:30", "13:45", "Musterstadt – Beispielheim")]);
-  await expect(page.locator("#nt-liste .ntzeiten")).toContainText("11:30");
-  await expect(page.locator("#nt-liste .ntzeiten")).toContainText("13:45");
-  await expect(page.locator("#nt-liste .ntzeiten")).toContainText("2:15 h");
+  const zeilen = page.locator("#nt-liste .zeitklein .zv");
+  await expect(zeilen.nth(0)).toHaveText("13:45");     // a) Ende oben
+  await expect(zeilen.nth(1)).toHaveText("11:30");     // b) Beginn darunter
+  await expect(page.locator("#nt-liste .zeitklein .nwert")).toHaveText("2:15");
+
+  // Ende und Beginn stehen bündig untereinander, wie beim Kilometerraster
+  const versatz = await page.evaluate(() => {
+    const v = document.querySelectorAll("#nt-liste .zeitklein .zv");
+    return Math.abs(v[0].getBoundingClientRect().right - v[1].getBoundingClientRect().right);
+  });
+  expect(versatz).toBe(0);
 
   await page.reload();
   await page.click("#go-nachtragen");
-  await expect(page.locator("#nt-liste .ntzeiten")).toContainText("2:15 h");
+  await expect(page.locator("#nt-liste .zeitklein .nwert")).toHaveText("2:15");
+});
+
+test("Betroffene Fahrten tragen ein Warnzeichen", async ({ page }) => {
+  await mitFahrten(page, [
+    fahrt("2026-07-14", 100, "08:00", "10:00"),
+    fahrt("2026-07-14", 100, "09:30", "11:00")     // überschneidet sich
+  ]);
+  // Beide beteiligten Zeilen sind markiert, und zwar hart
+  await expect(page.locator("#nt-liste .ntwarn")).toHaveCount(2);
+  await expect(page.locator("#nt-liste .ntwarn").first()).toHaveClass(/hart/);
+  await expect(page.locator("#nt-liste .ntwarntext").first()).toContainText("überschneiden");
+});
+
+test("Ohne Beanstandung trägt keine Zeile ein Warnzeichen", async ({ page }) => {
+  await mitFahrten(page, [
+    fahrt("2026-07-14", 100, "06:00", "08:00"),
+    fahrt("2026-07-14", 100, "09:00", "10:00")
+  ]);
+  await expect(page.locator("#nt-liste .ntwarn")).toHaveCount(0);
 });
 
 test("Ist die Option aus, tauchen weder Felder noch Hinweise auf", async ({ page }) => {
@@ -153,7 +192,8 @@ test("Ist die Option aus, tauchen weder Felder noch Hinweise auf", async ({ page
     fahrt("2026-07-14", 100, "08:45", "11:00")
   ], { zeiten: false });
   await expect(page.locator("#nt-zeithinweise")).toBeEmpty();
-  await expect(page.locator("#nt-liste .ntzeiten")).toHaveCount(0);
+  await expect(page.locator("#nt-liste .zeitklein")).toHaveCount(0);
+  await expect(page.locator("#nt-liste .ntwarn")).toHaveCount(0);
   await page.click("#nt-add");
   await expect(page.locator("#nt-e-zeiten")).toBeHidden();
 });

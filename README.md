@@ -27,9 +27,9 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
   Ende eintragen, Fahrzeit wird ausgerechnet – Fahrten über Mitternacht inbegriffen.
   Ab mehr als 4:30 Stunden erscheint ein Hinweis auf die Lenk- und Ruhezeiten
   (eine Gedächtnisstütze, keine Prüfung einer Vorschrift)
-- Zwei Gestaltungen zur Wahl: **Modern** (aufgeräumte App-Optik, Olivgrün als
-  einzige Akzentfarbe) und **Klassisch** (Schwarz auf Papierweiß, Haarlinien,
-  gerade Kanten – angelehnt an die Optik des Vordrucks), jeweils hell und dunkel
+- Design zur Wahl: **Automatisch**, **Hell**, **Dunkel** und **Klassisch** –
+  Letzteres ist Schwarz auf Papierweiß mit Haarlinien und geraden Kanten,
+  angelehnt an die Optik des Vordrucks
 - Komplett offline, alle Daten bleiben lokal auf dem Gerät (kein Server, kein Tracking)
 
 ## Fahrten nachtragen

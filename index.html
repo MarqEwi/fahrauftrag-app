@@ -59,22 +59,6 @@
     --kopf-bg:#fbfaf5; --kopf-text:#000000;
     --kopf-linie:#000000; --kopf-inaktiv:#4a4a45;
   }
-  html[data-stil="klassisch"][data-theme="dark"]{
-    --bg:#101010; --bg2:#191919; --bg3:#212121; --text:#f2f1ea; --text2:#b3b2ab;
-    --line:#f2f1ea; --linie:#f2f1ea; --accent:#f2f1ea; --accent2:#f2f1ea; --accent-text:#101010;
-    --gold:#d9bd63; --ok:#89c99a; --warn:#d7bc6a; --bad:#e79a9a;
-    --kopf-bg:#191919; --kopf-text:#f2f1ea;
-    --kopf-linie:#f2f1ea; --kopf-inaktiv:#9e9d97;
-  }
-  @media (prefers-color-scheme: dark){
-    html[data-stil="klassisch"][data-theme="auto"]{
-      --bg:#101010; --bg2:#191919; --bg3:#212121; --text:#f2f1ea; --text2:#b3b2ab;
-      --line:#f2f1ea; --linie:#f2f1ea; --accent:#f2f1ea; --accent2:#f2f1ea; --accent-text:#101010;
-      --gold:#d9bd63; --ok:#89c99a; --warn:#d7bc6a; --bad:#e79a9a;
-      --kopf-bg:#191919; --kopf-text:#f2f1ea;
-      --kopf-linie:#f2f1ea; --kopf-inaktiv:#9e9d97;
-    }
-  }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
@@ -171,6 +155,11 @@
   .seg button:last-child{border-right:none}
   .seg button.active{background:var(--accent);color:var(--accent-text)}
   .seg.mini button{padding:7px 6px;font-size:.82rem}
+  /* Vier Möglichkeiten passen auf schmalen Geräten nicht in eine Reihe */
+  .seg.gitter2{display:grid;grid-template-columns:1fr 1fr}
+  .seg.gitter2 button{border-right:1.5px solid var(--linie);border-bottom:1.5px solid var(--linie)}
+  .seg.gitter2 button:nth-child(2n){border-right:0}
+  .seg.gitter2 button:nth-child(n+3){border-bottom:0}
   /* ---------- Kästchenraster (eigene, vereinfachte Darstellung) ---------- */
   /* Der Spaltenkopf trägt die Zuordnung – so wie auf dem Blatt, wo über den
      Kästchen "km-Stand/BetrStd · a) Rückkehr · b) Abfahrt" steht. Dadurch
@@ -274,8 +263,17 @@
   .ntmarke{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
     background:var(--bg3);color:var(--text2);border-radius:5px;padding:1px 6px;vertical-align:2px}
   .ntfehler{color:var(--bad);font-size:.8rem;font-weight:600;margin-top:4px}
-  .ntzeiten{font-size:.8rem;color:var(--text2);font-variant-numeric:tabular-nums;margin-top:2px}
-  .ntzeiten b{color:var(--text)}
+  /* Warnzeichen direkt an der Fahrt */
+  .ntwarn{color:var(--warn);font-size:1rem;line-height:1}
+  .ntwarn.hart{color:var(--bad)}
+  .ntwarntext{font-size:.78rem;color:var(--warn);font-weight:600;margin-top:5px;line-height:1.35}
+  .ntwarntext.hart{color:var(--bad)}
+  /* Uhrzeiten je Fahrt – kleine Fassung des Zeitrasters */
+  .gitterblock.zeitklein{margin-top:5px}
+  .gitterblock.klein .zgitter{border-width:1.5px}
+  .gitterblock.klein .zrow{height:29px;padding:0 8px;border-bottom-width:1.5px}
+  .gitterblock.klein .zrow .zm{flex:0 0 58px;font-size:.64rem}
+  .gitterblock.klein .zrow .zv{font-size:.98rem}
   /* Reihenfolge von Hand ändern – nur innerhalb desselben Tages sinnvoll,
      weil die Liste sich nach Datum selbst ordnet. */
   .ntsort{flex:none;display:flex;flex-direction:column;gap:4px}
@@ -772,18 +770,13 @@
     <details class="acc" open>
       <summary><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg> Design</summary>
       <div class="acc-body">
-        <label class="field" style="margin-top:0">Stil</label>
-        <div class="seg mini" id="s-stil">
-          <button data-v="modern">Modern</button>
-          <button data-v="klassisch">Klassisch</button>
-        </div>
-        <p class="muted" id="s-stil-info" style="font-size:.8rem"></p>
-        <label class="field">Helligkeit</label>
-        <div class="seg mini" id="s-theme">
-          <button data-v="auto">System</button>
+        <div class="seg mini gitter2" id="s-theme">
+          <button data-v="auto">Automatisch</button>
           <button data-v="light">Hell</button>
           <button data-v="dark">Dunkel</button>
+          <button data-v="klassisch">Klassisch</button>
         </div>
+        <p class="muted" id="s-theme-info" style="font-size:.8rem"></p>
       </div>
     </details>
 
@@ -1428,11 +1421,20 @@ function segInit(id, onChange){
 
 /* ---------- Gestaltung: Stil und Helligkeit ---------- */
 const THEME_KEY = "fa_theme";
-const STIL_KEY = "fa_stil";
+/* Vier Möglichkeiten in einem Schalter: Automatisch, Hell, Dunkel und
+   Klassisch. "Klassisch" ist die Papieroptik des Vordrucks und damit immer
+   hell – ein dunkler Vordruck wäre ein Widerspruch in sich. */
+const THEMES = ["auto", "light", "dark", "klassisch"];
 function applyTheme(){
-  const t = load(THEME_KEY, "light");
-  document.documentElement.dataset.theme = t;
+  const t = THEMES.indexOf(load(THEME_KEY, "light")) >= 0 ? load(THEME_KEY, "light") : "light";
+  const klassisch = t === "klassisch";
+  document.documentElement.dataset.stil = klassisch ? "klassisch" : "modern";
+  document.documentElement.dataset.theme = klassisch ? "light" : t;
   segSet("s-theme", t);
+  const info = $("s-theme-info");
+  if (info) info.textContent = klassisch
+    ? "Schwarz auf Papierweiß, gerade Kanten, Haarlinien – angelehnt an die Optik des Vordrucks."
+    : (t === "auto" ? "Folgt der Einstellung deines Geräts." : "");
 }
 const ZEIT_KEY = "fa_zeiten";
 function zeitenAn(){ return load(ZEIT_KEY, false) === true; }
@@ -1444,17 +1446,7 @@ function applyZeiten(){
   homeRender();
   if (typeof ntRender === "function") ntRender();
 }
-function applyStil(){
-  const v = load(STIL_KEY, "modern") === "klassisch" ? "klassisch" : "modern";
-  document.documentElement.dataset.stil = v;
-  segSet("s-stil", v);
-  const info = $("s-stil-info");
-  if (info) info.textContent = v === "klassisch"
-    ? "Schwarz auf Papierweiß, gerade Kanten, Haarlinien – angelehnt an die Optik des Vordrucks."
-    : "Aufgeräumte App-Optik mit weichen Kanten und Olivgrün als einziger Akzentfarbe.";
-}
 segInit("s-theme", v => { store(THEME_KEY, v); applyTheme(); });
-segInit("s-stil", v => { store(STIL_KEY, v); applyStil(); });
 segInit("s-zeiten", v => { store(ZEIT_KEY, v === "ein"); applyZeiten(); });
 
 /* ---------- Ausfüllhilfe (Startseite) ---------- */
@@ -1465,6 +1457,21 @@ function modusAktuell(){ return FA.modus(segValue("s-modus")); }
 
 /* Ein fertiges Kästchengitter als HTML – für die Liste im Nachtrag, wo jede
    Zeile so aussehen soll, wie sie später auf dem Blatt steht. */
+/* Uhrzeiten einer Fahrt in derselben Anordnung wie die Kilometer:
+   a) Ende oben, b) Beginn darunter, rechts die Fahrzeit. */
+function zeitBlockHTML(d){
+  if (!d) return "";
+  return '<div class="gitterblock klein zeitklein">' +
+    '<div class="zgitter">' +
+      '<div class="zrow"><span class="zm">a) Ende</span><span class="zv">' + esc(fmtUhr(d.ende)) + "</span></div>" +
+      '<div class="zrow"><span class="zm">b) Beginn</span><span class="zv">' + esc(fmtUhr(d.beginn)) + "</span></div>" +
+    "</div>" +
+    '<div class="nachweis">' +
+      '<div class="nwert">' + esc(Math.floor(d.minuten / 60) + ":" + String(d.minuten % 60).padStart(2, "0")) + "</div>" +
+      '<div class="neinheit">' + (d.ueberMitternacht ? "h · Nacht" : "Stunden") + "</div>" +
+    "</div></div>";
+}
+
 function gitterBlockHTML(rueck, ab, km, einheit){
   const zellen = w => FA.kaestchen(w).map(z => "<span>" + esc(z) + "</span>").join("");
   const wert = km == null ? "–" : fmtNum(km);
@@ -1622,22 +1629,32 @@ function ntSichern(){ store(NT_KEY, NT); }
    Datum noch fehlt. Innerhalb desselben Tages entscheidet die Reihenfolge
    von Hand (Pfeile an der Zeile); der Sortierlauf lässt sie in Ruhe, weil
    bei gleichem Datum die bisherige Position den Ausschlag gibt.        */
+/* Vergleich zweier Fahrten: erst Datum, bei gleichem Tag die Uhrzeit des
+   Beginns. Fehlt eine der beiden Uhrzeiten, gilt "gleichrangig" – dann
+   entscheidet die Reihenfolge von Hand. */
+function ntVergleich(a, b){
+  const da = a.datum || "", db = b.datum || "";
+  if (da !== db) return da < db ? -1 : 1;
+  const za = FA.zeitZuMinuten(a.zab), zb = FA.zeitZuMinuten(b.zab);
+  if (za == null || zb == null || za === zb) return 0;
+  return za - zb;
+}
 function ntSortiert(liste){
   const plaetze = [];
   liste.forEach((f, i) => { if (f.datum) plaetze.push(i); });
-  const geordnet = plaetze.slice().sort((a, b) => {
-    const da = liste[a].datum, db = liste[b].datum;
-    return da < db ? -1 : da > db ? 1 : a - b;
-  });
+  const geordnet = plaetze.slice().sort((a, b) => ntVergleich(liste[a], liste[b]) || (a - b));
   const raus = liste.slice();
   plaetze.forEach((platz, n) => { raus[platz] = liste[geordnet[n]]; });
   return raus;
 }
 /* Zwei Nachbarn dürfen die Plätze tauschen, wenn der Sortierlauf das nicht
-   sofort rückgängig machen würde – also bei gleichem oder fehlendem Datum. */
+   sofort rückgängig machen würde – also nur, wenn die Sortierung sie als
+   gleichrangig ansieht (gleicher oder fehlender Tag, keine oder gleiche
+   Uhrzeit). Sonst wäre die Schaltfläche eine Attrappe. */
 function ntTauschbar(a, b){
   if (!a || !b) return false;
-  return !a.datum || !b.datum || a.datum === b.datum;
+  if (!a.datum || !b.datum) return true;
+  return ntVergleich(a, b) === 0;
 }
 function ntTauschen(i, j){
   const l = NT.fahrten;
@@ -1744,7 +1761,8 @@ function ntZeithinweise(zeilen){
   /* 1. Überschneidungen – zwei Fahrten können nicht gleichzeitig stattfinden. */
   for (let n = 1; n < sp.length; n++){
     if (sp[n].beginn < sp[n - 1].ende){
-      hinweise.push({ hart: true, text: "Fahrt " + sp[n].nr + " beginnt, bevor Fahrt " + sp[n - 1].nr
+      hinweise.push({ hart: true, betrifft: [sp[n - 1].i, sp[n].i],
+        text: "Fahrt " + sp[n].nr + " beginnt, bevor Fahrt " + sp[n - 1].nr
         + " zu Ende ist. Die Zeiten überschneiden sich – prüfe Uhrzeiten und Reihenfolge." });
     }
   }
@@ -1755,7 +1773,8 @@ function ntZeithinweise(zeilen){
   for (let n = 0; n < sp.length; n++){
     block += sp[n].minuten;
     if (block > LENK.BLOCK_MAX && !gemeldet){
-      hinweise.push({ hart: false, text: "Bis Fahrt " + sp[n].nr + " summieren sich "
+      hinweise.push({ hart: false, betrifft: [sp[n].i],
+        text: "Bis Fahrt " + sp[n].nr + " summieren sich "
         + fmtDauer(block) + " Fahrzeit ohne eine Pause von 45 Minuten dazwischen. "
         + "Nach spätestens 4:30 Stunden ist eine Pause vorgesehen (teilbar in 15 und 30 Minuten)." });
       gemeldet = true;
@@ -1771,15 +1790,20 @@ function ntZeithinweise(zeilen){
   }
 
   /* 3. Tageslenkzeit */
-  const proTag = {};
-  sp.forEach(s => { proTag[s.datum] = (proTag[s.datum] || 0) + s.minuten; });
+  const proTag = {}, tagFahrten = {};
+  sp.forEach(s => {
+    proTag[s.datum] = (proTag[s.datum] || 0) + s.minuten;
+    (tagFahrten[s.datum] = tagFahrten[s.datum] || []).push(s.i);
+  });
   Object.keys(proTag).sort().forEach(tag => {
     const m = proTag[tag];
     if (m > LENK.TAG_AUSNAHME){
-      hinweise.push({ hart: false, text: "Am " + datumKurz(tag) + " stehen " + fmtDauer(m)
+      hinweise.push({ hart: false, betrifft: tagFahrten[tag],
+        text: "Am " + datumKurz(tag) + " stehen " + fmtDauer(m)
         + " Fahrzeit – mehr als die 10 Stunden, die höchstens zweimal je Woche zulässig sind." });
     } else if (m > LENK.TAG_MAX){
-      hinweise.push({ hart: false, text: "Am " + datumKurz(tag) + " stehen " + fmtDauer(m)
+      hinweise.push({ hart: false, betrifft: tagFahrten[tag],
+        text: "Am " + datumKurz(tag) + " stehen " + fmtDauer(m)
         + " Fahrzeit – über 9 Stunden. Bis 10 Stunden ist das höchstens zweimal je Woche zulässig." });
     }
   });
@@ -1789,7 +1813,8 @@ function ntZeithinweise(zeilen){
     if (sp[n].datum === sp[n - 1].datum) continue;
     const ruhe = sp[n].beginn - sp[n - 1].ende;
     if (ruhe >= 0 && ruhe < LENK.RUHE_MIN){
-      hinweise.push({ hart: false, text: "Zwischen Fahrt " + sp[n - 1].nr + " und Fahrt " + sp[n].nr
+      hinweise.push({ hart: false, betrifft: [sp[n - 1].i, sp[n].i],
+        text: "Zwischen Fahrt " + sp[n - 1].nr + " und Fahrt " + sp[n].nr
         + " liegen nur " + fmtDauer(ruhe) + ". Die tägliche Ruhezeit beträgt 11 Stunden "
         + "(unter Bedingungen auf 9 verkürzbar)." });
     }
@@ -1867,6 +1892,15 @@ function ntRender(){
     st.textContent = "Die Kette geht auf: Die letzte Rückkehr trifft genau den Stand am Fahrzeug.";
   }
 
+  /* --- Hinweise zuerst: die Zeilen zeigen ihr eigenes Warnzeichen --- */
+  const hin = ntZeithinweise(k.zeilen);
+  const warnung = {};
+  hin.forEach(h => (h.betrifft || []).forEach(i => {
+    const w = warnung[i] || (warnung[i] = { hart: false, texte: [] });
+    if (h.hart) w.hart = true;
+    w.texte.push(h.text);
+  }));
+
   /* --- Liste der Fahrten --- */
   const cont = $("nt-liste");
   cont.innerHTML = "";
@@ -1879,18 +1913,23 @@ function ntRender(){
     const f = NT.fahrten[z.i];
     const dz = zeitenAn() ? FA.dauer(f && f.zab, f && f.zende) : null;
     const mehrere = k.zeilen.length > 1;
+    const warn = warnung[z.i];
     el.innerHTML =
       '<div class="ntnr">' + (z.i + 1) + "</div>" +
       '<div class="ntdaten">' +
-        '<div class="ntkopf">' + (z.datum ? esc(datumKurz(z.datum)) : '<i class="ntoffen">Datum fehlt</i>') +
+        '<div class="ntkopf">' +
+          (warn ? '<span class="ntwarn' + (warn.hart ? " hart" : "") + '" role="img" aria-label="'
+                  + esc(warn.hart ? "Zeiten passen nicht zusammen" : "Hinweis zu den Lenk- und Ruhezeiten")
+                  + '" title="' + esc(warn.texte.join(" ")) + '">&#9888;</span> ' : "") +
+          (z.datum ? esc(datumKurz(z.datum)) : '<i class="ntoffen">Datum fehlt</i>') +
           (z.strecke ? ' <span class="ntstrecke">· ' + esc(z.strecke) + "</span>" : "") +
           (z.art === "stand" ? ' <span class="ntmarke">Stand notiert</span>' : "") + "</div>" +
-        (dz ? '<div class="ntzeiten"><b>' + esc(fmtUhr(dz.beginn)) + "</b> – <b>" + esc(fmtUhr(dz.ende))
-              + "</b> · " + esc(fmtDauer(dz.minuten))
-              + (dz.ueberMitternacht ? " · über Mitternacht" : "") + "</div>" : "") +
         (z.fehler
           ? '<div class="ntfehler">' + esc(z.fehler) + "</div>"
           : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit)) +
+        zeitBlockHTML(dz) +
+        (warn ? '<div class="ntwarntext' + (warn.hart ? " hart" : "") + '">' + esc(warn.texte[0])
+                + (warn.texte.length > 1 ? " (+" + (warn.texte.length - 1) + ")" : "") + "</div>" : "") +
       "</div>" +
       (mehrere
         ? '<div class="ntsort">' +
@@ -1921,8 +1960,7 @@ function ntRender(){
     e.stopPropagation(); const i = parseInt(b.dataset.runter, 10); ntTauschen(i, i + 1);
   }));
 
-  /* --- Hinweise zu Uhrzeiten und Lenkzeiten --- */
-  const hin = ntZeithinweise(k.zeilen);
+  /* --- Hinweise gesammelt unter der Liste --- */
   const hb = $("nt-zeithinweise");
   if (hin.length){
     const hart = hin.some(h => h.hart);
@@ -2498,7 +2536,6 @@ window.addEventListener("load", updateAdbarH);
 window.addEventListener("resize", updateAdbarH);
 
 /* ---------- Start ---------- */
-applyStil();
 applyTheme();
 applyZeiten();
 segSet("s-modus", load(MODUS_KEY, "km") === "std" ? "std" : "km");
