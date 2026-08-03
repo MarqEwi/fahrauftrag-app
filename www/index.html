@@ -774,12 +774,18 @@
       <p class="muted">Die App zeigt beide Zahlen an der Stelle, an der sie auf dem Blatt stehen.</p>
     </div>
     <div class="ob-step" data-step="2">
+      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg></div>
+      <h2>Uhrzeiten, wenn du sie brauchst</h2>
+      <p>Im Fahrauftrag stehen neben den Kilometern auch <b>Beginn und Ende</b> der Fahrt. In den <b>Einstellungen</b> lassen sich die Uhrzeitfelder einschalten – ab Werk sind sie aus, damit die Eingabe schlank bleibt.</p>
+      <p class="muted">Eingeschaltet rechnet die App die Fahrzeit aus und erinnert bei langen Fahrten an die Lenk- und Ruhezeiten.</p>
+    </div>
+    <div class="ob-step" data-step="3">
       <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></div>
       <h2>Deine Daten bleiben bei dir</h2>
       <p>Alle Eingaben werden nur lokal auf deinem Gerät gespeichert – kein Konto, kein Server, kein Tracking. Auch Namen und Orte verlassen das Gerät nicht.</p>
       <p class="muted">Diese Einführung findest du jederzeit wieder in den Einstellungen.</p>
     </div>
-    <div class="ob-dots" id="ob-dots"><i class="on"></i><i></i><i></i></div>
+    <div class="ob-dots" id="ob-dots"><i class="on"></i><i></i><i></i><i></i></div>
     <div class="btn-row" style="justify-content:space-between">
       <button class="btn secondary" id="ob-skip">Überspringen</button>
       <button class="btn primary" id="ob-next">Weiter</button>
@@ -2619,14 +2625,17 @@ $("s-version").addEventListener("click", () => {
 /* ---------- Onboarding ---------- */
 const OB_KEY = "fa_onboarding_done";
 let obStep = 0;
+// Die Zahl der Schritte steht im HTML, nicht hier – eine weitere Seite
+// einzuhängen darf keine Änderung am Ablauf nötig machen.
+const OB_LETZTER = document.querySelectorAll(".ob-step").length - 1;
 function obShow(step){
-  obStep = Math.max(0, Math.min(2, step));
+  obStep = Math.max(0, Math.min(OB_LETZTER, step));
   document.querySelectorAll(".ob-step").forEach(s => s.classList.toggle("active", parseInt(s.dataset.step, 10) === obStep));
   document.querySelectorAll("#ob-dots i").forEach((d, i) => d.classList.toggle("on", i === obStep));
-  $("ob-next").textContent = obStep === 2 ? "Los geht's!" : "Weiter";
+  $("ob-next").textContent = obStep === OB_LETZTER ? "Los geht's!" : "Weiter";
 }
 function obFinish(){ store(OB_KEY, true); closeModal("modal-onboarding"); }
-$("ob-next").addEventListener("click", () => { if (obStep === 2) obFinish(); else obShow(obStep + 1); });
+$("ob-next").addEventListener("click", () => { if (obStep === OB_LETZTER) obFinish(); else obShow(obStep + 1); });
 $("ob-skip").addEventListener("click", obFinish);
 $("s-onboarding").addEventListener("click", () => { closeModal("modal-settings"); obShow(0); openModal("modal-onboarding"); });
 $("ads-privacy-btn").addEventListener("click", () => Ads.openPrivacyOptions());

@@ -62,3 +62,27 @@ test("Die Einführung erscheint nur beim ersten Start", async ({ page }) => {
   await page.reload();
   await expect(page.locator("#modal-onboarding")).not.toHaveClass(/open/);
 });
+
+test("Die Einführung führt bis zum letzten Schritt und nennt die Uhrzeiten", async ({ page }) => {
+  await page.goto("/");
+  const schritte = await page.locator(".ob-step").count();
+  const punkte = page.locator("#ob-dots i");
+  await expect(punkte).toHaveCount(schritte);       // je Schritt ein Punkt
+
+  for (let i = 0; i < schritte - 1; i++){
+    await expect(page.locator(`.ob-step.active[data-step="${i}"]`)).toBeVisible();
+    await expect(punkte.nth(i)).toHaveClass(/on/);
+    await expect(page.locator("#ob-next")).toHaveText("Weiter");
+    await page.click("#ob-next");
+  }
+
+  // Der Uhrzeit-Schritt sagt, wo man die Felder findet
+  const uhr = page.locator(".ob-step", { hasText: "Uhrzeiten" });
+  await expect(uhr).toContainText("Einstellungen");
+
+  // Letzter Schritt: der Knopf beendet die Einführung, statt weiterzublättern
+  await expect(page.locator("#ob-next")).toHaveText("Los geht's!");
+  await page.click("#ob-next");
+  await expect(page.locator("#modal-onboarding")).not.toHaveClass(/open/);
+  expect(await page.evaluate(() => localStorage.getItem("fa_onboarding_done"))).toBe("true");
+});
