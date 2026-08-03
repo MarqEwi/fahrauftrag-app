@@ -8,6 +8,7 @@ import { test, expect } from "@playwright/test";
 async function mitNachtrag(page, nachtrag, { premium = false } = {}){
   await page.addInitScript(([nt, prem]) => {
     localStorage.setItem("fa_onboarding_done", "true");
+    localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify(nt));
     if (prem) localStorage.setItem("fa_edition", JSON.stringify("premium"));
   }, [nachtrag, premium]);
@@ -164,6 +165,7 @@ test("Die Ausgabe des Nachtrags enthält die Kette", async ({ page }) => {
   await page.addInitScript(nt => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_edition", JSON.stringify("premium"));
+    localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify(nt));
   }, KETTE);
   await page.goto("/");
@@ -210,4 +212,73 @@ test("Ein einzelner Tipp auf Löschen richtet nichts an", async ({ page }) => {
   await page.click("#nt-liste .ntzeile >> nth=0");
   await page.click("#z-edit");
   await expect(page.locator("#nt-e-del")).toHaveText("Diese Fahrt löschen");
+});
+
+/* ---------- Blätter: eines je Fahrzeug, frei genau eines ---------- */
+
+test("Ein Altbestand wird als erstes Blatt übernommen", async ({ page }) => {
+  await mitNachtrag(page, KETTE);
+  await expect(page.locator("#nt-blatt option")).toHaveCount(1);
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);
+  const gespeichert = await page.evaluate(() => ({
+    neu: JSON.parse(localStorage.getItem("fa_nachtraege")),
+    alt: localStorage.getItem("fa_nachtrag")
+  }));
+  expect(gespeichert.neu.blaetter.length).toBe(1);
+  expect(gespeichert.neu.blaetter[0].fahrten.length).toBe(3);
+  expect(gespeichert.alt).toBeNull();               // alter Schlüssel ist entfernt
+});
+
+test("Ohne Premium bleibt es bei einem Blatt", async ({ page }) => {
+  await mitNachtrag(page, KETTE);
+  await page.click("#nt-blatt-neu");
+  await expect(page.locator("#modal-premium")).toHaveClass(/open/);
+  await expect(page.locator("#nt-blatt option")).toHaveCount(1);
+});
+
+test("Mit Premium: zweites Blatt anlegen, benennen, wechseln – Daten bleiben getrennt", async ({ page }) => {
+  await mitNachtrag(page, KETTE, { premium: true });
+  await page.click("#nt-blatt-neu");
+  await expect(page.locator("#nt-blatt option")).toHaveCount(2);
+  // Das neue Blatt ist leer und aktiv
+  await expect(page.locator("#nt-start")).toHaveValue("");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(0);
+
+  await page.fill("#nt-blatt-name", "LKW Y-123");
+  await expect(page.locator("#nt-blatt option >> nth=1")).toHaveText("LKW Y-123");
+  await page.fill("#nt-start", "500");
+  await page.fill("#nt-aktuell", "800");
+
+  // Zurück zum ersten Blatt: die alte Kette ist unverändert da
+  await page.selectOption("#nt-blatt", "0");
+  await expect(page.locator("#nt-start")).toHaveValue("27716");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);
+
+  // Und wieder zum zweiten: auch dessen Stand ist noch da
+  await page.selectOption("#nt-blatt", "1");
+  await expect(page.locator("#nt-start")).toHaveValue("500");
+  await expect(page.locator("#nt-aktuell")).toHaveValue("800");
+
+  // Dauerhaft gespeichert (der Test-Helfer setzt beim reload den Altbestand
+  // zurück, deshalb wird hier der Speicher selbst geprüft)
+  const d = await page.evaluate(() => JSON.parse(localStorage.getItem("fa_nachtraege")));
+  expect(d.blaetter.length).toBe(2);
+  expect(d.blaetter[1].name).toBe("LKW Y-123");
+  expect(d.blaetter[1].start).toBe("500");
+  expect(d.blaetter[0].fahrten.length).toBe(3);
+});
+
+test("Bei mehreren Blättern löscht der rote Knopf nur das aktive", async ({ page }) => {
+  await mitNachtrag(page, KETTE, { premium: true });
+  await page.click("#nt-blatt-neu");
+  await page.fill("#nt-start", "500");
+  await expect(page.locator("#nt-clear")).toHaveText("Dieses Blatt löschen");
+  await page.click("#nt-clear");
+  await expect(page.locator("#nt-clear")).toContainText("Noch einmal tippen");
+  await page.click("#nt-clear");
+  // Das zweite Blatt ist weg, das erste samt Kette wieder aktiv
+  await expect(page.locator("#nt-blatt option")).toHaveCount(1);
+  await expect(page.locator("#nt-start")).toHaveValue("27716");
+  await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(3);
+  await expect(page.locator("#nt-clear")).toHaveText("Nachtrag verwerfen");
 });

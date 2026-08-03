@@ -219,6 +219,9 @@
     background:var(--bg3);color:var(--text);font-size:.86rem}
   .empty{color:var(--text2);text-align:center;padding:20px 8px;font-size:.9rem}
   /* ---------- Nachtragen ---------- */
+  .blattzeile{display:flex;gap:8px;margin-bottom:8px}
+  .blattzeile select{flex:1;min-width:0}
+  .blattzeile .btn{flex:none;padding-left:12px;padding-right:12px}
   .bilanz{margin-top:12px;border-top:1.5px solid var(--linie);padding-top:10px}
   .bilanz .bz{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;padding:2px 0}
   .bilanz .bz b{font-variant-numeric:tabular-nums}
@@ -664,7 +667,16 @@
 
     <div class="card">
       <h3><svg class="ic" aria-hidden="true"><use href="#i-spanne"/></svg> Rahmen</h3>
-      <div class="seg mini" id="nt-modus" role="group" aria-label="Einheit">
+
+      <label class="field" style="margin-top:0" for="nt-blatt"><b>Blatt</b> <span class="opt">eines je Fahrzeug bzw. Papierblatt</span></label>
+      <div class="blattzeile">
+        <select id="nt-blatt" aria-label="Blatt wählen"></select>
+        <button class="btn secondary" id="nt-blatt-neu" aria-label="Neues Blatt anlegen"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg> Blatt <span class="premium-star" id="nt-blatt-star">💎</span></button>
+      </div>
+      <label class="field" for="nt-blatt-name"><b>Name des Blattes</b> <span class="opt">z. B. Kennzeichen, optional</span></label>
+      <input type="text" id="nt-blatt-name" placeholder="z. B. PKW Y-123 456" maxlength="40" autocomplete="off">
+
+      <div class="seg mini" id="nt-modus" role="group" aria-label="Einheit" style="margin-top:12px">
         <button data-v="km" class="active">Kilometer</button>
         <button data-v="std">Betriebsstunden</button>
       </div>
@@ -844,6 +856,7 @@
     <ul>
       <li><svg class="ic" aria-hidden="true"><use href="#i-ban"/></svg> Keine Werbung</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-stack"/></svg> Beliebig lange Nachträge (frei: max. 5 Fahrten)</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg> Mehrere Blätter parallel – eines je Fahrzeug (frei: eines)</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-export"/></svg> Nachtrag als PDF, Bild oder Text ausgeben</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg> Nachtrag drucken</li>
       <li><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg> Unterstützt die Weiterentwicklung</li>
@@ -1602,9 +1615,16 @@ $("btn-leeren").addEventListener("click", () => {
    steht sichtbar da, und es gibt genau einen ausdrücklichen Knopf, der
    daraus eine eigene Zeile macht. Die App ordnet die Zahlen der nutzenden
    Person – sie erfindet keine.                                          */
-const NT_KEY = "fa_nachtrag";
-const NT_FREI = 5;                      /* Fahrten in der freien Version */
-let NT = ntLaden();
+/* Ein "Blatt" ist ein eigenständiger Nachtrag – im echten Ablauf eines je
+   Fahrzeug bzw. Papierblatt. Frei gibt es eines, mit Premium beliebig
+   viele. Gespeichert wird alles zusammen unter fa_nachtraege; ein
+   Altbestand unter fa_nachtrag wird beim ersten Start als erstes Blatt
+   übernommen und der alte Schlüssel entfernt. */
+const NT_KEY = "fa_nachtraege";
+const NT_ALT_KEY = "fa_nachtrag";
+const NT_FREI = 5;                      /* Fahrten je Blatt in der freien Version */
+let NTD = ntLaden();                    /* { aktiv, blaetter: [...] } */
+let NT = NTD.blaetter[NTD.aktiv];       /* das aktive Blatt – alle Rechenwege lesen NT */
 let ntEditIndex = null;
 
 function isoHeute(){
@@ -1617,14 +1637,26 @@ function datumKurz(iso){
   return t.length === 3 ? t[2] + "." + t[1] + "." + t[0].slice(2) : iso;
 }
 
-function ntLeer(){ return { start:"", aktuell:"", modus:"km", fahrten:[] }; }
-function ntLaden(){
-  const d = load(NT_KEY, null);
-  if (!d || typeof d !== "object" || !Array.isArray(d.fahrten)) return ntLeer();
-  return { start: d.start || "", aktuell: d.aktuell || "", modus: d.modus === "std" ? "std" : "km",
-           fahrten: ntSortiert(d.fahrten) };
+function ntLeer(){ return { name:"", start:"", aktuell:"", modus:"km", fahrten:[] }; }
+function ntBlattSauber(b){
+  if (!b || typeof b !== "object") return ntLeer();
+  return { name: b.name || "", start: b.start || "", aktuell: b.aktuell || "",
+           modus: b.modus === "std" ? "std" : "km",
+           fahrten: ntSortiert(Array.isArray(b.fahrten) ? b.fahrten : []) };
 }
-function ntSichern(){ store(NT_KEY, NT); }
+function ntLaden(){
+  let d = load(NT_KEY, null);
+  if (!d || !Array.isArray(d.blaetter) || !d.blaetter.length){
+    const alt = load(NT_ALT_KEY, null);
+    d = { aktiv: 0, blaetter: [ntBlattSauber(alt)] };
+    store(NT_KEY, d);
+    try { localStorage.removeItem(NT_ALT_KEY); } catch(e){}
+  }
+  d.blaetter = d.blaetter.map(ntBlattSauber);
+  d.aktiv = Math.min(Math.max(0, d.aktiv | 0), d.blaetter.length - 1);
+  return d;
+}
+function ntSichern(){ store(NT_KEY, NTD); }
 
 /* ---------- Reihenfolge der Fahrten -------------------------------------
    Die Liste ordnet sich selbst nach Datum. Fahrten OHNE Datum bleiben an
@@ -1997,6 +2029,7 @@ function ntRender(){
       + '<a href="#" id="nt-limit-premium">Premium ansehen</a>';
   const lp = $("nt-limit-premium");
   if (lp) lp.addEventListener("click", e => { e.preventDefault(); openPremium(); });
+  blattRender();
   updateSticky();
 }
 
@@ -2141,6 +2174,57 @@ $("nt-e-del").addEventListener("click", () => {
   toast("Fahrt entfernt");
 });
 
+/* ---------- Blätter: wechseln, anlegen, benennen ---------- */
+function ntFelderFuellen(){
+  $("nt-start").value = NT.start || "";
+  $("nt-aktuell").value = NT.aktuell || "";
+  segSet("nt-modus", NT.modus === "std" ? "std" : "km");
+  $("nt-blatt-name").value = NT.name || "";
+  ntBeschriftung();
+}
+function blattRender(){
+  const sel = $("nt-blatt");
+  sel.innerHTML = "";
+  NTD.blaetter.forEach((bl, i) => {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = (bl.name && bl.name.trim()) ? bl.name.trim() : "Blatt " + (i + 1);
+    if (i === NTD.aktiv) o.selected = true;
+    sel.appendChild(o);
+  });
+  $("nt-blatt-star").style.display = Edition.isPremium() ? "none" : "";
+  /* Mit mehreren Blättern verwirft der rote Knopf nur das aktive */
+  if (clearScharf == null){
+    $("nt-clear").textContent = NTD.blaetter.length > 1 ? "Dieses Blatt löschen" : "Nachtrag verwerfen";
+  }
+}
+$("nt-blatt").addEventListener("change", () => {
+  NTD.aktiv = parseInt($("nt-blatt").value, 10) || 0;
+  NT = NTD.blaetter[NTD.aktiv];
+  ntSichern();
+  ntFelderFuellen();
+  ntRender();
+});
+$("nt-blatt-neu").addEventListener("click", () => {
+  if (!Edition.isPremium() && NTD.blaetter.length >= 1){ openPremium(); return; }
+  NTD.blaetter.push(ntLeer());
+  NTD.aktiv = NTD.blaetter.length - 1;
+  NT = NTD.blaetter[NTD.aktiv];
+  ntSichern();
+  ntFelderFuellen();
+  ntRender();
+  toast("Neues Blatt angelegt");
+  $("nt-blatt-name").focus();
+});
+/* Der Name wird beim Tippen übernommen; nur der Eintrag in der Auswahl wird
+   nachgezogen, nicht die ganze Ansicht – sonst verlöre das Feld den Fokus. */
+$("nt-blatt-name").addEventListener("input", () => {
+  NT.name = $("nt-blatt-name").value;
+  ntSichern();
+  const o = $("nt-blatt").options[NTD.aktiv];
+  if (o) o.textContent = NT.name.trim() || "Blatt " + (NTD.aktiv + 1);
+});
+
 /* Der Rest bekommt eine eigene Zeile – ausdrücklich und mit leerem Datum,
    damit die nutzende Person selbst einträgt, worum es sich handelt. */
 $("nt-rest").addEventListener("click", () => {
@@ -2158,21 +2242,30 @@ let clearScharf = null;
 function clearEntschaerfen(){
   clearTimeout(clearScharf); clearScharf = null;
   const b = $("nt-clear");
-  if (b) b.textContent = "Nachtrag verwerfen";
+  if (b) b.textContent = NTD.blaetter.length > 1 ? "Dieses Blatt löschen" : "Nachtrag verwerfen";
 }
 $("nt-clear").addEventListener("click", () => {
-  if (!NT.fahrten.length && !NT.start && !NT.aktuell) return;
+  const mehrere = NTD.blaetter.length > 1;
+  if (!mehrere && !NT.fahrten.length && !NT.start && !NT.aktuell) return;
   if (clearScharf == null){
-    $("nt-clear").textContent = "Wirklich alles verwerfen? Noch einmal tippen";
+    $("nt-clear").textContent = mehrere
+      ? "Blatt wirklich löschen? Noch einmal tippen"
+      : "Wirklich alles verwerfen? Noch einmal tippen";
     clearScharf = setTimeout(clearEntschaerfen, 4000);
     return;
   }
+  if (mehrere){
+    NTD.blaetter.splice(NTD.aktiv, 1);
+    NTD.aktiv = Math.max(0, NTD.aktiv - 1);
+  } else {
+    NTD.blaetter[0] = ntLeer();
+  }
+  NT = NTD.blaetter[NTD.aktiv];
   clearEntschaerfen();
-  NT = ntLeer(); ntSichern();
-  $("nt-start").value = ""; $("nt-aktuell").value = "";
-  segSet("nt-modus", "km");
-  ntBeschriftung(); ntRender();
-  toast("Nachtrag verworfen");
+  ntSichern();
+  ntFelderFuellen();
+  ntRender();
+  toast(mehrere ? "Blatt gelöscht" : "Nachtrag verworfen");
 });
 
 $("nt-start").addEventListener("input", () => { NT.start = $("nt-start").value; ntSichern(); ntRender(); });
@@ -2499,7 +2592,7 @@ function renderSettings(){
   const expEl = $("export-status");
   if (expEl && Bridge.statusLog.length) expEl.textContent = "Export-Status: " + Bridge.statusLog.join(" → ");
   $("s-edition-status").innerHTML = Edition.isPremium()
-    ? "💎 <b>Premium</b> ist aktiv: keine Werbung, beliebig lange Nachträge, Ausgabe als PDF/Bild/Text, Drucken."
+    ? "💎 <b>Premium</b> ist aktiv: keine Werbung, beliebig lange Nachträge, mehrere Blätter, Ausgabe als PDF/Bild/Text, Drucken."
     : "Aktuell: <b>Freie Version</b> (mit Werbung, bis zu " + NT_FREI + " Fahrten je Nachtrag).";
   renderBerechnung();
 }
@@ -2645,11 +2738,8 @@ if (Bridge.isNative()){
   setTimeout(() => Billing.init(), 3000);
 }
 homeRender();
-/* Nachtrag aus dem Speicher in die Felder zurückholen */
-$("nt-start").value = NT.start || "";
-$("nt-aktuell").value = NT.aktuell || "";
-segSet("nt-modus", NT.modus === "std" ? "std" : "km");
-ntBeschriftung();
+/* Aktives Blatt aus dem Speicher in die Felder zurückholen */
+ntFelderFuellen();
 ntRender();
 if (!load(OB_KEY, false)){ obShow(0); openModal("modal-onboarding"); }
 </script>

@@ -67,8 +67,9 @@ Zwei Dinge macht die App dabei bewusst **nicht**:
 
 ## Editionen
 
-- **Frei:** mit Werbung, bis zu 5 Fahrten je Nachtrag
+- **Frei:** mit Werbung, ein Blatt mit bis zu 5 Fahrten
 - **Premium** (einmalig 2,99 €): werbefrei, beliebig lange Nachträge,
+  mehrere Blätter parallel (eines je Fahrzeug bzw. Papierblatt),
   Ausgabe als PDF, Bild oder Text sowie Drucken
 
 ## Technik

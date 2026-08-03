@@ -6,6 +6,7 @@ async function mitFahrten(page, fahrten, { zeiten = true, start = "10000", aktue
   await page.addInitScript(([f, z, st, ak]) => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_zeiten", JSON.stringify(z));
+    localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify({ start: st, aktuell: ak, modus: "km", fahrten: f }));
   }, [fahrten, zeiten, start, aktuell]);
   await page.goto("/");

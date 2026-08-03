@@ -58,7 +58,7 @@ Play Console → deine App → **Monetarisieren → Produkte → In-App-Produkte
 | Produkt-ID | `premium_unlock` (muss exakt so lauten – steht so im Code) |
 | Tags | leer lassen |
 | Name (max. 55) | `Premium freischalten` |
-| Beschreibung (max. 200) | `Entfernt die Werbung, hebt das Limit von 5 Fahrten je Nachtrag auf und schaltet die Ausgabe als PDF, Bild oder Text sowie das Drucken frei. Einmaliger Kauf, kein Abo.` |
+| Beschreibung (max. 200) | `Entfernt die Werbung, hebt das Limit von 5 Fahrten auf, erlaubt mehrere Blätter parallel und schaltet die Ausgabe als PDF, Bild oder Text sowie das Drucken frei. Einmaliger Kauf, kein Abo.` |
 | Symbol | `docs/store-grafiken/produktsymbol-premium-512.png` (optional; enthält bewusst keinen Text und kein Branding – das App-Icon ist hier nicht zulässig) |
 | Produktsteuerkategorie | Voreinstellung **Verkäufe digitaler Apps** beibehalten |
 | Altersfreigabe | leer lassen (erbt die Einstufung der App) |

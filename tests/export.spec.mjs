@@ -19,6 +19,7 @@ async function appUmgebung(page, { plugins = true } = {}){
   await page.addInitScript(([nachtrag, mitPlugins]) => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_edition", JSON.stringify("premium"));
+    localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify(nachtrag));
     window.__calls = [];
     const Plugins = mitPlugins ? {
@@ -87,6 +88,7 @@ test("Im Browser bleibt der Download-Weg erhalten", async ({ page }) => {
   await page.addInitScript(nachtrag => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_edition", JSON.stringify("premium"));
+    localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify(nachtrag));
   }, NACHTRAG);
   await imNachtrag(page);
