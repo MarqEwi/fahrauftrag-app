@@ -1,84 +1,88 @@
-// Smoke-Test: App lädt fehlerfrei, SGT-Auswertung und Speicherung funktionieren.
+// Smoke-Test: App lädt fehlerfrei, die Ausfüllhilfe rechnet und zeigt das
+// Kästchenraster richtig an, und im localStorage stehen nur eigene Schlüssel.
 import { test, expect } from "@playwright/test";
 
-test("App lädt ohne Konsolenfehler und wertet das SGT korrekt aus", async ({ page }) => {
+/* Die Ziffern eines Kästchen-Rasters als String, leere Kästchen als "_". */
+const raster = (page, id) => page.$$eval("#" + id + " span",
+  els => els.map(e => e.textContent === "" ? "_" : e.textContent).join(""));
+
+test("App lädt ohne Konsolenfehler und rechnet die gefahrenen Kilometer", async ({ page }) => {
   const errors = [];
   page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", e => errors.push(String(e)));
 
   await page.goto("/");
-  await expect(page).toHaveTitle(/SGT Rechner/);
+  await expect(page).toHaveTitle(/Fahrauftrag Ausfüllhilfe/);
   await page.click("#ob-skip");
-  await page.click("#go-teilnehmer");
 
-  // Beispiel "Grün" aus Tabelle 2 der Handanweisung
-  await page.fill("#t-a", "48,2");
-  await page.fill("#t-b", "22,4");
-  await page.fill("#t-c", "60,6");
-  await page.fill("#t-d", "15,4");
-  await expect(page.locator("#t-r-total")).toHaveText("146,6 s");
-  await expect(page.locator("#t-r-grade")).toHaveText("Kategorie Grün");
+  // Leerer Zustand: sechs leere Kästchen je Zeile, kein Ergebnis
+  expect(await raster(page, "box-rueck")).toBe("______");
+  expect(await raster(page, "box-ab")).toBe("______");
+  await expect(page.locator("#nachweis-wert")).toHaveText("–");
 
-  // Ausklappbare Kategoriegrenzen (für alle gleich, ohne Wertungsgruppen)
-  await expect(page.locator("#t-limits-sum")).toContainText("für alle gleich");
-  await page.click("#t-limits-sum");
-  await expect(page.locator("#t-limits-body")).toContainText("≤ 55 s");   // SGT-A Grün
-  await expect(page.locator("#t-limits-body")).toContainText("≥ 100 s");  // SGT-C Rot
-  await expect(page.locator("#t-limits-body")).toContainText("vorläufig");
-  await page.click("#t-limits-sum");
+  // Beispielfahrt: 27768 − 27716 = 52
+  await page.fill("#in-ab", "27716");
+  await page.fill("#in-rueck", "27768");
+  await expect(page.locator("#nachweis-wert")).toHaveText("52");
+  // Oben die Rückkehr, unten die Abfahrt – rechtsbündig, vorne leer
+  expect(await raster(page, "box-rueck")).toBe("_27768");
+  expect(await raster(page, "box-ab")).toBe("_27716");
+  await expect(page.locator("#merksatz")).toContainText("52 km");
+  await expect(page.locator("#fehler")).toBeHidden();
 
-  // Beispiel "Gelb" 1 aus Tabelle 3: nur SGT-A im gelben Bereich
-  await page.fill("#t-a", "56,3");
-  await page.fill("#t-b", "25,9");
-  await page.fill("#t-c", "55,0");
-  await page.fill("#t-d", "18,8");
-  await expect(page.locator("#t-r-total")).toHaveText("156,0 s");
-  await expect(page.locator("#t-r-grade")).toHaveText("Kategorie Gelb");
-  await expect(page.locator("#t-r-failhint")).toContainText("SGT-A");
+  // Vertauschte Zeilen: klare Fehlermeldung statt negativer Strecke
+  await page.fill("#in-ab", "27768");
+  await page.fill("#in-rueck", "27716");
+  await expect(page.locator("#fehler")).toBeVisible();
+  await expect(page.locator("#fehler")).toContainText("vertauscht");
+  await expect(page.locator("#nachweis-wert")).toHaveText("–");
 
-  // Beispiel "Rot" 2 aus Tabelle 4: Abbruch bei SGT-D => obligatorisch Rot
-  await page.fill("#t-a", "54,5");
-  await page.fill("#t-b", "54,6");
-  await page.fill("#t-c", "101,9");
-  await page.selectOption("#t-abbruch", "d");
-  await expect(page.locator("#t-r-total")).toHaveText("Abbruch");
-  await expect(page.locator("#t-r-grade")).toHaveText("Kategorie Rot");
-  await expect(page.locator("#t-r-failhint")).toContainText("Abbruch");
+  // Betriebsstunden: gleiche Rechnung, andere Einheit
+  await page.fill("#in-ab", "1240");
+  await page.fill("#in-rueck", "1246");
+  await expect(page.locator("#nachweis-einheit")).toHaveText("km");
+  await page.click('#s-modus button[data-v="std"]');
+  await expect(page.locator("#nachweis-einheit")).toHaveText("h");
+  await expect(page.locator("#nachweis-wert")).toHaveText("6");
+  await expect(page.locator("#lbl-ab")).toContainText("Betriebsstunden");
+  await page.click('#s-modus button[data-v="km"]');
 
-  // Verlauf speichern + nur sgt_-Schlüssel im localStorage
-  await page.selectOption("#t-abbruch", "");
-  await page.fill("#t-a", "48,2");
-  await page.fill("#t-b", "22,4");
-  await page.fill("#t-c", "60,6");
-  await page.fill("#t-d", "15,4");
-  await page.click("#t-save");
-  await expect(page.locator("#t-history table")).toBeVisible();
+  // Im localStorage stehen nur eigene Schlüssel
   const keys = await page.evaluate(() => Object.keys(localStorage));
-  expect(keys.every(k => k.startsWith("sgt_"))).toBeTruthy();
-  expect(keys.some(k => k.startsWith("pft_") || k.startsWith("bft_"))).toBeFalsy();
+  expect(keys.every(k => k.startsWith("fa_"))).toBeTruthy();
+  expect(keys.some(k => k.startsWith("sgt_") || k.startsWith("pft_") || k.startsWith("bft_"))).toBeFalsy();
 
   expect(errors).toEqual([]);
 });
 
-test("Prüfermodus: Testpersonen erfassen und kategorisieren", async ({ page }) => {
+test("Die Einführung erscheint nur beim ersten Start", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("#modal-onboarding")).toHaveClass(/open/);
   await page.click("#ob-skip");
-  await page.click("#go-pruefer");
+  await page.reload();
+  await expect(page.locator("#modal-onboarding")).not.toHaveClass(/open/);
+});
 
-  await page.click("#p-add");
-  await page.fill("#e-name", "Mustermann, A.");
-  await page.fill("#e-a", "69,5");
-  await page.fill("#e-b", "52,7");
-  await page.fill("#e-c", "76,9");
-  await page.fill("#e-d", "54,3");
-  await page.click("#e-save");
-  // Beispiel "Rot" 1 aus Tabelle 4: Gesamt 253,4 s, Kategorie Rot
-  await expect(page.locator("#p-tbody tr")).toHaveCount(1);
-  await expect(page.locator("#p-tbody")).toContainText("253,4");
-  await expect(page.locator("#p-tbody")).toContainText("Rot");
+test("Die Einführung führt bis zum letzten Schritt und nennt die Uhrzeiten", async ({ page }) => {
+  await page.goto("/");
+  const schritte = await page.locator(".ob-step").count();
+  const punkte = page.locator("#ob-dots i");
+  await expect(punkte).toHaveCount(schritte);       // je Schritt ein Punkt
 
-  // Aufbau-&-Ablauf-Tab öffnet und zeigt die vier Aufgaben
-  await page.click("#ptab-aufbau-btn");
-  await expect(page.locator("#pruefer-tab-aufbau")).toContainText("SGT-A");
-  await expect(page.locator("#pruefer-tab-aufbau")).toContainText("Heben und Absetzen");
+  for (let i = 0; i < schritte - 1; i++){
+    await expect(page.locator(`.ob-step.active[data-step="${i}"]`)).toBeVisible();
+    await expect(punkte.nth(i)).toHaveClass(/on/);
+    await expect(page.locator("#ob-next")).toHaveText("Weiter");
+    await page.click("#ob-next");
+  }
+
+  // Der Uhrzeit-Schritt sagt, wo man die Felder findet
+  const uhr = page.locator(".ob-step", { hasText: "Uhrzeiten" });
+  await expect(uhr).toContainText("Einstellungen");
+
+  // Letzter Schritt: der Knopf beendet die Einführung, statt weiterzublättern
+  await expect(page.locator("#ob-next")).toHaveText("Los geht's!");
+  await page.click("#ob-next");
+  await expect(page.locator("#modal-onboarding")).not.toHaveClass(/open/);
+  expect(await page.evaluate(() => localStorage.getItem("fa_onboarding_done"))).toBe("true");
 });

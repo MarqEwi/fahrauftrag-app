@@ -1,7 +1,7 @@
 {
-  "name": "SGT Rechner – Soldaten-Grundfitness-Tool",
-  "short_name": "SGT Rechner",
-  "description": "Zeitrechner für das Soldaten-Grundfitness-Tool (SGT) der Bundeswehr: Zeiten der vier Aufgaben eingeben und die Ampel-Kategorie Grün, Gelb oder Rot ermitteln.",
+  "name": "Fahrauftrag Ausfüllhilfe – km-Stand eintragen",
+  "short_name": "Fahrauftrag",
+  "description": "Eintraghilfe für die Kilometerfelder im Fahrauftrag: Abfahrt- und Rückkehr-km eingeben, die gefahrenen Kilometer ablesen und im Kästchenraster sehen, welche Zahl in welche Zeile gehört.",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
