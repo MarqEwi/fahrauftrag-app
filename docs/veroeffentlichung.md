@@ -1,5 +1,10 @@
 # Veröffentlichung Schritt für Schritt (Fahrauftrag Ausfüllhilfe)
 
+> **Stand:** Die Veröffentlichung im Play Store ist **zurückgestellt**.
+> Die App läuft vorerst nur als werbefreie Web-Vollversion (mercwerk.de).
+> Diese Checkliste bleibt für später vollständig erhalten; im Code steht
+> alles bereit (Test-IDs, TESTING: true).
+
 Einfache Checkliste für alle Schritte außerhalb des Codes. Reihenfolge einhalten –
 jeder Block ist unabhängig abhakbar.
 

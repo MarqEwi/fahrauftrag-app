@@ -354,6 +354,9 @@
   .acc[open]>summary::after{transform:rotate(-135deg)}
   .acc>summary .ic{width:20px;height:20px;color:var(--accent2)}
   .acc-body{padding:0 15px 15px}
+  /* Im Browser ist die App die Vollversion – der Premium-Bereich der
+     Einstellungen gehört zur Android-App und bleibt dort. */
+  body.plattform-web #acc-premium{display:none}
   /* Onboarding */
   .ob-step{display:none;text-align:center;padding:8px 4px}
   .ob-step.active{display:block}
@@ -835,7 +838,8 @@
       <div class="acc-body" id="s-berechnung"></div>
     </details>
 
-    <details class="acc">
+    <!-- Nur in der Android-App sichtbar – im Browser gibt es keine Editionen -->
+    <details class="acc" id="acc-premium">
       <summary><svg class="ic" aria-hidden="true"><use href="#i-diamond"/></svg> Premium</summary>
       <div class="acc-body">
         <p id="s-edition-status" class="muted"></p>
@@ -1119,13 +1123,22 @@ function load(key, fallback){
   catch(e){ return fallback; }
 }
 
-/* ---------- Edition (zentraler free/premium-Schalter) ---------- */
+/* ---------- Edition (zentraler free/premium-Schalter) ----------
+   Editionen gibt es nur in der Android-App: Dort finanziert Werbung die
+   freie Version, und Premium ist ein Kauf über Google Play. Im Browser
+   (mercwerk.de) existiert beides nicht – deshalb ist die Web-Fassung die
+   Vollversion: keine Werbung, keine Grenzen, keine Kauf-Hinweise.       */
 const Edition = {
   KEY: "fa_edition",
+  istApp(){
+    try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
+    catch(e){ return false; }
+  },
   get(){ return load(this.KEY, "free") === "premium" ? "premium" : "free"; },
-  isPremium(){ return this.get() === "premium"; },
+  isPremium(){ return !this.istApp() || this.get() === "premium"; },
   set(v){ store(this.KEY, v === "premium" ? "premium" : "free"); this.apply(); },
   apply(){
+    document.body.classList.toggle("plattform-web", !this.istApp());
     document.body.classList.toggle("edition-free", !this.isPremium());
     document.body.classList.toggle("edition-premium", this.isPremium());
     renderSettings();
@@ -2043,7 +2056,9 @@ function ntRender(){
   const stern = Edition.isPremium() ? "none" : "";
   $("nt-export-star").style.display = stern;
   $("nt-print-star").style.display = stern;
-  $("nt-limit-info").innerHTML = Edition.isPremium()
+  $("nt-limit-info").innerHTML = !Edition.istApp()
+    ? ""                                             /* Web: keine Editionen, kein Hinweis */
+    : Edition.isPremium()
     ? "💎 Premium: beliebig viele Fahrten je Nachtrag."
     : "Freie Version: bis zu " + NT_FREI + " Fahrten je Nachtrag (aktuell " + k.zeilen.length + "). "
       + '<a href="#" id="nt-limit-premium">Premium ansehen</a>';
@@ -2476,19 +2491,19 @@ $("exp-txt").addEventListener("click", exportText);
 /* ---------- Premium ---------- */
 function openPremium(){
   const area = $("premium-buy-area");
-  if (Edition.isPremium()){
+  if (!Edition.istApp()){
+    /* Im Browser normalerweise unerreichbar (alle Zugänge sind ausgeblendet),
+       aber falls doch: ehrlich sagen, dass hier schon alles frei ist. */
+    area.innerHTML = '<div class="notice">Diese Web-Fassung enthält bereits alle Funktionen – ohne Werbung. '
+      + 'Editionen und der Kauf gehören zur Android-App.</div>';
+  } else if (Edition.isPremium()){
     area.innerHTML = '<p><b>💎 Premium ist aktiv – danke für deine Unterstützung!</b></p>';
-  } else if (Bridge.isNative()){
+  } else {
     const price = Billing.price() || "2,99 €";
     area.innerHTML = '<div class="btn-row"><button class="btn primary" id="premium-buy">Für ' + price + ' freischalten</button></div>'
       + '<p style="text-align:center;margin:10px 0 0"><a href="#" id="premium-restore" style="font-size:.82rem;color:var(--accent2)">Käufe wiederherstellen</a></p>';
     area.querySelector("#premium-buy").addEventListener("click", () => Billing.buy());
     area.querySelector("#premium-restore").addEventListener("click", e => { e.preventDefault(); Billing.restore(); });
-  } else {
-    area.innerHTML = '<div class="notice">Der Kauf ist in der Android-App über Google Play möglich. '
-      + 'Diese Web-Version ist eine Vorschau – hier kannst du Premium testweise aktivieren:</div>'
-      + '<div class="btn-row"><button class="btn secondary" id="premium-test">Premium testweise aktivieren</button></div>';
-    area.querySelector("#premium-test").addEventListener("click", () => { Edition.set("premium"); openPremium(); });
   }
   openModal("modal-premium");
 }
@@ -2611,7 +2626,9 @@ function renderSettings(){
   if (buyEl && Billing.statusLog.length) buyEl.textContent = "Kauf-Status: " + Billing.statusLog.join(" → ");
   const expEl = $("export-status");
   if (expEl && Bridge.statusLog.length) expEl.textContent = "Export-Status: " + Bridge.statusLog.join(" → ");
-  $("s-edition-status").innerHTML = Edition.isPremium()
+  $("s-edition-status").innerHTML = !Edition.istApp()
+    ? "Diese <b>Web-Fassung</b> enthält alle Funktionen ohne Werbung."
+    : Edition.isPremium()
     ? "💎 <b>Premium</b> ist aktiv: keine Werbung, beliebig lange Nachträge, mehrere Blätter, Ausgabe als PDF/Bild/Text, Drucken."
     : "Aktuell: <b>Freie Version</b> (mit Werbung, bis zu " + NT_FREI + " Fahrten je Nachtrag).";
   renderBerechnung();

@@ -67,6 +67,10 @@ Zwei Dinge macht die App dabei bewusst **nicht**:
 
 ## Editionen
 
+Die **Web-Fassung ist die Vollversion**: alle Funktionen, keine Werbung,
+keine Grenzen. Editionen gibt es nur in der Android-App (Veröffentlichung
+im Play Store derzeit zurückgestellt):
+
 - **Frei:** mit Werbung, ein Blatt mit bis zu 5 Fahrten
 - **Premium** (einmalig 2,99 €): werbefrei, beliebig lange Nachträge,
   mehrere Blätter parallel (eines je Fahrzeug bzw. Papierblatt),
@@ -93,5 +97,7 @@ Zwei Dinge macht die App dabei bewusst **nicht**:
 
 ## Web-Version
 
-Die App läuft als Web-Version unter: <https://marqewi.github.io/fahrauftrag-app/>
-(GitHub Pages: Settings → Pages → Deploy from a branch → `main` / root)
+Die App soll als Web-Version auf **mercwerk.de** laufen (werbefrei, alle
+Funktionen). Alternativ lässt sie sich über GitHub Pages ausliefern:
+Settings → Pages → Deploy from a branch → `main` / root ergibt
+<https://marqewi.github.io/fahrauftrag-app/>.

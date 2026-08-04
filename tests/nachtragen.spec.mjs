@@ -4,14 +4,18 @@
 // der Rest-Knopf und die Grenze der freien Version.
 import { test, expect } from "@playwright/test";
 
-/* Legt einen Nachtrag direkt im Speicher an – spart Klicks in den Tests. */
-async function mitNachtrag(page, nachtrag, { premium = false } = {}){
-  await page.addInitScript(([nt, prem]) => {
+/* Legt einen Nachtrag direkt im Speicher an – spart Klicks in den Tests.
+   Editionen (frei/premium) gibt es nur in der Android-App; im Browser ist
+   die App die Vollversion. Tests der freien Grenzen stellen die App
+   deshalb mit { app: true } nach. */
+async function mitNachtrag(page, nachtrag, { premium = false, app = false } = {}){
+  await page.addInitScript(([nt, prem, inApp]) => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify(nt));
     if (prem) localStorage.setItem("fa_edition", JSON.stringify("premium"));
-  }, [nachtrag, premium]);
+    if (inApp) window.Capacitor = { isNativePlatform: () => true, Plugins: {} };
+  }, [nachtrag, premium, app]);
   await page.goto("/");
   await page.click("#go-nachtragen");
 }
@@ -127,17 +131,38 @@ test("Eine fertige Zeile lässt sich im Kästchengitter ansehen und kopieren", a
   await expect(page.locator("#z-rechnung")).toContainText("230 km");
 });
 
-test("Die freie Version deckelt den Nachtrag bei fünf Fahrten", async ({ page }) => {
+test("Die freie Version der App deckelt den Nachtrag bei fünf Fahrten", async ({ page }) => {
   const fuenf = Array.from({ length: 5 }, (_, i) => (
     { datum: "2026-07-1" + i, strecke: "", art: "km", km: 10, stand: null }
   ));
-  await mitNachtrag(page, { start: "1000", aktuell: "2000", modus: "km", fahrten: fuenf });
+  await mitNachtrag(page, { start: "1000", aktuell: "2000", modus: "km", fahrten: fuenf }, { app: true });
   await expect(page.locator("#nt-liste .ntzeile")).toHaveCount(5);
 
   await page.click("#nt-add");
   await expect(page.locator("#modal-premium")).toHaveClass(/open/);
   await expect(page.locator("#modal-ntfahrt")).not.toHaveClass(/open/);
   await expect(page.locator("#nt-limit-info")).toContainText("bis zu 5");
+});
+
+test("Im Browser ist die App die Vollversion: keine Werbung, keine Grenze", async ({ page }) => {
+  const fuenf = Array.from({ length: 5 }, (_, i) => (
+    { datum: "2026-07-1" + i, strecke: "", art: "km", km: 10, stand: null }
+  ));
+  await mitNachtrag(page, { start: "1000", aktuell: "2000", modus: "km", fahrten: fuenf });
+
+  await expect(page.locator("#adbar")).toBeHidden();          // keine Werbeleiste
+  await expect(page.locator("#nt-limit-info")).toBeEmpty();   // kein Editions-Hinweis
+  await expect(page.locator("#nt-blatt-star")).toBeHidden();  // keine Premium-Sterne
+
+  // Die sechste Fahrt geht ohne Premium-Fenster
+  await page.click("#nt-add");
+  await expect(page.locator("#modal-ntfahrt")).toHaveClass(/open/);
+  await expect(page.locator("#modal-premium")).not.toHaveClass(/open/);
+
+  // In den Einstellungen taucht der Premium-Bereich gar nicht auf
+  await page.click('#modal-ntfahrt [data-close="modal-ntfahrt"] >> nth=0');
+  await page.click("#btn-settings");
+  await expect(page.locator("#acc-premium")).toBeHidden();
 });
 
 test("Mit Premium geht der Nachtrag über fünf Fahrten hinaus", async ({ page }) => {
@@ -229,8 +254,8 @@ test("Ein Altbestand wird als erstes Blatt übernommen", async ({ page }) => {
   expect(gespeichert.alt).toBeNull();               // alter Schlüssel ist entfernt
 });
 
-test("Ohne Premium bleibt es bei einem Blatt", async ({ page }) => {
-  await mitNachtrag(page, KETTE);
+test("Ohne Premium bleibt es in der App bei einem Blatt", async ({ page }) => {
+  await mitNachtrag(page, KETTE, { app: true });
   await page.click("#nt-blatt-neu");
   await expect(page.locator("#modal-premium")).toHaveClass(/open/);
   await expect(page.locator("#nt-blatt option")).toHaveCount(1);
