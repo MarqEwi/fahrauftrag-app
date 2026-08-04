@@ -117,3 +117,101 @@ test("Leeren räumt auch die Uhrzeiten ab", async ({ page }) => {
   await expect(page.locator("#in-zeit-ab")).toHaveValue("");
   await expect(page.locator("#zeitzeile")).toBeHidden();
 });
+
+/* ---------- Darstellen wie im Originalfahrauftrag ---------- */
+
+async function startOriginal(page){
+  await page.addInitScript(() => {
+    localStorage.setItem("fa_onboarding_done", "true");
+    localStorage.setItem("fa_zeiten", JSON.stringify(true));
+    localStorage.setItem("fa_zeit_original", JSON.stringify(true));
+  });
+  await page.goto("/");
+}
+
+test("Die Original-Option erscheint nur bei eingeschalteten Uhrzeiten und merkt sich ihren Stand", async ({ page }) => {
+  await start(page);
+  await zumSchalter(page);
+  await expect(page.locator("#zeitoriginal-block")).toBeHidden();   // Uhrzeiten sind aus
+
+  await page.click('#s-zeiten button[data-v="ein"]');
+  await expect(page.locator("#zeitoriginal-block")).toBeVisible();
+  await page.click('#s-zeitoriginal button[data-v="ein"]');
+  expect(await page.evaluate(() => localStorage.getItem("fa_zeit_original"))).toBe("true");
+
+  await page.reload();
+  await zumSchalter(page);
+  await expect(page.locator('#s-zeitoriginal button[data-v="ein"]')).toHaveClass(/active/);
+});
+
+test("Originaldarstellung: Uhrzeit als Spalte im Gitter, Fahrzeit als Textzeile", async ({ page }) => {
+  await startOriginal(page);
+  await page.fill("#in-ab", "27716");
+  await page.fill("#in-rueck", "27768");
+  await page.fill("#in-zeit-ab", "16:00");
+  await page.fill("#in-zeit-rueck", "16:45");
+
+  // Der bisherige Uhrzeiten-Block verschwindet, die Spalte übernimmt
+  await expect(page.locator("#zeitzeile")).toBeHidden();
+  await expect(page.locator("#z-spalte")).toBeVisible();
+  await expect(page.locator("#sk-z")).toContainText("Uhrzeit");
+  await expect(page.locator("#zs-ende")).toHaveText("16:45");      // a) Ende oben
+  await expect(page.locator("#zs-beginn")).toHaveText("16:00");    // b) Beginn unten
+
+  // Die Fahrzeit steht als normale Textzeile darunter – ohne eigenes Kästchen
+  await expect(page.locator("#zeit-summe")).toBeVisible();
+  await expect(page.locator("#zeit-summe")).toContainText("0:45");
+  const inKasten = await page.evaluate(() =>
+    !!document.getElementById("zeit-summe").closest(".nachweis, .gitterblock"));
+  expect(inKasten).toBeFalsy();
+
+  // Die Spalte steht zwischen den Kästchen und dem Nachweis
+  const lage = await page.evaluate(() => {
+    const g = document.querySelector("#view-home .gitter").getBoundingClientRect();
+    const z = document.getElementById("z-spalte").getBoundingClientRect();
+    const n = document.querySelector("#view-home .gitterblock .nachweis").getBoundingClientRect();
+    return g.right <= z.left && z.right <= n.left;
+  });
+  expect(lage).toBeTruthy();
+});
+
+test("Originaldarstellung: eine einzelne Uhrzeit steht schon in der Spalte", async ({ page }) => {
+  await startOriginal(page);
+  await page.fill("#in-zeit-ab", "08:00");                          // nur der Beginn
+  await expect(page.locator("#zs-beginn")).toHaveText("08:00");
+  await expect(page.locator("#zs-ende")).toHaveText("");
+  await expect(page.locator("#zeit-summe")).toBeHidden();           // ohne Ende keine Fahrzeit
+});
+
+test("Originaldarstellung gilt auch für die Liste im Nachtrag", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("fa_onboarding_done", "true");
+    localStorage.setItem("fa_zeiten", JSON.stringify(true));
+    localStorage.setItem("fa_zeit_original", JSON.stringify(true));
+    localStorage.removeItem("fa_nachtraege");
+    localStorage.setItem("fa_nachtrag", JSON.stringify({ start: "27716", aktuell: "27768", modus: "km",
+      fahrten: [{ datum: "2026-07-14", strecke: "", art: "km", km: 52, stand: null, zab: "16:00", zende: "16:45" }] }));
+  });
+  await page.goto("/");
+  await page.click("#go-nachtragen");
+
+  const zeile = page.locator("#nt-liste .ntzeile").first();
+  await expect(zeile.locator(".zspalte span").nth(0)).toHaveText("16:45");
+  await expect(zeile.locator(".zspalte span").nth(1)).toHaveText("16:00");
+  await expect(zeile.locator(".zeitsumme")).toContainText("0:45");
+  await expect(page.locator("#nt-liste .zeitklein")).toHaveCount(0);   // kein gestapelter Block mehr
+});
+
+test("Wird die Option ausgeschaltet, kehrt die bisherige Darstellung zurück", async ({ page }) => {
+  await startOriginal(page);
+  await page.fill("#in-zeit-ab", "11:30");
+  await page.fill("#in-zeit-rueck", "13:45");
+  await expect(page.locator("#z-spalte")).toBeVisible();
+
+  await zumSchalter(page);
+  await page.click('#s-zeitoriginal button[data-v="aus"]');
+  await page.click('#modal-settings [data-close="modal-settings"]');
+  await expect(page.locator("#z-spalte")).toBeHidden();
+  await expect(page.locator("#zeitzeile")).toBeVisible();
+  await expect(page.locator("#z-dauer")).toHaveText("2:15");
+});
