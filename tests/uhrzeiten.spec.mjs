@@ -4,18 +4,26 @@
 // nichts von alldem auftaucht.
 import { test, expect } from "@playwright/test";
 
-async function start(page, { zeiten = null } = {}){
-  await page.addInitScript(z => {
+/* original: null = Standard der App (an). Die Tests des eigenen
+   Uhrzeiten-Blocks schalten die Originaldarstellung ausdrücklich ab. */
+async function start(page, { zeiten = null, original = null } = {}){
+  await page.addInitScript(([z, o]) => {
     localStorage.setItem("fa_onboarding_done", "true");
     if (z !== null) localStorage.setItem("fa_zeiten", JSON.stringify(z));
-  }, zeiten);
+    if (o !== null) localStorage.setItem("fa_zeit_original", JSON.stringify(o));
+  }, [zeiten, original]);
   await page.goto("/");
 }
 
-/* Einstellungen öffnen und den Abschnitt "Uhrzeiten" aufklappen. */
+/* Einstellungen öffnen und den Abschnitt "Uhrzeiten" aufklappen.
+   Der Aufklappzustand überlebt das Schließen des Fensters – deshalb nur
+   klicken, wenn der Abschnitt wirklich zu ist. */
 async function zumSchalter(page){
   await page.click("#btn-settings");
-  await page.click('#modal-settings summary:has-text("Uhrzeiten")');
+  const acc = page.locator("#modal-settings details.acc", {
+    has: page.locator('summary:has-text("Uhrzeiten")')
+  });
+  if (!(await acc.evaluate(el => el.open))) await acc.locator("summary").click();
   await expect(page.locator("#s-zeiten")).toBeVisible();
 }
 
@@ -40,7 +48,7 @@ test("Der Schalter blendet die Felder ein und merkt sich das", async ({ page }) 
 });
 
 test("Die Fahrzeit wird ausgerechnet und in der Reihenfolge des Blattes gezeigt", async ({ page }) => {
-  await start(page, { zeiten: true });
+  await start(page, { zeiten: true, original: false });
   await page.fill("#in-zeit-ab", "11:30");
   await page.fill("#in-zeit-rueck", "13:45");
 
@@ -62,7 +70,7 @@ test("Die Fahrzeit wird ausgerechnet und in der Reihenfolge des Blattes gezeigt"
 });
 
 test("Eine Fahrt über Mitternacht ergibt keine negative Zeit", async ({ page }) => {
-  await start(page, { zeiten: true });
+  await start(page, { zeiten: true, original: false });
   // Beispiel aus einem echten Blatt: Beginn 23:50, Ende 03:00
   await page.fill("#in-zeit-ab", "23:50");
   await page.fill("#in-zeit-rueck", "03:00");
@@ -73,7 +81,7 @@ test("Eine Fahrt über Mitternacht ergibt keine negative Zeit", async ({ page })
 });
 
 test("Ab mehr als 4:30 Stunden erscheint der Hinweis auf die Lenkzeiten", async ({ page }) => {
-  await start(page, { zeiten: true });
+  await start(page, { zeiten: true, original: false });
 
   // Genau 4:30 ist noch kein Hinweis
   await page.fill("#in-zeit-ab", "08:00");
@@ -109,7 +117,7 @@ test("Die Rechnung selbst kennt die Grenzfälle", async ({ page }) => {
 });
 
 test("Leeren räumt auch die Uhrzeiten ab", async ({ page }) => {
-  await start(page, { zeiten: true });
+  await start(page, { zeiten: true, original: false });
   await page.fill("#in-zeit-ab", "08:00");
   await page.fill("#in-zeit-rueck", "12:00");
   await expect(page.locator("#zeitzeile")).toBeVisible();
@@ -119,6 +127,26 @@ test("Leeren räumt auch die Uhrzeiten ab", async ({ page }) => {
 });
 
 /* ---------- Darstellen wie im Originalfahrauftrag ---------- */
+
+test("Mit dem Einschalten der Uhrzeiten ist die Originaldarstellung von selbst an", async ({ page }) => {
+  await start(page);                                  // nichts vorgemerkt – frischer Nutzer
+  await zumSchalter(page);
+  await page.click('#s-zeiten button[data-v="ein"]');
+  await expect(page.locator('#s-zeitoriginal button[data-v="ein"]')).toHaveClass(/active/);
+  await page.click('#modal-settings [data-close="modal-settings"]');
+
+  await page.fill("#in-zeit-ab", "16:00");
+  await page.fill("#in-zeit-rueck", "16:45");
+  await expect(page.locator("#z-spalte")).toBeVisible();     // Spalte wie auf dem Blatt
+  await expect(page.locator("#zeitzeile")).toBeHidden();     // kein eigener Block
+
+  // Abschalten macht es übersichtlicher: der eigene Block übernimmt
+  await zumSchalter(page);
+  await page.click('#s-zeitoriginal button[data-v="aus"]');
+  await page.click('#modal-settings [data-close="modal-settings"]');
+  await expect(page.locator("#z-spalte")).toBeHidden();
+  await expect(page.locator("#zeitzeile")).toBeVisible();
+});
 
 async function startOriginal(page){
   await page.addInitScript(() => {

@@ -25,6 +25,9 @@ Stelle, an der sie auf dem Blatt stehen, und daneben die Differenz.
 - Prüfhinweise bei 0 km und bei ungewöhnlich großen Differenzen
 - **Uhrzeiten** (in den Einstellungen zuschaltbar, standardmäßig aus): Beginn und
   Ende eintragen, Fahrzeit wird ausgerechnet – Fahrten über Mitternacht inbegriffen.
+  Dargestellt wie auf dem Vordruck: die Uhrzeit als Spalte direkt neben den
+  Kilometerkästchen, die Fahrzeit als Textzeile darunter (für eine übersichtlichere
+  Ansicht abschaltbar – die Uhrzeiten bekommen dann ihren eigenen Block).
   Ab mehr als 4:30 Stunden erscheint ein Hinweis auf die Lenk- und Ruhezeiten
   (eine Gedächtnisstütze, keine Prüfung einer Vorschrift)
 - Design zur Wahl: **Automatisch**, **Hell**, **Dunkel** und **Klassisch** –
