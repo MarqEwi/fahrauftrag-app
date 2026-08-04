@@ -129,19 +129,35 @@ async function startOriginal(page){
   await page.goto("/");
 }
 
-test("Die Original-Option erscheint nur bei eingeschalteten Uhrzeiten und merkt sich ihren Stand", async ({ page }) => {
+test("Die Original-Option ist ohne Uhrzeiten sichtbar, aber ausgegraut und gesperrt", async ({ page }) => {
   await start(page);
   await zumSchalter(page);
-  await expect(page.locator("#zeitoriginal-block")).toBeHidden();   // Uhrzeiten sind aus
 
+  // Sichtbar von Anfang an – man soll wissen, dass es sie gibt …
+  const block = page.locator("#zeitoriginal-block");
+  await expect(block).toBeVisible();
+  await expect(block).toContainText("Darstellen wie im Originalfahrauftrag");
+  // … aber ausgegraut und nicht bedienbar, solange die Uhrzeiten aus sind
+  await expect(block).toHaveClass(/gesperrt/);
+  await expect(page.locator('#s-zeitoriginal button[data-v="ein"]')).toBeDisabled();
+
+  // Uhrzeiten einschalten gibt die Option frei
   await page.click('#s-zeiten button[data-v="ein"]');
-  await expect(page.locator("#zeitoriginal-block")).toBeVisible();
+  await expect(block).not.toHaveClass(/gesperrt/);
+  await expect(page.locator('#s-zeitoriginal button[data-v="ein"]')).toBeEnabled();
   await page.click('#s-zeitoriginal button[data-v="ein"]');
   expect(await page.evaluate(() => localStorage.getItem("fa_zeit_original"))).toBe("true");
 
   await page.reload();
   await zumSchalter(page);
   await expect(page.locator('#s-zeitoriginal button[data-v="ein"]')).toHaveClass(/active/);
+
+  // Uhrzeiten wieder aus: die Option sperrt sich, und die Darstellung
+  // fällt auf den Normalzustand zurück, ohne die Wahl zu vergessen
+  await page.click('#s-zeiten button[data-v="aus"]');
+  await expect(block).toHaveClass(/gesperrt/);
+  await expect(page.locator("#z-spalte")).toBeHidden();
+  expect(await page.evaluate(() => localStorage.getItem("fa_zeit_original"))).toBe("true");
 });
 
 test("Originaldarstellung: Uhrzeit als Spalte im Gitter, Fahrzeit als Textzeile", async ({ page }) => {
