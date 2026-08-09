@@ -92,10 +92,15 @@
     "aufhell_ton": "#12150B",
     "textseite_aufhellen": 150,
     "geraet": {
-      "vollstaendig": true
+      "vollstaendig": true,
+      "luft": 30,
+      "luft_rechts": 32
     }
   },
-  "screenshots": {},
+  "screenshots": {
+    "geraet_breite": 690,
+    "geraet_oben": 608
+  },
   "seiten": [
     {
       "aufnahme": "roh1.png",
