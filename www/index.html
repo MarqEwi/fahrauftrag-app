@@ -1261,19 +1261,17 @@ const Edition = {
    Im Browser bleibt der HTML-Platzhalter (#adbar) sichtbar.
    In der App zeigt AdMob ein echtes Banner unten; der Platzhalter wird
    dann ausgeblendet. Premium entfernt das Banner komplett.             */
-/* Zentrale Werbe-Konfiguration.
-   ACHTUNG: Hier stehen bewusst Googles offizielle TEST-IDs, weil für die
-   Fahrauftrag Ausfüllhilfe noch keine eigene AdMob-App angelegt ist. Die
-   IDs des SGT Rechners dürfen hier NICHT stehen – sonst zählen die Klicks
-   dieser App auf die andere App und das gefährdet das AdMob-Konto.
-   Vor der Veröffentlichung: neue AdMob-App + neuen Banner-Block anlegen,
-   BANNER_ID hier und die App-ID (ca-app-pub-…~…) im AndroidManifest
-   eintragen und TESTING auf false setzen. Hinweis: Neue AdMob-Apps
-   liefern anfangs oft "code 3 / not approved" – normale Prüfzeit,
-   danach erscheinen die Banner von selbst. */
+/* Zentrale Werbe-Konfiguration – die eigene AdMob-App der Fahrauftrag
+   Ausfüllhilfe. Der Anzeigenblock gehört zu genau dieser App; die IDs
+   anderer Apps des Kontos dürfen hier nicht stehen, sonst zählt Google
+   den Traffic als ungültig und das trifft das ganze Konto.
+   Die zugehörige App-ID (ca-app-pub-…~…) steht im AndroidManifest.
+   Hinweis: Frisch angelegte AdMob-Apps liefern anfangs oft
+   "code 3 / not approved" – das ist die normale Prüfzeit von Stunden bis
+   wenigen Tagen, danach erscheinen die Banner von selbst. */
 const ADS_CONF = {
-  TESTING: true,
-  BANNER_ID: "ca-app-pub-3940256099942544/9214589741" /* Google-Testbanner (adaptiv) */
+  TESTING: false,
+  BANNER_ID: "ca-app-pub-7311552668399418/6684991090" /* Banner unten (adaptiv) */
 };
 
 const Ads = {

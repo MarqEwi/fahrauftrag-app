@@ -78,15 +78,17 @@ Anzeigenblock**. Beide werden gebraucht.
 Die App kommt mit beiden Antworten zurecht: Bei Ablehnung bleibt das Banner
 aus, alles andere funktioniert normal weiter.
 
-### 2.4 Was danach im Code passiert
+### 2.4 Was im Code steht — **erledigt**
 
-Mit den beiden IDs werden eingetragen:
+Beide IDs sind eingetragen:
 
-- **App-ID** (`~`) → `android/app/src/main/AndroidManifest.xml`, ersetzt die
-  Google-Test-App-ID `ca-app-pub-3940256099942544~3347511713`.
-  Fehlt dieser Eintrag, **stürzt die App beim Start ab**.
-- **Anzeigenblock-ID** (`/`) → `index.html` bei `ADS_CONF.BANNER_ID`,
-  gleichzeitig `TESTING: false`.
+| Wert | Steht in | ID |
+|---|---|---|
+| App-ID (`~`) | `android/app/src/main/AndroidManifest.xml` | `ca-app-pub-7311552668399418~6409658921` |
+| Anzeigenblock-ID (`/`) | `index.html`, `ADS_CONF.BANNER_ID` | `ca-app-pub-7311552668399418/6684991090` |
+
+`ADS_CONF.TESTING` steht auf `false` – die App fordert also echte Anzeigen an.
+Fehlt die App-ID im Manifest, **stürzt die App beim Start ab**.
 
 ### 2.5 Was danach normal ist und nicht repariert werden muss
 
@@ -261,14 +263,13 @@ Entwicklerkonten. Dann zuerst diesen Test durchlaufen lassen; an der App selbst
 
 ## 6. Nach der AdMob-Freigabe
 
-**Stand jetzt stehen im Code noch Googles Test-IDs** (`TESTING: true` in
-`ADS_CONF`, Test-App-ID im `AndroidManifest.xml`). Sobald die eigene AdMob-App
-nach Schritt 2 angelegt ist, beide IDs eintragen und `TESTING` auf `false`
-setzen – erst dann verdient die App etwas.
+Die eigenen AdMob-IDs stehen im Code (siehe 2.4), `TESTING` ist `false`.
+Die Freigabe passiert allein auf Googles Seite – ein neuer Build ist dafür
+**nicht** nötig. Sobald AdMob die App freigegeben hat, erscheinen die Banner
+von selbst.
 
-Danach passiert die Freigabe allein auf Googles Seite – ein neuer Build ist
-dafür **nicht** nötig. Sobald AdMob die App freigegeben hat, erscheinen die
-Banner von selbst.
+Zwei Dinge bleiben dauerhaft wichtig:
 
-**Niemals** die AdMob-IDs des SGT Rechners in dieser App verwenden: Google
-wertet das als ungültigen Traffic und das trifft das ganze Konto.
+- **Niemals die eigenen Anzeigen anklicken.** Das führt zur Kontosperrung.
+- **Niemals die AdMob-IDs einer anderen App des Kontos verwenden.** Google
+  wertet das als ungültigen Traffic, und das trifft alle Apps.
