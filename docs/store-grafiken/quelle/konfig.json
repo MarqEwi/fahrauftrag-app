@@ -1,0 +1,136 @@
+{
+  "_hinweis": "Store-Grafiken Fahrauftrag Ausfüllhilfe. Alle Daten im Bild sind erfunden (Musterstadt, Beispielheim, PKW Y-123 456) – im Store-Material dürfen keine echten Kennzeichen, Namen oder Dienststellen stehen.",
+  "ausgabe": "..",
+  "aufnahmen": {
+    "url": "http://127.0.0.1:8125/index.html",
+    "anlauf": 1200,
+    "vorbereiten": "localStorage.setItem('fa_onboarding_done','true');localStorage.setItem('fa_edition',JSON.stringify('premium'));localStorage.setItem('fa_zeiten','false');localStorage.setItem('fa_zeit_original','true');localStorage.removeItem('fa_nachtrag');localStorage.setItem('fa_nachtraege',JSON.stringify({aktiv:0,blaetter:[{name:'PKW Y-123 456',start:'27716',aktuell:'27825',modus:'km',fahrten:[{datum:'2026-07-14',strecke:'Musterstadt – Beispielheim',art:'km',km:52,stand:null,zab:'08:00',zende:'09:00'},{datum:'2026-07-15',strecke:'Beispielheim – Musterstadt',art:'km',km:57,stand:null,zab:'16:00',zende:'16:45'}]}]}));",
+    "schritte": [
+      {
+        "fuellen": {
+          "#in-ab": "27716",
+          "#in-rueck": "27768"
+        },
+        "warten": 700,
+        "datei": "roh1.png"
+      },
+      {
+        "fuellen": {
+          "#in-ab": "27768",
+          "#in-rueck": "27716"
+        },
+        "warten": 700,
+        "datei": "roh2.png"
+      },
+      {
+        "js": "document.querySelector('#rubriken button[data-view=\"nachtragen\"]').click()",
+        "warten": 900,
+        "scrollen": "#nt-liste .ntzeile >> nth=0",
+        "datei": "roh3.png"
+      },
+      {
+        "fuellen": {
+          "#nt-aktuell": "27900"
+        },
+        "warten": 700,
+        "scrollen": ".restbox",
+        "datei": "roh4.png"
+      },
+      {
+        "js": "document.querySelector('#rubriken button[data-view=\"home\"]').click(); store('fa_zeiten',true); applyZeiten();",
+        "fuellen": {
+          "#in-ab": "27716",
+          "#in-rueck": "27768",
+          "#in-zeit-ab": "16:00",
+          "#in-zeit-rueck": "16:45"
+        },
+        "warten": 500
+      },
+      {
+        "js": "document.activeElement && document.activeElement.blur(); const c = document.getElementById('gitter-home').closest('.card'); window.scrollTo(0, c.getBoundingClientRect().top + window.scrollY - 10);",
+        "warten": 700,
+        "datei": "roh5.png"
+      },
+      {
+        "breite": 360,
+        "hoehe": 640,
+        "js": "document.activeElement && document.activeElement.blur(); const c = document.getElementById('gitter-home').closest('.card'); window.scrollTo(0, c.getBoundingClientRect().top + window.scrollY - 10);",
+        "warten": 800,
+        "datei": "roh-banner.png"
+      }
+    ]
+  },
+  "feature": {
+    "hintergrund": "fb.jpg",
+    "aufnahme": "roh-banner.png",
+    "symbol": "../../../icons/icon-512.png",
+    "wortmarke": [
+      [
+        [
+          "Fahrauftrag",
+          "#F2EFE2"
+        ]
+      ],
+      [
+        [
+          "Ausfüllhilfe",
+          "#C9D48A"
+        ]
+      ]
+    ],
+    "untertitel": "Kilometerstände richtig ins Kästchenraster",
+    "unter_farbe": "#D8D6C4",
+    "pillen": [
+      "Ohne Konto",
+      "Offline",
+      "Ohne Abo"
+    ],
+    "pillen_fuellung": "#F2EFE2",
+    "pillen_schrift": "#2A2E18",
+    "fusszeile": "Alle Eingaben bleiben auf deinem Gerät",
+    "fuss_farbe": "#AFB39A",
+    "aufhell_ton": "#12150B",
+    "textseite_aufhellen": 150,
+    "geraet": {
+      "vollstaendig": true,
+      "luft": 30,
+      "luft_rechts": 32
+    }
+  },
+  "screenshots": {
+    "geraet_breite": 690,
+    "geraet_oben": 608
+  },
+  "seiten": [
+    {
+      "aufnahme": "roh1.png",
+      "hintergrund": "v1.jpg",
+      "titel": "Kästchen für Kästchen",
+      "unter": "Rückkehr oben, Abfahrt unten – wie auf dem Blatt"
+    },
+    {
+      "aufnahme": "roh2.png",
+      "hintergrund": "v2.jpg",
+      "titel": "Zahlendreher fallen auf",
+      "unter": "Die App sagt dir, wenn die Rechnung nicht aufgeht"
+    },
+    {
+      "aufnahme": "roh3.png",
+      "hintergrund": "v3.jpg",
+      "titel": "Vergessene Fahrten nachtragen",
+      "unter": "Die App baut die Kette der Kilometerstände"
+    },
+    {
+      "aufnahme": "roh4.png",
+      "hintergrund": "v4.jpg",
+      "titel": "Der offene Rest im Blick",
+      "unter": "Du siehst jederzeit, wie viel noch fehlt"
+    },
+    {
+      "aufnahme": "roh5.png",
+      "hintergrund": "v5.jpg",
+      "titel": "Uhrzeiten wie im Vordruck",
+      "unter": "Beginn, Ende und Fahrzeit – zuschaltbar"
+    }
+  ]
+}

@@ -2,13 +2,16 @@
 // Tag, Überschneidungen und die Hinweise zu den Lenk- und Ruhezeiten.
 import { test, expect } from "@playwright/test";
 
-async function mitFahrten(page, fahrten, { zeiten = true, start = "10000", aktuell = "20000" } = {}){
-  await page.addInitScript(([f, z, st, ak]) => {
+/* original: false = der eigene Uhrzeiten-Block (Standard der App ist die
+   Originaldarstellung; die Tests hier prüfen überwiegend den Block). */
+async function mitFahrten(page, fahrten, { zeiten = true, original = false, start = "10000", aktuell = "20000" } = {}){
+  await page.addInitScript(([f, z, o, st, ak]) => {
     localStorage.setItem("fa_onboarding_done", "true");
     localStorage.setItem("fa_zeiten", JSON.stringify(z));
+    localStorage.setItem("fa_zeit_original", JSON.stringify(o));
     localStorage.removeItem("fa_nachtraege");   // erzwingt die Übernahme des Altbestands
     localStorage.setItem("fa_nachtrag", JSON.stringify({ start: st, aktuell: ak, modus: "km", fahrten: f }));
-  }, [fahrten, zeiten, start, aktuell]);
+  }, [fahrten, zeiten, original, start, aktuell]);
   await page.goto("/");
   await page.click("#go-nachtragen");
 }

@@ -17,39 +17,105 @@ jeder Block ist unabhängig abhakbar.
 4. Nach 1–2 Minuten ist die App unter `https://marqewi.github.io/fahrauftrag-app/`
    erreichbar – und die Datenschutzerklärung unter
    `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
-   (diese URL brauchst du später in der Play Console)
+
+**Hinweis:** Die App läuft bereits unter `https://mercwerk.de/fahrauftrag/` –
+dieser Schritt ist damit erledigt. Als Datenschutz-URL für Play Console und
+AdMob gilt: `https://mercwerk.de/fahrauftrag/datenschutz.html`.
+Die `app-ads.txt` liegt schon auf `https://mercwerk.de/app-ads.txt` und gilt
+für alle Apps des AdMob-Kontos.
 
 ## 2. AdMob: neue App + Banner anlegen
 
-1. Auf [admob.google.com](https://admob.google.com) anmelden (gleiches Konto wie BFT, PFT und SGT)
-2. **Apps → App hinzufügen** → Plattform **Android** →
-   „Ist die App bei Google Play gelistet?“ → **Nein** (sie ist ja noch nicht veröffentlicht)
-3. App-Name: **Fahrauftrag Ausfüllhilfe** → anlegen
-4. Die neue **App-ID** kopieren (Format `ca-app-pub-…~…`) →
-   in `android/app/src/main/AndroidManifest.xml` die dort eingetragene
-   Google-Test-App-ID `ca-app-pub-3940256099942544~3347511713` ersetzen
-5. In der neuen App: **Anzeigenblöcke → Anzeigenblock hinzufügen → Banner**,
-   Name z. B. „Fahrauftrag Banner unten“ → anlegen
-6. Die **Banner-Block-ID** kopieren (Format `ca-app-pub-…/…`) →
-   in `index.html` bei `ADS_CONF` eintragen und `TESTING: false` setzen
-7. **Datenschutz & Mitteilungen** → DSGVO-Meldung für die neue App aktivieren,
-   Option „Nicht einwilligen“ einschalten
-8. Wichtig: Neue AdMob-Apps liefern anfangs oft „code 3 / not approved“ –
-   das ist die normale Prüfzeit (Stunden bis wenige Tage). Solange laufen
-   keine echten Anzeigen; die App funktioniert trotzdem.
+Werbung läuft **nur in der Android-App**, nicht in der Web-Version auf
+mercwerk.de. Solange die App nicht im Play Store ist, verdient sie also
+nichts – das Anlegen lohnt sich trotzdem vorab, weil Google für die Freigabe
+Tage braucht.
+
+**Niemals** die AdMob-IDs einer anderen App verwenden: Google wertet das als
+ungültigen Traffic, und das trifft das ganze Konto.
+
+### 2.1 App anlegen
+
+1. [admob.google.com](https://admob.google.com) öffnen und mit **demselben
+   Google-Konto** anmelden wie bei BFT, PFT und SGT.
+2. Links **Apps** → **App hinzufügen**.
+3. Plattform: **Android**.
+4. „Ist deine App im Google Play Store oder in einem anderen App-Store
+   verfügbar?“ → **Nein**. (Die App ist noch nicht veröffentlicht. Nach der
+   Veröffentlichung lässt sie sich nachträglich mit dem Store-Eintrag
+   verknüpfen – dafür ist kein neuer Anzeigenblock nötig.)
+5. App-Name eintragen: **Fahrauftrag Ausfüllhilfe** → **App hinzufügen**.
+6. Auf der nächsten Seite steht die **App-ID** im Format
+   `ca-app-pub-…~…` (mit **Tilde ~**). Diese Nummer kopieren und
+   aufbewahren.
+
+### 2.2 Banner-Anzeigenblock anlegen
+
+1. In der neu angelegten App links auf **Anzeigenblöcke** →
+   **Anzeigenblock hinzufügen**.
+2. Format **Banner** wählen.
+3. Name: **Fahrauftrag Banner unten**. Alle weiteren Einstellungen
+   (Anzeigentyp, Aktualisierungsrate) unverändert lassen.
+4. **Anzeigenblock erstellen**. Danach erscheint die
+   **Anzeigenblock-ID** im Format `ca-app-pub-…/…` (mit **Schrägstrich /**).
+   Auch diese kopieren.
+
+Die beiden IDs werden oft verwechselt: **Tilde = App**, **Schrägstrich =
+Anzeigenblock**. Beide werden gebraucht.
+
+### 2.3 Einwilligung nach DSGVO einrichten
+
+1. Links **Datenschutz & Mitteilungen** → **Europäische Vorschriften (DSGVO)**.
+2. Die neue App auswählen → **Meldung erstellen**.
+3. Datenschutz-URL eintragen:
+   `https://mercwerk.de/fahrauftrag/datenschutz.html`
+4. Die Option **„Nicht einwilligen“ einschalten** – ein gleichwertiger
+   Ablehnen-Knopf ist in der EU rechtlich nötig.
+5. „Schließen (nicht einwilligen)“ ausgeschaltet lassen, damit es bei zwei
+   klaren Knöpfen bleibt.
+6. **Veröffentlichen**.
+
+Die App kommt mit beiden Antworten zurecht: Bei Ablehnung bleibt das Banner
+aus, alles andere funktioniert normal weiter.
+
+### 2.4 Was im Code steht — **erledigt**
+
+Beide IDs sind eingetragen:
+
+| Wert | Steht in | ID |
+|---|---|---|
+| App-ID (`~`) | `android/app/src/main/AndroidManifest.xml` | `ca-app-pub-7311552668399418~6409658921` |
+| Anzeigenblock-ID (`/`) | `index.html`, `ADS_CONF.BANNER_ID` | `ca-app-pub-7311552668399418/6684991090` |
+
+`ADS_CONF.TESTING` steht auf `false` – die App fordert also echte Anzeigen an.
+Fehlt die App-ID im Manifest, **stürzt die App beim Start ab**.
+
+### 2.5 Was danach normal ist und nicht repariert werden muss
+
+| Beobachtung | Bedeutung |
+|---|---|
+| `code 3` / „Account not approved yet“ | Prüfzeit für neue Apps, Stunden bis wenige Tage. Danach laufen die Banner von selbst. |
+| „Anzeigenbereitstellung begrenzt“ | Dasselbe – hebt sich nach der Prüfung auf. |
+| Auf dem eigenen Gerät erscheinen **Testanzeigen**, obwohl `TESTING: false` | Absicht von Google, schützt vor versehentlichen Klicks auf die eigenen Anzeigen. Echte Nutzer sehen echte Anzeigen. |
+| app-ads.txt „konnte nicht bestätigt werden“ | Der Crawl steht noch aus (bis 24 h, gelegentlich Tage). Die Datei auf `https://mercwerk.de/app-ads.txt` ist geprüft und korrekt. |
+
+**Niemals die eigenen Anzeigen anklicken** – das führt zur Kontosperrung.
 
 ## 3. Play Console: App anlegen
 
 1. [play.google.com/console](https://play.google.com/console) → **App erstellen**
-2. Name: **Fahrauftrag Ausfüllhilfe km** (27 Zeichen) ·
+2. Name: **Fahrauftrag Ausfüllhilfe** (24 Zeichen) ·
    Sprache Deutsch · **App** · **Kostenlos**
-3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen,
-   Icon `icons/icon-512.png`, Feature-Grafik 1024×500
-   (`docs/store-grafiken/feature-grafik-1024x500.png`; Hintergrundfarbe des Logos: `#585F2A`)
-4. **Data Safety** ausfüllen (siehe Kurzreferenz in `docs/store-texte.md`);
-   die vier AdMob-Datentypen bleiben unverändert, weil die App selbst nichts überträgt
-5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+**
-6. Datenschutz-URL: `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
+3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen –
+   Kurzbeschreibung, vollständige Beschreibung, App-Symbol `icons/icon-512.png`,
+   Feature-Grafik `docs/store-grafiken/feature-grafik.png`,
+   Screenshots `docs/store-grafiken/screenshot-1.png` … `-5.png`
+4. **Data Safety** ausfüllen (Kurzreferenz in `docs/store-texte.md`):
+   vier Datenarten wegen AdMob, die App selbst überträgt nichts
+5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+** ·
+   Gesundheits-Erklärung: **keine** Gesundheitsfunktionen
+6. Datenschutz-URL: `https://mercwerk.de/fahrauftrag/datenschutz.html`
+7. Kategorie: **Produktivität**
 
 ## 4. Einmalkauf-Produkt anlegen
 
@@ -200,14 +266,13 @@ Entwicklerkonten. Dann zuerst diesen Test durchlaufen lassen; an der App selbst
 
 ## 6. Nach der AdMob-Freigabe
 
-**Stand jetzt stehen im Code noch Googles Test-IDs** (`TESTING: true` in
-`ADS_CONF`, Test-App-ID im `AndroidManifest.xml`). Sobald die eigene AdMob-App
-nach Schritt 2 angelegt ist, beide IDs eintragen und `TESTING` auf `false`
-setzen – erst dann verdient die App etwas.
+Die eigenen AdMob-IDs stehen im Code (siehe 2.4), `TESTING` ist `false`.
+Die Freigabe passiert allein auf Googles Seite – ein neuer Build ist dafür
+**nicht** nötig. Sobald AdMob die App freigegeben hat, erscheinen die Banner
+von selbst.
 
-Danach passiert die Freigabe allein auf Googles Seite – ein neuer Build ist
-dafür **nicht** nötig. Sobald AdMob die App freigegeben hat, erscheinen die
-Banner von selbst.
+Zwei Dinge bleiben dauerhaft wichtig:
 
-**Niemals** die AdMob-IDs des SGT Rechners in dieser App verwenden: Google
-wertet das als ungültigen Traffic und das trifft das ganze Konto.
+- **Niemals die eigenen Anzeigen anklicken.** Das führt zur Kontosperrung.
+- **Niemals die AdMob-IDs einer anderen App des Kontos verwenden.** Google
+  wertet das als ungültigen Traffic, und das trifft alle Apps.

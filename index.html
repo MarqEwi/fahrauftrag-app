@@ -197,6 +197,29 @@
     .nachweis{flex:0 0 74px}
     .gitter span{font-size:1.3rem;height:50px}
   }
+  /* Originaldarstellung: Die Uhrzeit steht als eigene Spalte zwischen den
+     Kästchen und dem Nachweis – so wie auf dem Vordruck. Die Fahrzeit
+     bekommt kein Kästchen, sie steht als Textzeile unter dem Gitter. */
+  .zspalte{flex:0 0 88px;min-width:0;border:1.5px solid var(--linie);display:flex;flex-direction:column}
+  .zspalte span{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg2);
+    font-size:1.02rem;font-weight:700;font-variant-numeric:tabular-nums;min-height:0;
+    border-bottom:1.5px solid var(--linie)}
+  .zspalte span:last-child{border-bottom:0}
+  .spaltenkopf .sk-z{flex:0 0 88px;text-align:center}
+  .zeitsumme{margin:8px 0 0;font-size:.9rem}
+  .zeitsumme .zs-wert{font-weight:700;font-variant-numeric:tabular-nums}
+  /* Drei Spalten nebeneinander brauchen Platz – die Ziffern treten etwas kürzer */
+  body.zeit-original .gitter span{font-size:1.25rem}
+  .gitterblock.klein .zspalte{flex:0 0 60px}
+  .gitterblock.klein .zspalte span{font-size:.82rem}
+  .zeitsumme.klein{font-size:.78rem;color:var(--text2);margin-top:4px}
+  @media(max-width:379px){
+    .zspalte{flex:0 0 70px}
+    .zspalte span{font-size:.88rem}
+    .spaltenkopf .sk-z{flex:0 0 70px}
+    body.zeit-original .gitter span{font-size:1.02rem}
+    .gitterblock.klein .zspalte{flex:0 0 52px}
+  }
   /* Kleine Fassung für die Liste im Nachtrag */
   .gitterblock.klein{gap:6px;margin-top:6px}
   .gitterblock.klein .gitter span{height:34px;font-size:1.05rem}
@@ -354,6 +377,9 @@
   .acc[open]>summary::after{transform:rotate(-135deg)}
   .acc>summary .ic{width:20px;height:20px;color:var(--accent2)}
   .acc-body{padding:0 15px 15px}
+  /* Gesperrte Unteroption: sichtbar, aber ausgegraut und nicht bedienbar –
+     so ist von Anfang an klar, dass es sie gibt und wovon sie abhängt. */
+  .gesperrt{opacity:.45;pointer-events:none}
   /* Im Browser ist die App die Vollversion – der Premium-Bereich der
      Einstellungen gehört zur Android-App und bleibt dort. */
   body.plattform-web #acc-premium{display:none}
@@ -361,6 +387,9 @@
   .ob-step{display:none;text-align:center;padding:8px 4px}
   .ob-step.active{display:block}
   .ob-step .emoji .ic{width:44px;height:44px;color:var(--accent2)}
+  /* Bild statt Piktogramm: kleine Skizzen in den Farben des Designs */
+  .ob-skizze{display:block;width:100%;max-width:300px;margin:0 auto 4px}
+  .ob-skizze text{font-family:inherit}
   .ob-dots{text-align:center;margin:10px 0}
   .ob-dots i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line);margin:0 3px}
   .ob-dots i.on{background:var(--accent)}
@@ -457,6 +486,8 @@
   html[data-stil="klassisch"] .gitter{border-width:1px}
   html[data-stil="klassisch"] .gitter span{border-right-width:1px;border-bottom-width:1px}
   html[data-stil="klassisch"] .nachweis{border-width:1px}
+  html[data-stil="klassisch"] .zspalte{border-width:1px}
+  html[data-stil="klassisch"] .zspalte span{border-bottom-width:1px}
   /* Der Merksatz wird zur Fußnote wie unter dem Vordruck */
   html[data-stil="klassisch"] .merksatz{
     border-left:0;border-top:1px solid var(--linie);background:none;padding:9px 0 0;
@@ -602,6 +633,8 @@
           <span class="skt" id="kopf-links">km-Stand / BetrStd</span>
           <span class="skz">a) Rückkehr <i>oben</i> · b) Abfahrt <i>unten</i></span>
         </div>
+        <!-- Nur in der Originaldarstellung: die Uhrzeit-Spalte des Vordrucks -->
+        <div class="sk-z" id="sk-z" style="display:none"><span class="skt">Uhrzeit</span></div>
         <div class="sk-b"><span class="skt">Nachweis</span></div>
       </div>
 
@@ -614,12 +647,17 @@
             <div class="kmboxen" id="box-ab" aria-label="Kästchen der Zeile b) Abfahrt"></div>
           </div>
         </div>
+        <div class="zspalte" id="z-spalte" style="display:none" aria-label="Uhrzeit: a) Ende oben, b) Beginn unten">
+          <span id="zs-ende"></span>
+          <span id="zs-beginn"></span>
+        </div>
         <div class="nachweis">
           <div class="nkopf" id="nachweis-kopf">km oder<br>BetrStd</div>
           <div class="nwert" id="nachweis-wert">–</div>
           <div class="neinheit" id="nachweis-einheit">km</div>
         </div>
       </div>
+      <p class="zeitsumme" id="zeit-summe" style="display:none"></p>
 
       <!-- Uhrzeiten in derselben Anordnung wie die Kilometer: a) oben,
            b) darunter, rechts die Fahrzeit auf Höhe der Nachweis-Spalte. -->
@@ -767,21 +805,80 @@
 <div class="modal-back" id="modal-onboarding">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Einführung">
     <div class="ob-step active" data-step="0">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></div>
+      <!-- Das Kernbild der App: Kästchenraster mit Nachweis -->
+      <svg class="ob-skizze" viewBox="0 0 320 80" role="img" aria-label="Kästchenraster mit den Ständen 27768 oben und 27716 unten, rechts der Nachweis 52 km">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="34" y="6" width="204" height="68"/>
+          <path d="M34 40h204M68 6v68M102 6v68M136 6v68M170 6v68M204 6v68" fill="none"/>
+          <rect x="250" y="6" width="62" height="68"/>
+        </g>
+        <g font-size="16" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="85" y="29">2</text><text x="119" y="29">7</text><text x="153" y="29">7</text><text x="187" y="29">6</text><text x="221" y="29">8</text>
+          <text x="85" y="63">2</text><text x="119" y="63">7</text><text x="153" y="63">7</text><text x="187" y="63">1</text><text x="221" y="63">6</text>
+        </g>
+        <g font-size="11" font-weight="700" fill="var(--text2)" text-anchor="middle">
+          <text x="22" y="27">a)</text><text x="22" y="61">b)</text>
+        </g>
+        <text x="281" y="41" font-size="20" font-weight="800" fill="var(--accent2)" text-anchor="middle">52</text>
+        <text x="281" y="60" font-size="11" fill="var(--text2)" text-anchor="middle">km</text>
+      </svg>
       <h2>Willkommen bei der Fahrauftrag Ausfüllhilfe!</h2>
       <p>Diese App hilft beim Eintragen der Kilometerstände. Du gibst den Stand bei der Abfahrt und bei der Rückkehr ein – die App rechnet die gefahrenen Kilometer aus und zeigt, welche Zahl in welche Zeile gehört.</p>
     </div>
     <div class="ob-step" data-step="1">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg></div>
+      <!-- Die Umkehr: unten beginnt die Fahrt, oben endet sie -->
+      <svg class="ob-skizze" viewBox="0 0 320 88" role="img" aria-label="Zwei Kästchenzeilen: oben a) Rückkehr mit 27768, sie kommt später; unten b) Abfahrt mit 27716, sie kommt zuerst. Ein Pfeil zeigt von unten nach oben.">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="30" y="8" width="144" height="72"/>
+          <path d="M30 44h144M54 8v72M78 8v72M102 8v72M126 8v72M150 8v72" fill="none"/>
+        </g>
+        <g font-size="12" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="66" y="30">2</text><text x="90" y="30">7</text><text x="114" y="30">7</text><text x="138" y="30">6</text><text x="162" y="30">8</text>
+          <text x="66" y="66">2</text><text x="90" y="66">7</text><text x="114" y="66">7</text><text x="138" y="66">1</text><text x="162" y="66">6</text>
+        </g>
+        <g font-size="10" font-weight="700" fill="var(--text2)" text-anchor="middle">
+          <text x="42" y="29">a)</text><text x="42" y="65">b)</text>
+        </g>
+        <g text-anchor="start">
+          <text x="186" y="26" font-size="13" font-weight="700" fill="var(--text)">Rückkehr</text>
+          <text x="186" y="39" font-size="11" fill="var(--accent2)" font-weight="700">kommt später</text>
+          <text x="186" y="62" font-size="13" font-weight="700" fill="var(--text)">Abfahrt</text>
+          <text x="186" y="75" font-size="11" fill="var(--text2)">kommt zuerst</text>
+        </g>
+        <!-- Die Fahrt läuft von unten nach oben -->
+        <g stroke="var(--accent2)" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M14 74V16"/><path d="M14 16l-5 7M14 16l5 7"/>
+        </g>
+      </svg>
       <h2>Oben steht das Spätere</h2>
       <p>Im Kilometerfeld steht <b>a) Rückkehr oben</b> und <b>b) Abfahrt darunter</b> – also andersherum, als die Fahrt abläuft. Genau hier passieren die meisten Fehler.</p>
       <p class="muted">Die App zeigt beide Zahlen an der Stelle, an der sie auf dem Blatt stehen.</p>
     </div>
     <div class="ob-step" data-step="2">
-      <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg></div>
+      <!-- Die Uhrzeit-Spalte, wie sie mit eingeschalteten Uhrzeiten aussieht -->
+      <svg class="ob-skizze" viewBox="0 0 320 100" role="img" aria-label="Kästchenraster mit Uhrzeit-Spalte daneben: oben 16:45, unten 16:00, rechts der Nachweis 52 km. Darunter die Fahrzeit 0:45 Stunden.">
+        <g stroke="var(--linie)" stroke-width="1.5" fill="var(--bg2)">
+          <rect x="8" y="6" width="144" height="64"/>
+          <path d="M8 38h144M32 6v64M56 6v64M80 6v64M104 6v64M128 6v64" fill="none"/>
+          <rect x="162" y="6" width="68" height="64"/>
+          <path d="M162 38h68" fill="none"/>
+          <rect x="240" y="6" width="72" height="64"/>
+        </g>
+        <g font-size="12" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="44" y="26">2</text><text x="68" y="26">7</text><text x="92" y="26">7</text><text x="116" y="26">6</text><text x="140" y="26">8</text>
+          <text x="44" y="58">2</text><text x="68" y="58">7</text><text x="92" y="58">7</text><text x="116" y="58">1</text><text x="140" y="58">6</text>
+        </g>
+        <g font-size="13" font-weight="700" fill="var(--text)" text-anchor="middle">
+          <text x="196" y="27">16:45</text>
+          <text x="196" y="59">16:00</text>
+        </g>
+        <text x="276" y="34" font-size="18" font-weight="800" fill="var(--accent2)" text-anchor="middle">52</text>
+        <text x="276" y="52" font-size="10" fill="var(--text2)" text-anchor="middle">km</text>
+        <text x="160" y="92" font-size="12" fill="var(--text2)" text-anchor="middle">Fahrzeit: <tspan font-weight="700" fill="var(--text)">0:45 h</tspan></text>
+      </svg>
       <h2>Uhrzeiten, wenn du sie brauchst</h2>
-      <p>Im Fahrauftrag stehen neben den Kilometern auch <b>Beginn und Ende</b> der Fahrt. In den <b>Einstellungen</b> lassen sich die Uhrzeitfelder einschalten – ab Werk sind sie aus, damit die Eingabe schlank bleibt.</p>
-      <p class="muted">Eingeschaltet rechnet die App die Fahrzeit aus und erinnert bei langen Fahrten an die Lenk- und Ruhezeiten.</p>
+      <p>Im Fahrauftrag stehen neben den Kilometern auch <b>Beginn und Ende</b> der Fahrt. In den <b>Einstellungen</b> lassen sich die Uhrzeitfelder einschalten – ab Werk sind sie aus, damit die Eingabe schlank bleibt. Eingeschaltet stehen sie wie auf dem Blatt direkt neben den Kästchen.</p>
+      <p class="muted">Die App rechnet die Fahrzeit aus und erinnert bei langen Fahrten an die Lenk- und Ruhezeiten.</p>
     </div>
     <div class="ob-step" data-step="3">
       <div class="emoji"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></div>
@@ -826,6 +923,18 @@
         <div class="seg mini" id="s-zeiten">
           <button data-v="aus">Aus</button>
           <button data-v="ein">Ein</button>
+        </div>
+        <!-- Immer sichtbar; ohne eingeschaltete Uhrzeiten ausgegraut und gesperrt -->
+        <div id="zeitoriginal-block">
+          <p class="muted" style="margin:12px 0 4px"><b>Darstellen wie im Originalfahrauftrag</b><br>
+            Die Uhrzeit steht als Spalte direkt neben den Kilometern, dahinter der Nachweis;
+            die Fahrzeit als Textzeile darunter. So schaltet sich das mit den Uhrzeiten ein.
+            Zum Übersichtlicher&shy;machen abschaltbar – die Uhrzeiten bekommen dann ihren
+            eigenen Block unter dem Gitter.</p>
+          <div class="seg mini" id="s-zeitoriginal">
+            <button data-v="aus">Aus</button>
+            <button data-v="ein">Ein</button>
+          </div>
         </div>
         <p class="muted" style="font-size:.8rem">Ab mehr als 4:30 Stunden Fahrzeit erscheint ein Hinweis auf die
           Lenk- und Ruhezeiten. Die App prüft keine Vorschrift und kennt deine Pausen nicht – der Hinweis ist
@@ -1152,23 +1261,21 @@ const Edition = {
    Im Browser bleibt der HTML-Platzhalter (#adbar) sichtbar.
    In der App zeigt AdMob ein echtes Banner unten; der Platzhalter wird
    dann ausgeblendet. Premium entfernt das Banner komplett.             */
-/* Zentrale Werbe-Konfiguration.
-   ACHTUNG: Hier stehen bewusst Googles offizielle TEST-IDs, weil für die
-   Fahrauftrag Ausfüllhilfe noch keine eigene AdMob-App angelegt ist. Die
-   IDs des SGT Rechners dürfen hier NICHT stehen – sonst zählen die Klicks
-   dieser App auf die andere App und das gefährdet das AdMob-Konto.
-   Vor der Veröffentlichung: neue AdMob-App + neuen Banner-Block anlegen,
-   BANNER_ID hier und die App-ID (ca-app-pub-…~…) im AndroidManifest
-   eintragen und TESTING auf false setzen. Hinweis: Neue AdMob-Apps
-   liefern anfangs oft "code 3 / not approved" – normale Prüfzeit,
-   danach erscheinen die Banner von selbst. */
+/* Zentrale Werbe-Konfiguration – die eigene AdMob-App der Fahrauftrag
+   Ausfüllhilfe. Der Anzeigenblock gehört zu genau dieser App; die IDs
+   anderer Apps des Kontos dürfen hier nicht stehen, sonst zählt Google
+   den Traffic als ungültig und das trifft das ganze Konto.
+   Die zugehörige App-ID (ca-app-pub-…~…) steht im AndroidManifest.
+   Hinweis: Frisch angelegte AdMob-Apps liefern anfangs oft
+   "code 3 / not approved" – das ist die normale Prüfzeit von Stunden bis
+   wenigen Tagen, danach erscheinen die Banner von selbst. */
 const ADS_CONF = {
-  TESTING: true,
-  BANNER_ID: "ca-app-pub-3940256099942544/9214589741" /* Google-Testbanner (adaptiv) */
+  TESTING: false,
+  BANNER_ID: "ca-app-pub-7311552668399418/6684991090" /* Banner unten (adaptiv) */
 };
 
 const Ads = {
-  plugin: null, showing: false, statusLog: [], consentOk: false, privacyRequired: false,
+  plugin: null, showing: false, statusLog: [], consentOk: false, privacyRequired: false, kbHidden: false,
   log(msg, isErr){
     (isErr ? console.error : console.log)("[Ads] " + msg);
     this.statusLog.push(msg);
@@ -1189,6 +1296,10 @@ const Ads = {
       await p.initialize({ initializeForTesting: ADS_CONF.TESTING });
       this.log("AdMob initialisiert");
       p.addListener("bannerAdSizeChanged", info => {
+        /* hideBanner() meldet Höhe 0. Ist das Banner wegen der Tastatur
+           absichtlich versteckt, bleibt der reservierte Platz stehen – sonst
+           springt der HTML-Platzhalter ein und das Layout hüpft doppelt. */
+        if (Ads.kbHidden) return;
         Ads.log("Banner-Größe " + JSON.stringify(info));
         const h = info && info.height ? Math.max(0, Math.round(info.height)) : 0;
         document.documentElement.style.setProperty("--native-ad-h", h + "px");
@@ -1248,8 +1359,41 @@ const Ads = {
       this.log("Banner angefordert");
       this.showing = true;
     } catch(e){ this.log("Banner-Anforderung fehlgeschlagen: " + (e && e.message ? e.message : e), true); /* App bleibt ohne Werbung voll nutzbar */ }
+  },
+  /* Bei offener Tastatur schrumpft das App-Fenster; das native Banner würde
+     sonst mitten in den Inhalt rutschen. Solange ein Eingabefeld den Fokus
+     hat, ist das Banner deshalb versteckt – der reservierte Platz bleibt,
+     damit beim Tippen nichts springt. */
+  async hideForKeyboard(){
+    if (!this.showing || this.kbHidden || !this.plugin) return;
+    this.kbHidden = true;
+    try { await this.plugin.hideBanner(); } catch(e){ this.kbHidden = false; }
+  },
+  async showAfterKeyboard(){
+    if (!this.kbHidden || !this.plugin) return;
+    try { await this.plugin.resumeBanner(); } catch(e){}
+    this.kbHidden = false;
   }
 };
+
+/* Tastatur-Auslöser: Fokus in einem Eingabefeld versteckt das Banner.
+   Der Rückweg ist entprellt – beim Wechsel zwischen zwei Feldern bleibt
+   die Tastatur offen, das Banner soll dann nicht kurz aufblitzen. */
+const istEingabefeld = el => !!el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)
+  && el.type !== "checkbox" && el.type !== "radio";
+let kbTimer = null;
+document.addEventListener("focusin", e => {
+  if (!istEingabefeld(e.target)) return;
+  clearTimeout(kbTimer);
+  Ads.hideForKeyboard();
+});
+document.addEventListener("focusout", e => {
+  if (!istEingabefeld(e.target)) return;
+  clearTimeout(kbTimer);
+  kbTimer = setTimeout(() => {
+    if (!istEingabefeld(document.activeElement)) Ads.showAfterKeyboard();
+  }, 350);
+});
 
 /* ---------- Premium-Kauf (Google Play Billing) ----------
    Läuft nur in der Android-App über das Plugin "cordova-plugin-purchase".
@@ -1486,10 +1630,23 @@ function applyTheme(){
     : (t === "auto" ? "Folgt der Einstellung deines Geräts." : "");
 }
 const ZEIT_KEY = "fa_zeiten";
+const ZORIG_KEY = "fa_zeit_original";
 function zeitenAn(){ return load(ZEIT_KEY, false) === true; }
+/* Originaldarstellung: Uhrzeit als Spalte im Gitter statt als eigener Block.
+   Greift nur, wenn die Uhrzeiten überhaupt eingeschaltet sind – und ist dann
+   der Normalfall: Wer Uhrzeiten einschaltet, sieht das Blatt. Abschalten
+   macht die Ansicht übersichtlicher (eigener Uhrzeiten-Block). */
+function zeitOriginal(){ return zeitenAn() && load(ZORIG_KEY, true) === true; }
 function applyZeiten(){
   const an = zeitenAn();
   segSet("s-zeiten", an ? "ein" : "aus");
+  segSet("s-zeitoriginal", load(ZORIG_KEY, true) === true ? "ein" : "aus");
+  /* Die Unteroption bleibt immer sichtbar; ohne Uhrzeiten ist sie ausgegraut
+     und gesperrt, damit man sieht, dass es sie gibt und was sie freischaltet. */
+  const zoBlock = $("zeitoriginal-block");
+  zoBlock.classList.toggle("gesperrt", !an);
+  zoBlock.querySelectorAll("#s-zeitoriginal button").forEach(b => { b.disabled = !an; });
+  document.body.classList.toggle("zeit-original", zeitOriginal());
   $("zeit-felder").style.display = an ? "" : "none";
   $("nt-e-zeiten").style.display = an ? "" : "none";
   homeRender();
@@ -1497,6 +1654,7 @@ function applyZeiten(){
 }
 segInit("s-theme", v => { store(THEME_KEY, v); applyTheme(); });
 segInit("s-zeiten", v => { store(ZEIT_KEY, v === "ein"); applyZeiten(); });
+segInit("s-zeitoriginal", v => { store(ZORIG_KEY, v === "ein"); applyZeiten(); });
 
 /* ---------- Ausfüllhilfe (Startseite) ---------- */
 const MODUS_KEY = "fa_modus";
@@ -1507,9 +1665,15 @@ function modusAktuell(){ return FA.modus(segValue("s-modus")); }
 /* Ein fertiges Kästchengitter als HTML – für die Liste im Nachtrag, wo jede
    Zeile so aussehen soll, wie sie später auf dem Blatt steht. */
 /* Uhrzeiten einer Fahrt in derselben Anordnung wie die Kilometer:
-   a) Ende oben, b) Beginn darunter, rechts die Fahrzeit. */
+   a) Ende oben, b) Beginn darunter, rechts die Fahrzeit. In der
+   Originaldarstellung steckt die Uhrzeit stattdessen als Spalte im
+   Gitter (siehe gitterBlockHTML) – hier bleibt nur die Fahrzeit-Zeile. */
 function zeitBlockHTML(d){
   if (!d) return "";
+  if (zeitOriginal()){
+    return '<div class="zeitsumme klein">Fahrzeit <span class="zs-wert">' + esc(fmtDauer(d.minuten)) + "</span>"
+      + (d.ueberMitternacht ? " · über Mitternacht" : "") + "</div>";
+  }
   return '<div class="gitterblock klein zeitklein">' +
     '<div class="zgitter">' +
       '<div class="zrow"><span class="zm">a) Ende</span><span class="zv">' + esc(fmtUhr(d.ende)) + "</span></div>" +
@@ -1521,11 +1685,16 @@ function zeitBlockHTML(d){
     "</div></div>";
 }
 
-function gitterBlockHTML(rueck, ab, km, einheit){
+/* zeiten: nur in der Originaldarstellung gesetzt – { ende, beginn } als
+   Anzeigetext (leer, wenn nichts eingetragen ist, wie auf dem Blatt). */
+function gitterBlockHTML(rueck, ab, km, einheit, zeiten){
   const zellen = w => FA.kaestchen(w).map(z => "<span>" + esc(z) + "</span>").join("");
   const wert = km == null ? "–" : fmtNum(km);
   return '<div class="gitterblock klein">' +
     '<div class="gitter">' + zellen(rueck) + zellen(ab) + "</div>" +
+    (zeiten
+      ? '<div class="zspalte"><span>' + esc(zeiten.ende) + "</span><span>" + esc(zeiten.beginn) + "</span></div>"
+      : "") +
     '<div class="nachweis">' +
       '<div class="nwert' + (wert.length > 5 ? " lang" : "") + '">' + esc(wert) + "</div>" +
       '<div class="neinheit">' + esc(einheit) + "</div>" +
@@ -1590,15 +1759,35 @@ function homeRender(){
 
   /* --- Uhrzeiten --- */
   const zz = $("zeitzeile"), lz = $("lenkzeit");
+  const orig = zeitOriginal();
   const d = zeitenAn() ? FA.dauer($("in-zeit-ab").value, $("in-zeit-rueck").value) : null;
-  if (d){
-    zz.style.display = "";
-    $("z-ende").textContent = fmtUhr(d.ende);
-    $("z-beginn").textContent = fmtUhr(d.beginn);
-    $("z-dauer").textContent = Math.floor(d.minuten / 60) + ":" + String(d.minuten % 60).padStart(2, "0");
-    $("z-mitternacht").style.display = d.ueberMitternacht ? "" : "none";
-  } else {
+  /* Originaldarstellung: Uhrzeit-Spalte im Gitter, wie auf dem Vordruck.
+     Eingetragen wird, was bekannt ist – auch eine einzelne Uhrzeit. */
+  $("sk-z").style.display = orig ? "" : "none";
+  $("z-spalte").style.display = orig ? "" : "none";
+  if (orig){
     zz.style.display = "none";
+    $("zs-ende").textContent = d ? fmtUhr(d.ende) : ($("in-zeit-rueck").value || "");
+    $("zs-beginn").textContent = d ? fmtUhr(d.beginn) : ($("in-zeit-ab").value || "");
+    const su = $("zeit-summe");
+    if (d){
+      su.style.display = "";
+      su.innerHTML = 'Fahrzeit: <span class="zs-wert">' + esc(fmtDauer(d.minuten)) + "</span>"
+        + (d.ueberMitternacht ? " · Fahrt über Mitternacht – 24 Stunden hinzugerechnet." : "");
+    } else {
+      su.style.display = "none";
+    }
+  } else {
+    $("zeit-summe").style.display = "none";
+    if (d){
+      zz.style.display = "";
+      $("z-ende").textContent = fmtUhr(d.ende);
+      $("z-beginn").textContent = fmtUhr(d.beginn);
+      $("z-dauer").textContent = Math.floor(d.minuten / 60) + ":" + String(d.minuten % 60).padStart(2, "0");
+      $("z-mitternacht").style.display = d.ueberMitternacht ? "" : "none";
+    } else {
+      zz.style.display = "none";
+    }
   }
   if (d && d.lang){
     lz.style.display = "";
@@ -1994,7 +2183,8 @@ function ntRender(){
           (z.art === "stand" ? ' <span class="ntmarke">Stand notiert</span>' : "") + "</div>" +
         (z.fehler
           ? '<div class="ntfehler">' + esc(z.fehler) + "</div>"
-          : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit)) +
+          : gitterBlockHTML(z.rueck, z.ab, z.km, m.einheit,
+              zeitOriginal() ? { ende: (f && f.zende) || "", beginn: (f && f.zab) || "" } : null)) +
         zeitBlockHTML(dz) +
         (warn ? '<div class="ntwarntext' + (warn.hart ? " hart" : "") + '">' + esc(warn.texte[0])
                 + (warn.texte.length > 1 ? " (+" + (warn.texte.length - 1) + ")" : "") + "</div>" : "") +
@@ -2634,10 +2824,18 @@ function renderSettings(){
   renderBerechnung();
 }
 $("btn-settings").addEventListener("click", () => { renderSettings(); openModal("modal-settings"); });
-/* Versteckte Diagnose: 5× auf die Versionsnummer tippen blendet die Statuszeilen ein */
-let dbgTaps = 0;
+/* Versteckte Diagnose: 5× auf die Versionsnummer tippen (innerhalb weniger
+   Sekunden) blendet die Statuszeilen ein – bewusstes Tippen, kein Zufall. */
+let dbgTaps = 0, dbgTimer = null;
 $("s-version").addEventListener("click", () => {
-  if (++dbgTaps >= 5){ $("ads-status").style.display = ""; $("buy-status").style.display = ""; $("export-status").style.display = ""; renderSettings(); }
+  dbgTaps++;
+  clearTimeout(dbgTimer);
+  dbgTimer = setTimeout(() => { dbgTaps = 0; }, 2500);
+  if (dbgTaps >= 5){
+    dbgTaps = 0;
+    $("ads-status").style.display = ""; $("buy-status").style.display = ""; $("export-status").style.display = "";
+    renderSettings();
+  }
 });
 
 /* ---------- Onboarding ---------- */
