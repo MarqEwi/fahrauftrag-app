@@ -17,7 +17,12 @@ jeder Block ist unabhängig abhakbar.
 4. Nach 1–2 Minuten ist die App unter `https://marqewi.github.io/fahrauftrag-app/`
    erreichbar – und die Datenschutzerklärung unter
    `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
-   (diese URL brauchst du später in der Play Console)
+
+**Hinweis:** Die App läuft bereits unter `https://mercwerk.de/fahrauftrag/` –
+dieser Schritt ist damit erledigt. Als Datenschutz-URL für Play Console und
+AdMob gilt: `https://mercwerk.de/fahrauftrag/datenschutz.html`.
+Die `app-ads.txt` liegt schon auf `https://mercwerk.de/app-ads.txt` und gilt
+für alle Apps des AdMob-Kontos.
 
 ## 2. AdMob: neue App + Banner anlegen
 
@@ -49,7 +54,7 @@ jeder Block ist unabhängig abhakbar.
 4. **Data Safety** ausfüllen (siehe Kurzreferenz in `docs/store-texte.md`);
    die vier AdMob-Datentypen bleiben unverändert, weil die App selbst nichts überträgt
 5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+**
-6. Datenschutz-URL: `https://marqewi.github.io/fahrauftrag-app/datenschutz.html`
+6. Datenschutz-URL: `https://mercwerk.de/fahrauftrag/datenschutz.html`
 
 ## 4. Einmalkauf-Produkt anlegen
 
