@@ -104,15 +104,18 @@ Fehlt die App-ID im Manifest, **stürzt die App beim Start ab**.
 ## 3. Play Console: App anlegen
 
 1. [play.google.com/console](https://play.google.com/console) → **App erstellen**
-2. Name: **Fahrauftrag Ausfüllhilfe km** (27 Zeichen) ·
+2. Name: **Fahrauftrag Ausfüllhilfe** (24 Zeichen) ·
    Sprache Deutsch · **App** · **Kostenlos**
-3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen,
-   Icon `icons/icon-512.png`, Feature-Grafik 1024×500
-   (`docs/store-grafiken/feature-grafik-1024x500.png`; Hintergrundfarbe des Logos: `#585F2A`)
-4. **Data Safety** ausfüllen (siehe Kurzreferenz in `docs/store-texte.md`);
-   die vier AdMob-Datentypen bleiben unverändert, weil die App selbst nichts überträgt
-5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+**
+3. Store-Eintrag: Texte aus `docs/store-texte.md` einfügen –
+   Kurzbeschreibung, vollständige Beschreibung, App-Symbol `icons/icon-512.png`,
+   Feature-Grafik `docs/store-grafiken/feature-grafik.png`,
+   Screenshots `docs/store-grafiken/screenshot-1.png` … `-5.png`
+4. **Data Safety** ausfüllen (Kurzreferenz in `docs/store-texte.md`):
+   vier Datenarten wegen AdMob, die App selbst überträgt nichts
+5. Anzeigen: **Ja** · Werbe-ID: **Ja** · Zielgruppe: **18+** ·
+   Gesundheits-Erklärung: **keine** Gesundheitsfunktionen
 6. Datenschutz-URL: `https://mercwerk.de/fahrauftrag/datenschutz.html`
+7. Kategorie: **Produktivität**
 
 ## 4. Einmalkauf-Produkt anlegen
 

@@ -1,98 +1,112 @@
-# Play-Store-Texte – SGT Rechner (VERALTET, wird ersetzt)
+# Play-Store-Texte – Fahrauftrag Ausfüllhilfe
 
-> **Achtung:** Diese Datei enthält noch die Texte des SGT Rechners, aus dem
-> dieses Repo abgeleitet wurde. Sie werden vollständig durch eigene Texte für
-> die **Fahrauftrag Ausfüllhilfe** ersetzt, sobald der Funktionsumfang und die
-> Grafiken feststehen. Bis dahin bleibt die Datei als Formatvorlage stehen –
-> **nichts daraus in die Play Console übernehmen**, „wiederholter Inhalt“ ist
-> bei mehreren Apps desselben Kontos das größte Ablehnungsrisiko.
+Alles hier zum Kopieren in die Play Console. Die Texte sind bewusst anders
+aufgebaut und anders formuliert als bei BFT Tool, PFT Tool und SGT Rechner:
+„wiederholter Inhalt“ ist bei mehreren Apps desselben Entwicklerkontos das
+größte Ablehnungsrisiko.
 
-## Alte Texte (nur als Muster für Aufbau und Länge)
-
-
-Dritte App der Reihe (nach BFT Tool und PFT Tool) – deshalb sind diese Texte
-bewusst mit anderem Einstieg, anderer Gliederung und anderem Wortlaut
-geschrieben, damit der Play-Review sie nicht als „wiederholten Inhalt“
-einstuft. Vor dem Einreichen in der Play Console einfügen und bei Bedarf anpassen.
-
-## App-Name (max. 30 Zeichen) – FESTGELEGT
+## App-Name (max. 30 Zeichen)
 
 ```
-SGT Soldaten-Grundfitness-Tool
+Fahrauftrag Ausfüllhilfe
 ```
 
-(Exakt 30 Zeichen – schöpft das Play-Limit voll aus und enthält den kompletten
-offiziellen Testnamen als Suchbegriff. Der Launcher-Name unter dem App-Icon
-bleibt davon unberührt „SGT Rechner“.)
+(24 Zeichen. Gleicher Name wie Logo, Website und App – ein Name überall.)
 
 ## Kurzbeschreibung (max. 80 Zeichen)
 
 ```
-Ampel-Auswertung für das Soldaten-Grundfitness-Tool: 4 Aufgaben, Grün-Gelb-Rot.
+Kilometerstände richtig ins Kästchenraster des Fahrauftrags eintragen.
 ```
 
-(80 Zeichen)
+(70 Zeichen)
 
 ## Vollständige Beschreibung (max. 4000 Zeichen)
 
 ```
-Grün, Gelb oder Rot? Beim Soldaten-Grundfitness-Tool (SGT) der Bundeswehr zählt jede Zehntelsekunde: Vier einsatznahe Aufgaben, ein Durchlauf, ca. 20 kg Ausrüstung am Körper – und am Ende entscheidet die schwächste Einzelzeit über deine Kategorie. Der SGT Rechner nimmt dir die Auswertung ab: Zwischenzeiten eintippen, Ampel ablesen, gezielt trainieren.
+Oben die Rückkehr, darunter die Abfahrt – im Kilometerfeld des Fahrauftrags stehen die beiden Stände genau andersherum, als die Fahrt abläuft. Wer sie vertauscht, trägt rechnerisch eine negative Strecke ein. Genau hier setzt diese Ausfüllhilfe an: Du gibst zwei Zahlen ein, die App rechnet die gefahrenen Kilometer aus und zeigt jede Ziffer an der Stelle, an der sie auf dem Blatt steht.
 
-EIN PARCOURS, VIER AUFGABEN
-Auf 55 × 10 Metern werden ohne feste Pause nacheinander absolviert:
-– SGT-A „Bewegen im Gelände“: ca. 130 m mit zweimal Slalom und 10 m Gleiten
-– SGT-B „Ziehen von Lasten“: 50-kg-Personendummy über ca. 40 m
-– SGT-C „Tragen von Lasten“: zwei 18-kg-Kanister über 100 m
-– SGT-D „Heben und Absetzen“: 24-kg-Kanister fünfmal auf 1,25 m Höhe
+DAS KÄSTCHENRASTER
+Sechs Kästchen je Zeile, rechtsbündig wie auf dem Vordruck. Führende Kästchen bleiben leer und werden nicht mit Nullen gefüllt – eine Kleinigkeit, die beim Ausfüllen von Hand regelmäßig für Rückfragen sorgt. Dieselben Felder lassen sich per Umschalter für Betriebsstunden statt Kilometer nutzen.
 
-DIE AMPEL SAGT DIR, WO DU STEHST
-Die App übernimmt das Bewertungssystem der offiziellen Handanweisung (Stand April 2019): Für jede Aufgabe gilt eine Grün-, Gelb- und Rot-Zone – für alle gleich, ohne Alters- oder Geschlechtergruppen. Eine gelbe Aufgabe macht den Durchlauf gelb, eine rote macht ihn rot, ein Abbruch zählt automatisch als Rot. Zusätzlich zeigt dir die App die Gesamtzeit als schnellen Überblick und alle Zielzeiten zum Nachschlagen. Hinweis der Vorschrift: Die Zeitwerte sind vorläufig.
+WENN ETWAS NICHT ZUSAMMENPASST
+Ist der Stand bei der Rückkehr kleiner als bei der Abfahrt, sagt die App das im Klartext – meist sind dann die beiden Zeilen vertauscht. Auch bei null Kilometern und bei ungewöhnlich großen Differenzen kommt ein Hinweis zum Gegenprüfen. Ausgegeben wird nur, was sich aus den Eingaben sicher ergibt; geraten wird nichts.
 
-TRAINING MIT SYSTEM
-Jeder gespeicherte Durchlauf landet in deinem Verlauf. So erkennst du sofort, welche der vier Aufgaben dich Kategorie kostet – Schnelligkeit, Ziehen, Tragen oder Heben – und ob dein Training wirkt.
+MEHRERE TAGE AUF EINMAL NACHHOLEN
+Der Klassiker: Ein paar Tage nicht eingetragen, und jetzt fehlt die halbe Woche. Trag den letzten eingetragenen Stand und den Stand von heute ein, dazu je Fahrt die gefahrenen Kilometer – die App baut daraus die Kette der Kilometerstände, denn jede Abfahrt ist die Rückkehr der Fahrt davor. Eine große Zahl zeigt jederzeit, wie viel noch offen ist. Hast du dir für eine Fahrt einen Stand notiert, hängt sich die Kette an diesem festen Punkt auf. Jede Zeile lässt sich groß im Kästchenraster anzeigen und Stück für Stück abtragen.
 
-AUSBILDER-FUNKTIONEN AN BORD
-Der Prüfermodus führt eine Ergebnisliste für ganze Gruppen und enthält eine bebilderte Anleitung zum Parcours: Aufbauplan mit allen Pylonen-Positionen, Materialsatz, Ablaufskizzen zu jeder Aufgabe und die typischen Ausführungsfehler. Listen lassen sich drucken oder als PDF, Bild und Text exportieren (Premium).
+UHRZEITEN, WENN DU SIE BRAUCHST
+Zuschaltbar in den Einstellungen, ab Werk aus: Beginn und Ende eintragen, Fahrzeit ablesen – Fahrten über Mitternacht eingerechnet. Beim Nachtragen weist die App auf Überschneidungen, fehlende Pausen, lange Fahrtage und kurze Ruhezeiten hin. Das sind Gedächtnisstützen, keine Prüfung einer Vorschrift: Die App sieht nur die Lücken zwischen den eingetragenen Fahrten und kennt weder Pausen innerhalb einer Fahrt noch Ausnahmen.
 
-OFFLINE UND PRIVAT
-Es gibt kein Konto und keinen Server: Sämtliche Eingaben bleiben lokal auf deinem Gerät, die App läuft vollständig offline.
+VIER DESIGNS
+Automatisch, Hell, Dunkel – und Klassisch: Schwarz auf Papierweiß mit Haarlinien und geraden Kanten, angelehnt an die Optik des Vordrucks. Praktisch, wenn man zwischen Bildschirm und Blatt hin- und herschaut.
+
+OHNE KONTO, OHNE SERVER
+Alle Eingaben bleiben lokal auf dem Gerät. Kein Konto, keine Anmeldung, kein Tracking; die App läuft vollständig offline.
 
 EINMAL ZAHLEN STATT ABO
-Kostenlos nutzt du den kompletten Rechner mit Werbung und bis zu drei Personen im Prüfermodus. Premium (einmaliger Kauf) schaltet Werbefreiheit, unbegrenzte Listen sowie Export und Druck frei.
+Kostenlos trägst du mit Werbung ein und führst ein Blatt mit bis zu fünf nachgetragenen Fahrten. Premium (einmaliger Kauf, kein Abo) entfernt die Werbung, hebt die Grenze auf, erlaubt mehrere Blätter parallel – eines je Fahrzeug – und schaltet die Ausgabe als PDF, Bild und Text sowie das Drucken frei.
+
+WAS DIE APP NICHT IST
+Sie ist ein Rechen- und Zuordnungshelfer, kein Formular und kein Ersatz für den amtlichen Vordruck: Eingetragen wird weiterhin von Hand. Sie bildet den Vordruck nicht nach, kennt keine Dienststellen, Fahrzeuge oder Aufträge aus irgendeinem System und sendet nichts an einen Server.
 
 RECHTLICHER HINWEIS
-Privates, inoffizielles Projekt – kein Angebot der Bundeswehr. „Soldaten-Grundfitness-Tool“ wird nur beschreibend verwendet. Grundlage ist die öffentlich zugängliche Handanweisung; maßgeblich ist stets die offizielle Auswertung durch die Überprüfungsleitung. Alle Angaben ohne Gewähr.
+Privates, inoffizielles Projekt – kein Angebot der Bundeswehr und in keiner Weise mit ihr verbunden. „Fahrauftrag“ wird ausschließlich beschreibend verwendet. Für die Richtigkeit der Eintragungen bleibt die fahrzeugführende Person verantwortlich. Alle Angaben ohne Gewähr.
 ```
+
+(rund 3400 Zeichen)
 
 ## Grafiken
 
-Alle Grafiken liegen fertig unter `docs/store-grafiken/`:
-`feature-grafik-1024x500.png` und `screenshot-1…6-1080x1920.png`
-(gerahmte Screenshots mit Überschrift, Motive siehe unten).
+Alle fertig unter `docs/store-grafiken/`:
 
-- **App-Icon 512×512**: liegt bereit unter `icons/icon-512.png`
-- **Feature-Grafik 1024×500**: Logo-Schriftzug links, rechts die vier
-  SGT-Aufgaben als Piktogramm-Reihe (Slalom, Ziehen, Tragen, Heben) auf
-  Olivgrün – liegt fertig unter `docs/store-grafiken/feature-grafik-1024x500.png`
-- **Screenshots**: eigene Motive und andere Überschriften als bei BFT/PFT, z. B.:
-  1. Teilnehmer-Ansicht mit Ampel-Ergebnis („Zeiten rein, Ampel ablesen“)
-  2. Kategoriegrenzen-Aufklapper („Alle Zielzeiten auf einen Blick“)
-  3. Aufbau-&-Ablauf-Tab mit Parcours-Plan („Der komplette Parcours erklärt“)
-  4. Stationsskizze SGT-D („Jede Aufgabe als Skizze“)
-  5. Verlauf („Sieh, welche Aufgabe dich Kategorie kostet“)
-  6. Prüfermodus-Liste („Ergebnisse für die ganze Gruppe“)
+| Was | Datei |
+|---|---|
+| App-Symbol 512×512 | `icons/icon-512.png` |
+| Feature-Grafik 1024×500 | `docs/store-grafiken/feature-grafik.png` |
+| Screenshots 1080×1920 | `docs/store-grafiken/screenshot-1.png` … `-5.png` |
+| Produktsymbol Premium 512×512 | `docs/store-grafiken/produktsymbol-premium-512.png` |
+
+Die Screenshots zeigen der Reihe nach: Kästchenraster · Fehlermeldung bei
+vertauschten Zeilen · Nachtragen mit aufgehender Kette · offener Rest ·
+Uhrzeiten in der Vordruck-Darstellung. Alle Daten darin sind erfunden
+(Musterstadt, Beispielheim, `PKW Y-123 456`).
+
+Neu bauen lassen sie sich mit `docs/store-grafiken/quelle/` – siehe die
+README dort.
 
 ## Formulare (Kurzreferenz)
 
-- Data Safety: Geräte-/andere IDs, ungefährer Standort, App-Interaktionen,
-  Absturz-/Diagnosedaten – jeweils „erhoben und geteilt“, Zweck Analyse + Werbung,
-  nicht sitzungsspezifisch, erforderlich, keine Löschfunktion;
-  „Gesundheit und Fitness“ NICHT ankreuzen (alle Eingaben bleiben lokal)
-- Anzeigen: Ja · Werbe-ID: Ja · Zielgruppe: 18+
-- Datenschutz-URL: `https://marqewi.github.io/sgt-rechner/datenschutz.html`
-  (ergibt sich aus dem Repo-Namen `sgt-rechner`, sobald GitHub Pages aktiviert ist)
-- In-App-Produkt: `premium_unlock` (Einmalkauf, 2,99 €, „Digitale Inhalte“;
-  Kaufoptions-ID `premium-unlock`)
-- AdMob-DSGVO-Meldung: Option „Nicht einwilligen“ auf AN
-- Builds: immer „Generate Signed App Bundle → release“, versionCode bei jedem
-  Upload erhöhen (aktuell 2)
+| Formular | Antwort |
+|---|---|
+| Anzeigen | **Ja, enthält Werbung** |
+| Werbe-ID | **Ja**, Zweck „Werbung“ |
+| Zielgruppe | **18+**, „spricht Kinder an?“ → Nein |
+| Gesundheits-Erklärung | **Keine** Gesundheitsfunktionen (die App misst nichts am Menschen) |
+| Datenschutz-URL | `https://mercwerk.de/fahrauftrag/datenschutz.html` |
+| Kategorie | Produktivität |
+
+**Data Safety** – mit AdMob gilt **nicht** „keine Daten“. Erhoben und geteilt
+werden vier Datenarten:
+
+- Geräte- oder andere IDs (Werbe-ID)
+- Standort → ungefährer Standort
+- App-Aktivität → App-Interaktionen
+- App-Informationen und Leistung → Absturzprotokolle, Diagnose
+
+Für alle vier gleich: **erhoben und geteilt**, **erforderlich**, Zweck
+**Werbung und Analyse** (bei den IDs zusätzlich Betrugsprävention und
+Sicherheit), **nicht** sitzungsspezifisch. Verschlüsselt bei der Übertragung:
+ja. Löschfunktion: nein.
+
+Die App selbst überträgt nichts – die vier Punkte betreffen ausschließlich
+das Werbe-SDK.
+
+## In-App-Produkt
+
+| Feld | Wert |
+|---|---|
+| Produkt-ID | `premium_unlock` (exakt so, später nicht änderbar) |
+| Kaufoptions-ID | `premium-unlock` (nur Bindestriche erlaubt) |
+| Preis | 2,99 € |
+| Einstufung | Digitale Inhalte |
