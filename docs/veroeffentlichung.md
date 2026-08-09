@@ -26,22 +26,78 @@ für alle Apps des AdMob-Kontos.
 
 ## 2. AdMob: neue App + Banner anlegen
 
-1. Auf [admob.google.com](https://admob.google.com) anmelden (gleiches Konto wie BFT, PFT und SGT)
-2. **Apps → App hinzufügen** → Plattform **Android** →
-   „Ist die App bei Google Play gelistet?“ → **Nein** (sie ist ja noch nicht veröffentlicht)
-3. App-Name: **Fahrauftrag Ausfüllhilfe** → anlegen
-4. Die neue **App-ID** kopieren (Format `ca-app-pub-…~…`) →
-   in `android/app/src/main/AndroidManifest.xml` die dort eingetragene
-   Google-Test-App-ID `ca-app-pub-3940256099942544~3347511713` ersetzen
-5. In der neuen App: **Anzeigenblöcke → Anzeigenblock hinzufügen → Banner**,
-   Name z. B. „Fahrauftrag Banner unten“ → anlegen
-6. Die **Banner-Block-ID** kopieren (Format `ca-app-pub-…/…`) →
-   in `index.html` bei `ADS_CONF` eintragen und `TESTING: false` setzen
-7. **Datenschutz & Mitteilungen** → DSGVO-Meldung für die neue App aktivieren,
-   Option „Nicht einwilligen“ einschalten
-8. Wichtig: Neue AdMob-Apps liefern anfangs oft „code 3 / not approved“ –
-   das ist die normale Prüfzeit (Stunden bis wenige Tage). Solange laufen
-   keine echten Anzeigen; die App funktioniert trotzdem.
+Werbung läuft **nur in der Android-App**, nicht in der Web-Version auf
+mercwerk.de. Solange die App nicht im Play Store ist, verdient sie also
+nichts – das Anlegen lohnt sich trotzdem vorab, weil Google für die Freigabe
+Tage braucht.
+
+**Niemals** die AdMob-IDs einer anderen App verwenden: Google wertet das als
+ungültigen Traffic, und das trifft das ganze Konto.
+
+### 2.1 App anlegen
+
+1. [admob.google.com](https://admob.google.com) öffnen und mit **demselben
+   Google-Konto** anmelden wie bei BFT, PFT und SGT.
+2. Links **Apps** → **App hinzufügen**.
+3. Plattform: **Android**.
+4. „Ist deine App im Google Play Store oder in einem anderen App-Store
+   verfügbar?“ → **Nein**. (Die App ist noch nicht veröffentlicht. Nach der
+   Veröffentlichung lässt sie sich nachträglich mit dem Store-Eintrag
+   verknüpfen – dafür ist kein neuer Anzeigenblock nötig.)
+5. App-Name eintragen: **Fahrauftrag Ausfüllhilfe** → **App hinzufügen**.
+6. Auf der nächsten Seite steht die **App-ID** im Format
+   `ca-app-pub-…~…` (mit **Tilde ~**). Diese Nummer kopieren und
+   aufbewahren.
+
+### 2.2 Banner-Anzeigenblock anlegen
+
+1. In der neu angelegten App links auf **Anzeigenblöcke** →
+   **Anzeigenblock hinzufügen**.
+2. Format **Banner** wählen.
+3. Name: **Fahrauftrag Banner unten**. Alle weiteren Einstellungen
+   (Anzeigentyp, Aktualisierungsrate) unverändert lassen.
+4. **Anzeigenblock erstellen**. Danach erscheint die
+   **Anzeigenblock-ID** im Format `ca-app-pub-…/…` (mit **Schrägstrich /**).
+   Auch diese kopieren.
+
+Die beiden IDs werden oft verwechselt: **Tilde = App**, **Schrägstrich =
+Anzeigenblock**. Beide werden gebraucht.
+
+### 2.3 Einwilligung nach DSGVO einrichten
+
+1. Links **Datenschutz & Mitteilungen** → **Europäische Vorschriften (DSGVO)**.
+2. Die neue App auswählen → **Meldung erstellen**.
+3. Datenschutz-URL eintragen:
+   `https://mercwerk.de/fahrauftrag/datenschutz.html`
+4. Die Option **„Nicht einwilligen“ einschalten** – ein gleichwertiger
+   Ablehnen-Knopf ist in der EU rechtlich nötig.
+5. „Schließen (nicht einwilligen)“ ausgeschaltet lassen, damit es bei zwei
+   klaren Knöpfen bleibt.
+6. **Veröffentlichen**.
+
+Die App kommt mit beiden Antworten zurecht: Bei Ablehnung bleibt das Banner
+aus, alles andere funktioniert normal weiter.
+
+### 2.4 Was danach im Code passiert
+
+Mit den beiden IDs werden eingetragen:
+
+- **App-ID** (`~`) → `android/app/src/main/AndroidManifest.xml`, ersetzt die
+  Google-Test-App-ID `ca-app-pub-3940256099942544~3347511713`.
+  Fehlt dieser Eintrag, **stürzt die App beim Start ab**.
+- **Anzeigenblock-ID** (`/`) → `index.html` bei `ADS_CONF.BANNER_ID`,
+  gleichzeitig `TESTING: false`.
+
+### 2.5 Was danach normal ist und nicht repariert werden muss
+
+| Beobachtung | Bedeutung |
+|---|---|
+| `code 3` / „Account not approved yet“ | Prüfzeit für neue Apps, Stunden bis wenige Tage. Danach laufen die Banner von selbst. |
+| „Anzeigenbereitstellung begrenzt“ | Dasselbe – hebt sich nach der Prüfung auf. |
+| Auf dem eigenen Gerät erscheinen **Testanzeigen**, obwohl `TESTING: false` | Absicht von Google, schützt vor versehentlichen Klicks auf die eigenen Anzeigen. Echte Nutzer sehen echte Anzeigen. |
+| app-ads.txt „konnte nicht bestätigt werden“ | Der Crawl steht noch aus (bis 24 h, gelegentlich Tage). Die Datei auf `https://mercwerk.de/app-ads.txt` ist geprüft und korrekt. |
+
+**Niemals die eigenen Anzeigen anklicken** – das führt zur Kontosperrung.
 
 ## 3. Play Console: App anlegen
 
