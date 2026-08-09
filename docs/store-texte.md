@@ -86,18 +86,48 @@ README dort.
 | Datenschutz-URL | `https://mercwerk.de/fahrauftrag/datenschutz.html` |
 | Kategorie | Produktivität |
 
-**Data Safety** – mit AdMob gilt **nicht** „keine Daten“. Erhoben und geteilt
-werden vier Datenarten:
+## Datensicherheit (Data Safety) – Antworten im Wortlaut
 
-- Geräte- oder andere IDs (Werbe-ID)
-- Standort → ungefährer Standort
-- App-Aktivität → App-Interaktionen
-- App-Informationen und Leistung → Absturzprotokolle, Diagnose
+Mit AdMob gilt **nicht** „keine Daten“: Die App selbst überträgt nichts, das
+Werbe-SDK von Google aber schon. Deshalb wird die Erhebung angegeben.
 
-Für alle vier gleich: **erhoben und geteilt**, **erforderlich**, Zweck
-**Werbung und Analyse** (bei den IDs zusätzlich Betrugsprävention und
-Sicherheit), **nicht** sitzungsspezifisch. Verschlüsselt bei der Übertragung:
-ja. Löschfunktion: nein.
+### Seite 1 – Übersicht
+
+| Frage | Antwort |
+|---|---|
+| Werden erforderliche Nutzerdaten erhoben oder geteilt? | **Ja** |
+| Werden alle erhobenen Nutzerdaten bei der Übertragung verschlüsselt? | **Ja** (das Werbe-SDK überträgt über HTTPS) |
+| Methoden zur Kontoerstellung | **Nutzer können in meiner App kein Konto erstellen** |
+| Anmeldung mit Konten von außerhalb der App? | **Nein** |
+| Können Nutzer die Löschung ihrer Daten anfordern? (optional) | **Nein** |
+| Zusätzliche Logos (Sicherheitsüberprüfung, UPI) | beides **überspringen** |
+
+Zur Löschanfrage: Die App speichert alles nur lokal – es gibt weder Konto
+noch Server, aus dem etwas zu löschen wäre. Was das Werbe-SDK erhebt, liegt
+bei Google, nicht bei uns; „innerhalb von 90 Tagen automatisch gelöscht“
+wäre eine Zusage, die wir nicht einhalten können. Örtliche Daten löscht der
+Nutzer selbst in der App („Nachtrag verwerfen“, „Blatt löschen“).
+
+### Seite 2 – Datentypen
+
+Vier Datenarten ankreuzen, alle wegen AdMob:
+
+| Datentyp | Kategorie |
+|---|---|
+| Geräte- oder andere IDs | Geräte- oder andere IDs |
+| Ungefährer Standort | Standort |
+| App-Interaktionen | App-Aktivität |
+| Absturzprotokolle · Diagnose | App-Informationen und Leistung |
+
+### Seite 3 – je Datentyp dieselben Angaben
+
+| Frage | Antwort |
+|---|---|
+| Werden diese Daten erhoben? | **Ja** |
+| Werden diese Daten geteilt? | **Ja** |
+| Werden die Daten nur vorübergehend verarbeitet? | **Nein** |
+| Erhebung erforderlich oder wählbar? | **Erforderlich** |
+| Zweck | **Werbung oder Marketing** und **Analyse**; bei den IDs zusätzlich **Betrugsprävention und Sicherheit** |
 
 Die App selbst überträgt nichts – die vier Punkte betreffen ausschließlich
 das Werbe-SDK.
