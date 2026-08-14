@@ -1,9 +1,8 @@
 # Veröffentlichung Schritt für Schritt (Fahrauftrag Ausfüllhilfe)
 
-> **Stand:** Die Veröffentlichung im Play Store ist **zurückgestellt**.
-> Die App läuft vorerst nur als werbefreie Web-Vollversion (mercwerk.de).
-> Diese Checkliste bleibt für später vollständig erhalten; im Code steht
-> alles bereit (Test-IDs, TESTING: true).
+> **Stand:** Die Veröffentlichung läuft. Eigene AdMob-IDs sind eingetragen
+> (`TESTING: false`), das Store-Material liegt bereit. Die Web-Version auf
+> mercwerk.de bleibt davon unberührt und werbefrei.
 
 Einfache Checkliste für alle Schritte außerhalb des Codes. Reihenfolge einhalten –
 jeder Block ist unabhängig abhakbar.
@@ -223,9 +222,14 @@ Nach diesem Upload kennt die Play Console den Paketnamen
 `de.mercwerk.fahrauftragausfuellhilfe`, und das In-App-Produkt aus Schritt 4 lässt sich
 anlegen.
 
+> **„Versionscode 1 wurde bereits verwendet"** – diese Meldung heißt nicht, dass etwas
+> kaputt ist. Google zählt jede **hochgeladene Datei**, auch einen später
+> verworfenen Test-Upload. Die Nummer lässt sich nie wiederverwenden.
+> Lösung: `versionCode` erhöhen, `npm run cap:sync`, neu bauen.
+
 ### 5.5 Bei jedem weiteren Upload
 
-In `android/app/build.gradle` den `versionCode` um 1 erhöhen (aktuell `1`),
+In `android/app/build.gradle` den `versionCode` um 1 erhöhen (aktuell `2`),
 bei sichtbaren Änderungen zusätzlich den `versionName` anpassen. Danach wieder
 `npm run cap:sync` und neu bauen.
 
@@ -251,7 +255,7 @@ bei sichtbaren Änderungen zusätzlich den `versionName` anpassen. Danach wieder
 1. Play Console → **Testen und veröffentlichen → Produktion → Neuen Release
    erstellen**.
 2. Statt neu hochzuladen: **„App-Bundles hinzufügen“ → aus der Bibliothek** das
-   bereits hochgeladene Bundle (versionCode 1) auswählen. Alternativ lässt sich
+   bereits hochgeladene Bundle (die höchste versionCode-Nummer) auswählen. Alternativ lässt sich
    der interne Test über **„Release hochstufen → Produktion“** direkt übernehmen.
 3. Länder/Regionen auswählen (z. B. alle, oder nur Deutschland/Österreich/Schweiz).
 4. Versionshinweise eintragen, **Speichern → Release überprüfen →
